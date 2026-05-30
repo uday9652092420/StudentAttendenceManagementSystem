@@ -61,6 +61,7 @@ flutter:
     - assets/nodata/
     - assets/new_images/
     - assets/app_icon/
+    - assets/images/logo.png
 
   fonts:
     - family: Montserrat

@@ -1,91 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/auth/login_controller.dart';
 
-import '../../routes/app_routes.dart';
-
-class LoginPageView extends StatelessWidget {
+class LoginPageView extends GetView<LoginController> {
   const LoginPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xfff3f3f3),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          'Login',
-          style: textTheme.titleLarge?.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+        title: const Text(
+          "Teachers Login",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
       ),
       body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.85,
-          padding: const EdgeInsets.all(25),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 8,
-                spreadRadius: 2,
-                offset: Offset(0, 3),
-              ),
-            ],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 30,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Phone Number',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[800],
-                  fontWeight: FontWeight.w500,
+              SizedBox(
+                height: 140,
+                width: 140,
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
+              const Text(
+                "Darul Uloom Sabeelus Salam",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 28,
+                ),
+              ),
+              const SizedBox(height: 40),
               TextField(
-                keyboardType: TextInputType.phone,
+                controller: controller.usernameController,
                 decoration: InputDecoration(
-                  hintText: 'Enter your phone number',
+                  hintText: "Username",
+                  prefixIcon: const Icon(Icons.person),
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.blue, width: 1.5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
                 ),
               ),
-              const SizedBox(height: 25),
-              ElevatedButton(
-                onPressed: () {
-                  Get.toNamed(Routes.otpPage);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller.passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  prefixIcon: const Icon(Icons.lock),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text(
-                  'LOGIN',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: controller.login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "LOGIN",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ),

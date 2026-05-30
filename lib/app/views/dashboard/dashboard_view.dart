@@ -24,173 +24,176 @@ class DashboardView extends GetView<DashboardController> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              /// IMAGE
-              Container(
-                height: 220,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.qr_code_scanner_outlined,
-                  size: 130,
-                  color: Colors.blue,
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              /// HEADING
-              const Text(
-                "Scan to Get Classroom Details",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              const Text(
-                "Use the QR scanner to fetch classroom information and mark attendance instantly.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
-              ),
-
-              const SizedBox(height: 50),
-
-              /// BUTTON
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    final MobileScannerController scannerController =
-                        MobileScannerController();
-
-                    bool isScanned = false;
-
-                    Get.bottomSheet(
-                      StatefulBuilder(
-                        builder: (context, setState) {
-                          return Container(
-                            height: Get.height * 0.85,
-                            decoration: const BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(25),
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                /// CAMERA SCANNER
-                                MobileScanner(
-                                  controller: scannerController,
-                                  onDetect: (capture) {
-                                    if (isScanned) return;
-
-                                    final barcode = capture.barcodes.first;
-
-                                    final String? code = barcode.rawValue;
-
-                                    if (code == null) return;
-                                    isScanned = true;
-
-                                    Get.back();
-
-                                    Future.delayed(
-                                        const Duration(milliseconds: 300), () {
-                                      controller.handleScannedData(code);
-                                    });
-
-                                    // isScanned = true;
-
-                                    // controller.handleScannedData(code);
-
-                                    // Get.back();
-                                  },
-                                ),
-
-                                /// SCAN BOX
-                                Center(
-                                  child: Container(
-                                    width: 260,
-                                    height: 260,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                ),
-
-                                /// CLOSE BUTTON
-                                Positioned(
-                                  top: 40,
-                                  right: 20,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Get.back();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                /// IMAGE
+                Container(
+                  height: 220,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
                       ),
-                      isScrollControlled: true,
-                    );
-                  },
-                  icon: const Icon(Icons.qr_code_scanner),
-                  label: const Text(
-                    "Scan QR",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    ],
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                  child: const Icon(
+                    Icons.qr_code_scanner_outlined,
+                    size: 130,
+                    color: Colors.blue,
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                /// HEADING
+                const Text(
+                  "Scan to Get Classroom Details",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                const Text(
+                  "Use the QR scanner to fetch classroom information and mark attendance instantly.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 50),
+
+                /// BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final MobileScannerController scannerController =
+                          MobileScannerController();
+
+                      bool isScanned = false;
+
+                      Get.bottomSheet(
+                        StatefulBuilder(
+                          builder: (context, setState) {
+                            return Container(
+                              height: Get.height * 0.85,
+                              decoration: const BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(25),
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  /// CAMERA SCANNER
+                                  MobileScanner(
+                                    controller: scannerController,
+                                    onDetect: (capture) {
+                                      if (isScanned) return;
+
+                                      final barcode = capture.barcodes.first;
+
+                                      final String? code = barcode.rawValue;
+
+                                      if (code == null) return;
+                                      isScanned = true;
+
+                                      Get.back();
+
+                                      Future.delayed(
+                                          const Duration(milliseconds: 300),
+                                          () {
+                                        controller.handleScannedData(code);
+                                      });
+
+                                      // isScanned = true;
+
+                                      // controller.handleScannedData(code);
+
+                                      // Get.back();
+                                    },
+                                  ),
+
+                                  /// SCAN BOX
+                                  Center(
+                                    child: Container(
+                                      width: 260,
+                                      height: 260,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 4,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                  ),
+
+                                  /// CLOSE BUTTON
+                                  Positioned(
+                                    top: 40,
+                                    right: 20,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.back();
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.2),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        isScrollControlled: true,
+                      );
+                    },
+                    icon: const Icon(Icons.qr_code_scanner),
+                    label: const Text(
+                      "Scan QR",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
