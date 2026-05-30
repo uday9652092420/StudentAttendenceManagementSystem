@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:my_new_app/app/controllers/dashboard/studentattendance_controller.dart';
+import 'package:my_new_app/app/controllers/dashboard/attendance_controller.dart';
 
-class StudentAttendanceView extends GetView<StudentAttendanceController> {
+class StudentAttendanceView extends GetView<AttendanceController> {
   const StudentAttendanceView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    /// CURRENT DATE IN ENGLISH
-    final String currentDate = DateFormat(
-      'dd MMM yyyy',
-      'en_US',
-    ).format(DateTime.now());
+    final String currentDate =
+        DateFormat('dd MMM yyyy', 'en_US').format(DateTime.now());
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f5f5),
@@ -28,152 +25,153 @@ class StudentAttendanceView extends GetView<StudentAttendanceController> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            /// DATE CARD
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 16,
-              ),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xff2196F3),
-                    Color(0xff1565C0),
+      body: Obx(
+        () => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              /// DATE CARD
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xff2196F3),
+                      Color(0xff1565C0),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.calendar_month,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Today's Date",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          currentDate,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// TOP CARD
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  /// COURSE
-                  TextFormField(
-                    initialValue: controller.courseName.value,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Course Name",
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      prefixIcon: const Icon(Icons.menu_book),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 55,
+                      width: 55,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.calendar_month,
+                        color: Colors.white,
+                        size: 28,
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  /// CLASS
-                  TextFormField(
-                    initialValue: controller.className.value,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Class Name",
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      prefixIcon: const Icon(Icons.class_),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Today's Date",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            currentDate,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
 
-                  const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-                  /// PERIOD
-                  Obx(
-                    () => DropdownButtonFormField<String>(
-                      value: controller.selectedPeriod.value,
+              /// TOP CARD
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: controller.courseController,
+                      readOnly: true,
                       decoration: InputDecoration(
-                        labelText: "Select Period",
+                        labelText: "Course Name",
                         filled: true,
                         fillColor: Colors.grey.shade100,
-                        prefixIcon: const Icon(Icons.access_time),
+                        prefixIcon: const Icon(Icons.menu_book),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      items: controller.periods.map((period) {
-                        return DropdownMenuItem(
-                          value: period,
-                          child: Text(period),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        controller.selectedPeriod.value = value!;
-                      },
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                  /// COUNTS
-                  Obx(
-                    () => Row(
+                    TextFormField(
+                      controller: controller.classController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "Class Name",
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        prefixIcon: const Icon(Icons.class_),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    /// PERIOD
+                    Obx(
+                      () => DropdownButtonFormField<String>(
+                        value: controller.selectedPeriod.value.isEmpty
+                            ? null
+                            : controller.selectedPeriod.value,
+                        decoration: InputDecoration(
+                          labelText: "Select Period",
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          prefixIcon: const Icon(Icons.access_time),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: controller.periods.map((period) {
+                          return DropdownMenuItem(
+                            value: period,
+                            child: Text(period),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.selectedPeriod.value = value;
+                          }
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    /// COUNTS
+                    Row(
                       children: [
                         Expanded(
                           child: Container(
@@ -240,61 +238,59 @@ class StudentAttendanceView extends GetView<StudentAttendanceController> {
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            /// STUDENTS LIST
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  /// HEADER
-                  Row(
-                    children: const [
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          "Roll No",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+              /// STUDENTS LIST
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    /// HEADER
+                    Row(
+                      children: const [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Roll No",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child: Text(
-                          "Student Name",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                            "Student Name",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Text(
-                          "Status",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            "Status",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
-                  const Divider(height: 30),
+                    const Divider(height: 30),
 
-                  /// STUDENTS
-                  Obx(
-                    () => ListView.separated(
+                    /// STUDENTS
+                    ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: controller.students.length,
@@ -304,19 +300,14 @@ class StudentAttendanceView extends GetView<StudentAttendanceController> {
 
                         return Row(
                           children: [
-                            /// ROLL NO
                             Expanded(
                               flex: 2,
                               child: Text(student.rollNo),
                             ),
-
-                            /// NAME
                             Expanded(
                               flex: 4,
                               child: Text(student.name),
                             ),
-
-                            /// STATUS BUTTON
                             Expanded(
                               flex: 2,
                               child: Center(
@@ -361,39 +352,39 @@ class StudentAttendanceView extends GetView<StudentAttendanceController> {
                         );
                       },
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            /// SAVE BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.saveAttendance();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text(
-                  "Save Attendance",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  ],
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 30),
+
+              /// SAVE BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    controller.saveAttendance();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    "Save Attendance",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

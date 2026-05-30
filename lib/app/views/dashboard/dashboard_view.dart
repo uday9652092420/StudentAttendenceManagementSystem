@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -82,7 +83,95 @@ class DashboardView extends GetView<DashboardController> {
                 height: 55,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    controller.scanQRCode();
+                    final MobileScannerController scannerController =
+                        MobileScannerController();
+
+                    bool isScanned = false;
+
+                    Get.bottomSheet(
+                      StatefulBuilder(
+                        builder: (context, setState) {
+                          return Container(
+                            height: Get.height * 0.85,
+                            decoration: const BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25),
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                /// CAMERA SCANNER
+                                MobileScanner(
+                                  controller: scannerController,
+                                  onDetect: (capture) {
+                                    if (isScanned) return;
+
+                                    final barcode = capture.barcodes.first;
+
+                                    final String? code = barcode.rawValue;
+
+                                    if (code == null) return;
+                                    isScanned = true;
+
+                                    Get.back();
+
+                                    Future.delayed(
+                                        const Duration(milliseconds: 300), () {
+                                      controller.handleScannedData(code);
+                                    });
+
+                                    // isScanned = true;
+
+                                    // controller.handleScannedData(code);
+
+                                    // Get.back();
+                                  },
+                                ),
+
+                                /// SCAN BOX
+                                Center(
+                                  child: Container(
+                                    width: 260,
+                                    height: 260,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 4,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                ),
+
+                                /// CLOSE BUTTON
+                                Positioned(
+                                  top: 40,
+                                  right: 20,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.back();
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      isScrollControlled: true,
+                    );
                   },
                   icon: const Icon(Icons.qr_code_scanner),
                   label: const Text(

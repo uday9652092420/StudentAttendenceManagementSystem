@@ -6,5 +6,5 @@ abstract class Routes {
   static const dashboard = '/dashboard_view';
 
   static const otpPage = '/otp_view_page';
-  static const studentAttendance = '/student_attendance_view';
+  static const studentAttendance = '/studentattendance_view';
 }
