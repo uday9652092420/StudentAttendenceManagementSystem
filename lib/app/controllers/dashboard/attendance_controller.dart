@@ -17,6 +17,8 @@ class AttendanceController extends GetxController {
   /// COUNTS
   RxInt presentCount = 0.obs;
   RxInt absentCount = 0.obs;
+//total students
+  RxInt totalStudents = 0.obs;
 
   /// STUDENTS
   RxList<StudentModel> students = <StudentModel>[].obs;
@@ -85,6 +87,7 @@ class AttendanceController extends GetxController {
     presentCount.value = students.where((e) => e.status == "P").length;
 
     absentCount.value = students.where((e) => e.status == "A").length;
+    totalStudents.value = students.length;
   }
 
   void saveAttendance() {

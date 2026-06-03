@@ -169,15 +169,12 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                     ),
 
                     const SizedBox(height: 20),
-
-                    /// COUNTS
                     Row(
                       children: [
+                        /// PRESENT
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: Colors.green.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
@@ -204,12 +201,13 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+
+                        const SizedBox(width: 10),
+
+                        /// ABSENT
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: Colors.red.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
@@ -236,8 +234,109 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                             ),
                           ),
                         ),
+
+                        const SizedBox(width: 10),
+
+                        /// TOTAL
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "Total",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "${controller.totalStudents.value}",
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+                    // /// COUNTS
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       child: Container(
+                    //         padding: const EdgeInsets.symmetric(
+                    //           vertical: 14,
+                    //         ),
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.green.withOpacity(0.1),
+                    //           borderRadius: BorderRadius.circular(12),
+                    //         ),
+                    //         child: Column(
+                    //           children: [
+                    //             const Text(
+                    //               "Present Students",
+                    //               style: TextStyle(
+                    //                 color: Colors.green,
+                    //                 fontWeight: FontWeight.w600,
+                    //               ),
+                    //             ),
+                    //             const SizedBox(height: 5),
+                    //             Text(
+                    //               "${controller.presentCount.value}",
+                    //               style: const TextStyle(
+                    //                 color: Colors.green,
+                    //                 fontSize: 22,
+                    //                 fontWeight: FontWeight.bold,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 12),
+                    //     Expanded(
+                    //       child: Container(
+                    //         padding: const EdgeInsets.symmetric(
+                    //           vertical: 14,
+                    //         ),
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.red.withOpacity(0.1),
+                    //           borderRadius: BorderRadius.circular(12),
+                    //         ),
+                    //         child: Column(
+                    //           children: [
+                    //             const Text(
+                    //               "Absent",
+                    //               style: TextStyle(
+                    //                 color: Colors.red,
+                    //                 fontWeight: FontWeight.w600,
+                    //               ),
+                    //             ),
+                    //             const SizedBox(height: 5),
+                    //             Text(
+                    //               "${controller.absentCount.value}",
+                    //               style: const TextStyle(
+                    //                 color: Colors.red,
+                    //                 fontSize: 22,
+                    //                 fontWeight: FontWeight.bold,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
