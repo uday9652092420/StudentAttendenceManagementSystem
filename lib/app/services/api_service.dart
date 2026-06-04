@@ -188,11 +188,11 @@ class ApiService {
               // );
 
               consolePrint("Resonse NULL : ${error.message}");
-              return;
+              return handler.next(error);
             }
             if (error.response?.statusCode == 500) {
               errorToast("somthing_wrng_try_again".tr);
-              return;
+              return handler.next(error);
             }
             if (error.response?.statusCode == 401) {
               // Token Invalid - Just Logout
@@ -209,8 +209,8 @@ class ApiService {
               //   barrierColor: Constants.bgBackDropColor,
               //   barrierDismissible: false, // Prevents closing the dialog by tapping outside
               // );
-              logout();
-              return;
+              //logout();
+              return handler.next(error);
             }
             // if (error.response?.statusCode == 303) {
             //   // AccessToken Expired - Get new AccessToken by using Refresh Token.
@@ -300,7 +300,7 @@ class ApiService {
         return response;
       } catch (error) {
         // fnHandleControllerException(error, stackTrace, "ApiService", "post");
-        return null; // or rethrow the error based on your need
+        rethrow; // or rethrow the error based on your need
       }
     } else {
       if (isInternetDialouge || true) {

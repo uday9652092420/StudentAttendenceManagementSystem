@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/dashboard/login_model.dart';
 import 'package:my_new_app/app/repositories/auth_repository.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
@@ -16,10 +17,8 @@ class LoginController extends GetxController {
   Future<void> login() async {
     if (usernameController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      Get.snackbar(
-        "Validation",
+      errorToast(
         "Please enter username and password",
-        snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
@@ -35,10 +34,8 @@ class LoginController extends GetxController {
       final response = await authRepository.postlogin(request.toJson());
 
       if (response == null) {
-        Get.snackbar(
-          "Error",
+        errorToast(
           "Unable to connect to server",
-          snackPosition: SnackPosition.BOTTOM,
         );
         return;
       }
@@ -52,10 +49,8 @@ class LoginController extends GetxController {
         final accessToken = data["accessToken"]?.toString() ?? "";
 
         if (accessToken.isEmpty) {
-          Get.snackbar(
-            "Login Failed",
-            "Token not received",
-            snackPosition: SnackPosition.BOTTOM,
+          errorToast(
+            "Login failed: No access token received",
           );
           return;
         }
@@ -77,27 +72,20 @@ class LoginController extends GetxController {
 
         print("TOKEN SAVED => $accessToken");
 
-        Get.snackbar(
-          "Success",
+        successToast(
           "Login Successful",
-          snackPosition: SnackPosition.BOTTOM,
         );
 
         Get.offAllNamed(Routes.dashboard);
       } else {
-        Get.snackbar(
-          "Login Failed",
+        errorToast(
           "Invalid Username or Password",
-          snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e) {
       print("LOGIN ERROR => $e");
-
-      Get.snackbar(
-        "Error",
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+      errorToast(
+        "Invalid Username or Password",
       );
     } finally {
       isLoading.value = false;
