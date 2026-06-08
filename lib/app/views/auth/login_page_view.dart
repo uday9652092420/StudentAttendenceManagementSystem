@@ -13,7 +13,7 @@ class LoginPageView extends GetView<LoginController> {
         backgroundColor: Colors.blue,
         centerTitle: true,
         title: const Text(
-          "Teachers Login",
+          "Login",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ class LoginPageView extends GetView<LoginController> {
               ),
               const SizedBox(height: 20),
               const Text(
-                "Darul Uloom Sabeelus Salam",
+                "DARUL ULOOM SABEELUS SALAM",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.blue,

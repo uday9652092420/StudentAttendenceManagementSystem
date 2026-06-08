@@ -1,6 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
+import 'package:my_new_app/app/views/security/security_dashboard.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -43,6 +44,10 @@ class AppPages {
       name: Routes.dashboard,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.securityDashboard,
+      page: () => const SecurityDashboard(),
     ),
     GetPage(
       name: Routes.studentAttendance,

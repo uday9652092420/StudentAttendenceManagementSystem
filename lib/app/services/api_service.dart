@@ -516,6 +516,8 @@ class ApiService {
     }).toList();
   }
 
+  Future<void> validateGatepass(Map<String, dynamic> json) async {}
+
   // static bool logout() {
   //   FlutterSecureStore().deleteAllData();
   //   Storage.remove(Storage.loginResponse);

@@ -10,4 +10,5 @@ abstract class Routes {
   static const otpPage = '/otp_view_page';
 
   static const studentAttendance = '/studentattendance_view';
+  static const securityDashboard = "/security-dashboard";
 }

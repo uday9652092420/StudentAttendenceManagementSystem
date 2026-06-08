@@ -17,43 +17,56 @@ class LoginController extends GetxController {
   Future<void> login() async {
     if (usernameController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      errorToast(
-        "Please enter username and password",
-      );
+      errorToast("Please enter username and password");
       return;
     }
 
     try {
       isLoading.value = true;
 
+      /// SECURITY GUARD STATIC LOGIN
+      if (usernameController.text.trim() == "uday" &&
+          passwordController.text.trim() == "uday123") {
+        await SharedPrefsHelper.setString(
+          "username",
+          "uday",
+        );
+
+        await SharedPrefsHelper.setString(
+          "roleName",
+          "security",
+        );
+
+        successToast("Security Login Successful");
+
+        Get.offAllNamed(
+          Routes.securityDashboard,
+        );
+
+        return;
+      }
+
+      /// TEACHER LOGIN API
       final request = LoginModel(
         username: usernameController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      final response = await authRepository.postlogin(request.toJson());
+      final response = await authRepository.postlogin(
+        request.toJson(),
+      );
 
       if (response == null) {
-        errorToast(
-          "Unable to connect to server",
-        );
+        errorToast("Unable to connect to server");
         return;
       }
-
-      print("STATUS => ${response.statusCode}");
-      print("BODY => ${response.data}");
 
       if (response.statusCode == 200) {
         final data = response.data;
 
         final accessToken = data["accessToken"]?.toString() ?? "";
 
-        if (accessToken.isEmpty) {
-          errorToast(
-            "Login failed: No access token received",
-          );
-          return;
-        }
+        final roleName = data["roleName"]?.toString() ?? "";
 
         await SharedPrefsHelper.setString(
           SharedPrefsHelper.accessToken,
@@ -67,16 +80,21 @@ class LoginController extends GetxController {
 
         await SharedPrefsHelper.setString(
           "roleName",
-          data["roleName"]?.toString() ?? "",
+          roleName,
         );
 
-        print("TOKEN SAVED => $accessToken");
+        successToast("Login Successful");
 
-        successToast(
-          "Login Successful",
-        );
-
-        Get.offAllNamed(Routes.dashboard);
+        /// ROLE BASED NAVIGATION
+        if (roleName.toLowerCase() == "security") {
+          Get.offAllNamed(
+            Routes.securityDashboard,
+          );
+        } else {
+          Get.offAllNamed(
+            Routes.dashboard,
+          );
+        }
       } else {
         errorToast(
           "Invalid Username or Password",
