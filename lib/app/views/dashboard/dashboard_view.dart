@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
-import 'package:my_new_app/app/helpers/shared_preferences.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});

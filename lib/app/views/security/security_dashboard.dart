@@ -1,22 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../helpers/shared_preferences.dart';
+import '../../controllers/securitycontrollers/security_dashboard_controller.dart';
+import '../../custome_widgets/logout.dart';
 import '../../routes/app_routes.dart';
 
 class SecurityDashboard extends StatelessWidget {
-  const SecurityDashboard({super.key});
+  SecurityDashboard({super.key});
 
-  Future<void> logout() async {
-    await SharedPrefsHelper.remove("username");
-    await SharedPrefsHelper.remove("roleName");
-    await SharedPrefsHelper.remove(
-      SharedPrefsHelper.accessToken,
-    );
-
-    Get.offAllNamed(Routes.login);
-  }
+  final SecurityDashboardController controller =
+      Get.put(SecurityDashboardController(), permanent: true);
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +54,12 @@ class SecurityDashboard extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 100),
-
-                /// QR CARD
+                const SizedBox(height: 80),
                 Container(
                   height: 220,
                   width: double.infinity,
@@ -86,9 +80,7 @@ class SecurityDashboard extends StatelessWidget {
                     color: Colors.blue,
                   ),
                 ),
-
                 const SizedBox(height: 40),
-
                 const Text(
                   "Scan to Validate Gatepass",
                   textAlign: TextAlign.center,
@@ -97,21 +89,16 @@ class SecurityDashboard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
                 const Text(
                   "Use the QR scanner to verify gatepass details and validate student or visitor entry instantly.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.black87,
-                    height: 1.5,
                   ),
                 ),
-
                 const SizedBox(height: 50),
-
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -130,9 +117,28 @@ class SecurityDashboard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await controller.pickQrFromGallery();
+                    },
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text(
+                      "Upload QR Image",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 ),
@@ -150,77 +156,103 @@ class SecurityDashboard extends StatelessWidget {
     bool isScanned = false;
 
     Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            height: Get.height * 0.85,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(25),
-              ),
+      SizedBox(
+        height: Get.height * 0.85,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(25),
             ),
-            child: Stack(
-              children: [
-                MobileScanner(
-                  controller: scannerController,
-                  onDetect: (capture) {
-                    if (isScanned) return;
+          ),
+          child: Stack(
+            children: [
+              MobileScanner(
+                controller: scannerController,
+                onDetect: (capture) async {
+                  if (isScanned) return;
 
-                    final barcode = capture.barcodes.first;
-                    final String? code = barcode.rawValue;
+                  final barcode = capture.barcodes.first;
 
-                    if (code == null) return;
+                  final String? code = barcode.rawValue;
 
-                    isScanned = true;
+                  if (code == null || code.isEmpty) return;
 
-                    Get.back();
+                  isScanned = true;
 
+                  String gatePassId = "";
+
+                  try {
+                    final qrData = jsonDecode(code);
+
+                    if (qrData is Map<String, dynamic>) {
+                      gatePassId = qrData["gatePassId"]?.toString() ?? "";
+                    }
+                  } catch (_) {
+                    gatePassId = code;
+                  }
+
+                  print("QR FROM CAMERA => $code");
+                  print("EXTRACTED GATEPASS ID => $gatePassId");
+
+                  if (gatePassId.isEmpty) {
                     Get.snackbar(
-                      "Gatepass Scanned",
-                      code,
-                      snackPosition: SnackPosition.BOTTOM,
+                      "Error",
+                      "Gate Pass ID not found in QR",
                     );
+                    isScanned = false;
+                    return;
+                  }
 
-                    /// TODO:
-                    /// Call Gatepass Validation API here
+                  scannerController.dispose();
+
+                  Get.back();
+
+                  await controller.processScan(code);
+
+                  Get.toNamed(
+                    Routes.addMovement,
+                    arguments: gatePassId,
+                  );
+                },
+              ),
+              Center(
+                child: Container(
+                  width: 260,
+                  height: 260,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 4,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    scannerController.dispose();
+                    Get.back();
                   },
-                ),
-                Center(
                   child: Container(
-                    width: 260,
-                    height: 260,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 4,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 40,
-                  right: 20,
-                  child: GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
       isScrollControlled: true,
     );

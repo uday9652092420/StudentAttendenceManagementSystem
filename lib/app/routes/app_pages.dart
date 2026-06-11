@@ -1,5 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_binding.dart';
+import 'package:my_new_app/app/bindings/security/add_movement_binding.dart';
+import 'package:my_new_app/app/bindings/security/security_dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
 import 'package:my_new_app/app/views/security/security_dashboard.dart';
 
@@ -12,6 +14,8 @@ import '../views/auth/login_page_view.dart';
 import '../views/auth/otp_screen_view.dart';
 import '../views/splash_screen_view.dart';
 import 'app_routes.dart';
+import 'package:get/get.dart';
+import 'package:my_new_app/app/views/security/add_movement_view.dart';
 
 import 'package:my_new_app/app/bindings/dashboard/studentattendance_binding.dart';
 import 'package:my_new_app/app/views/dashboard/studentattendance_view.dart';
@@ -47,12 +51,18 @@ class AppPages {
     ),
     GetPage(
       name: Routes.securityDashboard,
-      page: () => const SecurityDashboard(),
+      page: () => SecurityDashboard(),
+      binding: SecurityDashboardBinding(),
     ),
     GetPage(
       name: Routes.studentAttendance,
       page: () => const StudentAttendanceView(),
       binding: StudentAttendanceBinding(),
+    ),
+    GetPage(
+      name: Routes.addMovement,
+      page: () => const AddMovementView(),
+      binding: AddMovementBinding(),
     ),
   ];
 }
