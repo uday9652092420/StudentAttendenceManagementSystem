@@ -394,9 +394,11 @@ class AddMovementView extends GetView<AddMovementController> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    controller.saveMovement();
-                  },
+                  onPressed: data.movementExists == true
+                      ? null
+                      : () {
+                          controller.saveMovement();
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
@@ -407,9 +409,11 @@ class AddMovementView extends GetView<AddMovementController> {
                       ),
                     ),
                   ),
-                  child: const Text(
-                    "Save Movement",
-                    style: TextStyle(
+                  child: Text(
+                    data.movementExists == true
+                        ? "Movement Already Saved"
+                        : "Save Movement",
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

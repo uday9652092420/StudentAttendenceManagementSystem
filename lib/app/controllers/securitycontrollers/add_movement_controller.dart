@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/models/security/movement_save_model.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
 import '../../repositories/security/movement_repository.dart';
@@ -65,6 +66,15 @@ class AddMovementController extends GetxController {
         gatePass.value = GatePassDetailsModel.fromJson(
           apiResponse.data["data"],
         );
+        final movement = gatePass.value!;
+
+        outSecurityGuardController.text = movement.outSecurityGuard ?? "";
+
+        returnSecurityGuardController.text = movement.returnSecurityGuard ?? "";
+
+        confirmStudentLeft.value = movement.outConfirmed ?? false;
+
+        confirmStudentReturned.value = movement.returnConfirmed ?? false;
         print(
           "API URL => hostel-in-out-movements/gate-pass-id/$gatePassId",
         );
@@ -81,13 +91,57 @@ class AddMovementController extends GetxController {
 
   Future<void> saveMovement() async {
     try {
+      final data = gatePass.value;
+
+      if (data == null) {
+        Get.snackbar(
+          "Error",
+          "Gate Pass Data Missing",
+        );
+        return;
+      }
+
       isLoading.value = true;
 
-      Get.snackbar(
-        "Success",
-        "Movement saved successfully",
+      final movementModel = MovementSaveModel(
+        gatePassId: data.gatePassId ?? "",
+        hostelAdmissionId: data.hostelAdmissionId ?? "",
+        studentId: data.studentId ?? "",
+        studentName: data.studentName ?? "",
+        roomNo: data.roomNo ?? "",
+        courseName: data.courseName ?? "",
+        gatePassNo: data.gatePassNo ?? "",
+        outConfirmed: confirmStudentLeft.value,
+        outSecurityGuard: outSecurityGuardController.text.trim(),
+        returnConfirmed: confirmStudentReturned.value,
+        returnSecurityGuard: returnSecurityGuardController.text.trim(),
       );
+
+      print(
+        "SAVE BODY => ${movementModel.toJson()}",
+      );
+
+      final response = await repository.saveMovement(
+        movementModel.toJson(),
+      );
+
+      print(
+        "SAVE RESPONSE => ${response?.data}",
+      );
+
+      if (response != null && response.statusCode == 200) {
+        Get.snackbar(
+          "Success",
+          "Movement saved successfully",
+        );
+
+        Get.back();
+      }
     } catch (e) {
+      print(
+        "SAVE MOVEMENT ERROR => $e",
+      );
+
       Get.snackbar(
         "Error",
         e.toString(),

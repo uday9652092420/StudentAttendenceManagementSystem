@@ -12,6 +12,15 @@ class GatePassDetailsModel {
   String? returnTime;
   String? photoPath;
 
+  bool? movementExists;
+  String? movementId;
+
+  bool? outConfirmed;
+  String? outSecurityGuard;
+
+  bool? returnConfirmed;
+  String? returnSecurityGuard;
+
   GatePassDetailsModel.fromJson(Map<String, dynamic> json) {
     gatePassId = json["gate_pass_id"];
     hostelAdmissionId = json["hostel_admission_id"];
@@ -25,5 +34,14 @@ class GatePassDetailsModel {
     issueDate = json["issue_date"];
     returnTime = json["return_time"];
     photoPath = json["photo_path"];
+
+    movementExists = json["movement_exists"];
+    movementId = json["movement_id"];
+
+    outConfirmed = json["out_confirmed"];
+    outSecurityGuard = json["out_security_guard"];
+
+    returnConfirmed = json["return_confirmed"];
+    returnSecurityGuard = json["return_security_guard"];
   }
 }

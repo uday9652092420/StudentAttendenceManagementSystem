@@ -21,4 +21,15 @@ class GatePassRepository {
 
     return response;
   }
+
+  Future<Response?> saveMovement(
+    Map<String, dynamic> body,
+  ) async {
+    return await ApiService.post(
+      EndPoints.saveMovement,
+      body,
+      requireAuthToken:
+          false, //temperary change, will handle auth token in controller
+    );
+  }
 }
