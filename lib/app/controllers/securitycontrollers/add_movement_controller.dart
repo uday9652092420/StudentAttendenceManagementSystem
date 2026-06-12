@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/security/movement_save_model.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
@@ -90,62 +91,83 @@ class AddMovementController extends GetxController {
   }
 
   Future<void> saveMovement() async {
+    print("====================================");
+    print("SAVE BUTTON CLICKED");
+    print("====================================");
     try {
       final data = gatePass.value;
 
       if (data == null) {
-        Get.snackbar(
-          "Error",
-          "Gate Pass Data Missing",
-        );
+        errorToast("Gate Pass Data Missing");
+        return;
+      }
+// both already completed
+      if ((data.outConfirmed ?? false) && (data.returnConfirmed ?? false)) {
+        errorToast("Both movements already completed");
+        return;
+      }
+
+      if (!confirmStudentLeft.value) {
+        errorToast("Please confirm student has left the hostel");
+        return;
+      }
+
+      if (outSecurityGuardController.text.trim().isEmpty) {
+        errorToast("Please enter Security Guard name");
         return;
       }
 
       isLoading.value = true;
 
-      final movementModel = MovementSaveModel(
-        gatePassId: data.gatePassId ?? "",
-        hostelAdmissionId: data.hostelAdmissionId ?? "",
-        studentId: data.studentId ?? "",
-        studentName: data.studentName ?? "",
-        roomNo: data.roomNo ?? "",
-        courseName: data.courseName ?? "",
-        gatePassNo: data.gatePassNo ?? "",
-        outConfirmed: confirmStudentLeft.value,
-        outSecurityGuard: outSecurityGuardController.text.trim(),
-        returnConfirmed: confirmStudentReturned.value,
-        returnSecurityGuard: returnSecurityGuardController.text.trim(),
-      );
+      final body = {
+        "gatePassId": data.gatePassId,
+        "hostelAdmissionId": data.hostelAdmissionId,
+        "studentId": data.studentId,
+        "studentName": data.studentName,
+        "roomNo": data.roomNo,
+        "courseName": data.courseName,
+        "gatePassNo": data.gatePassNo,
+        "outConfirmed": confirmStudentLeft.value,
+        "outSecurityGuard": outSecurityGuardController.text.trim(),
+      };
 
+      print("=================================");
       print(
-        "SAVE BODY => ${movementModel.toJson()}",
-      );
+          "POST URL => http://192.168.1.230:3002/api/hostel-in-out-movements");
+      print("SAVE BODY => $body");
+      print("=================================");
 
-      final response = await repository.saveMovement(
-        movementModel.toJson(),
-      );
+      final response = await repository.saveMovement(body);
 
-      print(
-        "SAVE RESPONSE => ${response?.data}",
-      );
+      print("=================================");
+      print("STATUS CODE => ${response?.statusCode}");
+      print("SAVE RESPONSE => ${response?.data}");
+      print("=================================");
 
-      if (response != null && response.statusCode == 200) {
-        Get.snackbar(
-          "Success",
-          "Movement saved successfully",
+      if (response == null) {
+        errorToast("No response from server");
+        return;
+      }
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        successToast(
+          response.data["message"] ?? "Movement created successfully",
         );
 
-        Get.back();
+        if (gatePass.value != null) {
+          gatePass.value!.movementExists = true;
+          gatePass.refresh();
+        }
+
+        Get.back(result: true);
+      } else {
+        errorToast(
+          response.data["message"] ?? "Failed to save movement",
+        );
       }
     } catch (e) {
-      print(
-        "SAVE MOVEMENT ERROR => $e",
-      );
-
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      print("SAVE MOVEMENT ERROR => $e");
+      errorToast(e.toString());
     } finally {
       isLoading.value = false;
     }

@@ -3,8 +3,9 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
 
 import 'package:my_new_app/app/controllers/securitycontrollers/add_movement_controller.dart';
-import '../../config/environment.dart';
+
 import 'package:intl/intl.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 class AddMovementView extends GetView<AddMovementController> {
   const AddMovementView({super.key});
@@ -79,33 +80,46 @@ class AddMovementView extends GetView<AddMovementController> {
         print(
           "IMAGE URL => ${Constants.imageBaseUrl}${data.photoPath}",
         );
-
-        final imageUrl = "${Constants.imageBaseUrl}${data.photoPath ?? ''}";
+        final imageUrl = data.photoPath != null && data.photoPath!.isNotEmpty
+            ? "${Constants.imageBaseUrl}${data.photoPath}"
+            : "";
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  imageUrl,
-                  width: 110,
-                  height: 130,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) {
-                    return Container(
-                      width: 110,
-                      height: 130,
-                      color: Colors.blue.shade50,
-                      child: const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: Colors.blue,
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        width: 110,
+                        height: 130,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) {
+                          return Container(
+                            width: 110,
+                            height: 130,
+                            color: Colors.blue.shade50,
+                            child: const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: Colors.blue,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        width: 110,
+                        height: 130,
+                        color: Colors.blue.shade50,
+                        child: const Icon(
+                          Icons.person,
+                          size: 60,
+                          color: Colors.blue,
+                        ),
                       ),
-                    );
-                  },
-                ),
               ),
+
               const SizedBox(height: 20),
 
               /// STUDENT DETAILS
@@ -389,37 +403,41 @@ class AddMovementView extends GetView<AddMovementController> {
               ),
 
               const SizedBox(height: 25),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: data.movementExists == true
+                  onPressed: controller.isLoading.value ||
+                          ((data.outConfirmed ?? false) &&
+                              (data.returnConfirmed ?? false))
                       ? null
-                      : () {
-                          controller.saveMovement();
+                      : () async {
+                          await controller.saveMovement();
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
                     elevation: 4,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    data.movementExists == true
-                        ? "Movement Already Saved"
-                        : "Save Movement",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: controller.isLoading.value
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : Text(
+                          ((data.outConfirmed ?? false) &&
+                                  (data.returnConfirmed ?? false))
+                              ? "Movement Completed"
+                              : "Save Movement",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
-              ),
+              )
             ],
           ),
         );

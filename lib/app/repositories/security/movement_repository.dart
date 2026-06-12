@@ -25,11 +25,22 @@ class GatePassRepository {
   Future<Response?> saveMovement(
     Map<String, dynamic> body,
   ) async {
-    return await ApiService.post(
+    print("=================================");
+    print("POST URL => ${EndPoints.saveMovement}");
+    print("POST BODY => $body");
+    print("=================================");
+
+    final response = await ApiService.post(
       EndPoints.saveMovement,
       body,
-      requireAuthToken:
-          false, //temperary change, will handle auth token in controller
+      requireAuthToken: false,
     );
+
+    print("=================================");
+    print("POST STATUS => ${response?.statusCode}");
+    print("POST RESPONSE => ${response?.data}");
+    print("=================================");
+
+    return response;
   }
 }
