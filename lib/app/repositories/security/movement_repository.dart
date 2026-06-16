@@ -43,4 +43,15 @@ class GatePassRepository {
 
     return response;
   }
+
+  Future<Response?> updateMovement(
+    String movementId,
+    Map<String, dynamic> body,
+  ) async {
+    return await ApiService.put(
+      "${EndPoints.saveMovement}/$movementId",
+      body,
+      requireAuthToken: false,
+    );
+  }
 }

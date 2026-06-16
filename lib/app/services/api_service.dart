@@ -291,6 +291,7 @@ class ApiService {
           endpoint,
           data: jsonEncode(body),
           options: Options(
+            validateStatus: (status) => true,
             headers: await _mergeHeaders(
               headers,
               requireAuthToken: requireAuthToken,
@@ -365,6 +366,7 @@ class ApiService {
         endpoint,
         data: jsonEncode(body),
         options: Options(
+          validateStatus: (status) => true,
           headers: await _mergeHeaders(
             headers,
             requireAuthToken: requireAuthToken,

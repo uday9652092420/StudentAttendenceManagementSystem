@@ -57,6 +57,13 @@ class AddMovementView extends GetView<AddMovementController> {
 
         final data = controller.gatePass.value;
 
+        final bool outDone = data?.outConfirmed ?? false;
+
+        final bool returnDone = data?.returnConfirmed ?? false;
+
+        final bool isReturnMode =
+            outDone && !returnDone && (data?.movementId?.isNotEmpty ?? false);
+
         if (data == null) {
           return Center(
             child: Column(
@@ -229,18 +236,31 @@ class AddMovementView extends GetView<AddMovementController> {
                         ),
                       ),
                       const SizedBox(height: 15),
+
                       TextField(
                         controller: controller.outSecurityGuardController,
+                        readOnly: outDone,
                         decoration: InputDecoration(
                           labelText: "Out Security Guard",
-                          prefixIcon: const Icon(
-                            Icons.security,
-                          ),
+                          prefixIcon: const Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
+                      // TextField(
+                      //   controller: controller.outSecurityGuardController,
+                      //   decoration: InputDecoration(
+                      //     labelText: "Out Security Guard",
+                      //     prefixIcon: const Icon(
+                      //       Icons.security,
+                      //     ),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(12),
+                      //     ),
+                      //   ),
+                      // ),
+
                       const SizedBox(height: 15),
                       // TextField(
                       //   controller: controller.outNotesController,
@@ -261,10 +281,12 @@ class AddMovementView extends GetView<AddMovementController> {
                           title: const Text(
                             "Confirm student has left the hostel",
                           ),
-                          onChanged: (value) {
-                            controller.confirmStudentLeft.value =
-                                value ?? false;
-                          },
+                          onChanged: outDone
+                              ? null
+                              : (value) {
+                                  controller.confirmStudentLeft.value =
+                                      value ?? false;
+                                },
                         ),
                       ),
                     ],
@@ -320,11 +342,10 @@ class AddMovementView extends GetView<AddMovementController> {
                       const SizedBox(height: 15),
                       TextField(
                         controller: controller.returnSecurityGuardController,
+                        readOnly: !isReturnMode,
                         decoration: InputDecoration(
                           labelText: "Return Security Guard",
-                          prefixIcon: const Icon(
-                            Icons.security,
-                          ),
+                          prefixIcon: const Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -350,10 +371,12 @@ class AddMovementView extends GetView<AddMovementController> {
                           title: const Text(
                             "Confirm student has returned to the hostel",
                           ),
-                          onChanged: (value) {
-                            controller.confirmStudentReturned.value =
-                                value ?? false;
-                          },
+                          onChanged: isReturnMode
+                              ? (value) {
+                                  controller.confirmStudentReturned.value =
+                                      value ?? false;
+                                }
+                              : null,
                         ),
                       ),
                     ],
@@ -407,36 +430,49 @@ class AddMovementView extends GetView<AddMovementController> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: controller.isLoading.value ||
-                          ((data.outConfirmed ?? false) &&
-                              (data.returnConfirmed ?? false))
-                      ? null
-                      : () async {
-                          await controller.saveMovement();
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade700,
-                    foregroundColor: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : () async {
+                            // FIRST SCAN
+                            if (!outDone) {
+                              await controller.createOutMovement();
+                            }
+
+                            // SECOND SCAN
+                            else if (outDone &&
+                                !returnDone &&
+                                (data.movementId?.isNotEmpty ?? false)) {
+                              await controller.updateReturnMovement();
+                            }
+
+                            // BOTH COMPLETED
+                            else {
+                              errorToast("Movement Already Completed");
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  child: controller.isLoading.value
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : Text(
-                          ((data.outConfirmed ?? false) &&
-                                  (data.returnConfirmed ?? false))
-                              ? "Movement Completed"
-                              : "Save Movement",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
+                    child: controller.isLoading.value
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Text(
+                            !outDone
+                                ? "Save Exit Movement"
+                                : (outDone && !returnDone)
+                                    ? "Save Return Movement"
+                                    : "Movement Completed",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
               )
             ],
           ),

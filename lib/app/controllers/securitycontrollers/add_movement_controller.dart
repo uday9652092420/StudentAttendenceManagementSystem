@@ -4,6 +4,7 @@ import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/security/movement_save_model.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
+import 'package:dio/dio.dart';
 import '../../repositories/security/movement_repository.dart';
 
 class AddMovementController extends GetxController {
@@ -94,6 +95,7 @@ class AddMovementController extends GetxController {
     print("====================================");
     print("SAVE BUTTON CLICKED");
     print("====================================");
+
     try {
       final data = gatePass.value;
 
@@ -101,12 +103,20 @@ class AddMovementController extends GetxController {
         errorToast("Gate Pass Data Missing");
         return;
       }
-// both already completed
+
+      // RETURN MOVEMENT
+      if ((data.outConfirmed ?? false) && !(data.returnConfirmed ?? false)) {
+        await updateReturnMovement();
+        return;
+      }
+
+      // BOTH COMPLETED
       if ((data.outConfirmed ?? false) && (data.returnConfirmed ?? false)) {
         errorToast("Both movements already completed");
         return;
       }
 
+      // OUT MOVEMENT VALIDATION
       if (!confirmStudentLeft.value) {
         errorToast("Please confirm student has left the hostel");
         return;
@@ -127,49 +137,135 @@ class AddMovementController extends GetxController {
         "roomNo": data.roomNo,
         "courseName": data.courseName,
         "gatePassNo": data.gatePassNo,
-        "outConfirmed": confirmStudentLeft.value,
+        "outConfirmed": true,
         "outSecurityGuard": outSecurityGuardController.text.trim(),
       };
 
       print("=================================");
-      print(
-          "POST URL => http://192.168.1.230:3002/api/hostel-in-out-movements");
-      print("SAVE BODY => $body");
+      print("POST BODY => $body");
       print("=================================");
 
       final response = await repository.saveMovement(body);
-
+      print("TYPE => ${response?.data.runtimeType}");
+      print("DATA => ${response?.data}");
+      print("STATUS => ${response?.statusCode}");
+      print("RESPONSE => ${response?.data}");
       print("=================================");
       print("STATUS CODE => ${response?.statusCode}");
       print("SAVE RESPONSE => ${response?.data}");
       print("=================================");
 
-      if (response == null) {
-        errorToast("No response from server");
-        return;
-      }
-
-      if (response.statusCode == 200 && response.data["success"] == true) {
+      if (response != null &&
+          response.statusCode == 200 &&
+          response.data["success"] == true) {
         successToast(
           response.data["message"] ?? "Movement created successfully",
         );
 
-        if (gatePass.value != null) {
-          gatePass.value!.movementExists = true;
-          gatePass.refresh();
-        }
+        await loadGatePassDetails();
 
         Get.back(result: true);
       } else {
         errorToast(
-          response.data["message"] ?? "Failed to save movement",
+          response?.data["message"] ?? "Failed to save movement",
         );
       }
+    } on DioException catch (e) {
+      print("=================================");
+      print("DIO STATUS => ${e.response?.statusCode}");
+      print("DIO DATA => ${e.response?.data}");
+      print("=================================");
+
+      String message = "Server Error";
+
+      if (e.response?.data != null &&
+          e.response!.data is Map &&
+          e.response!.data["message"] != null) {
+        message = e.response!.data["message"].toString();
+      }
+
+      errorToast(message);
     } catch (e) {
-      print("SAVE MOVEMENT ERROR => $e");
+      print("GENERAL ERROR => $e");
       errorToast(e.toString());
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> createOutMovement() async {
+    try {
+      final data = gatePass.value!;
+
+      final body = {
+        "gatePassId": data.gatePassId,
+        "hostelAdmissionId": data.hostelAdmissionId,
+        "studentId": data.studentId,
+        "studentName": data.studentName,
+        "roomNo": data.roomNo,
+        "courseName": data.courseName,
+        "gatePassNo": data.gatePassNo,
+        "outConfirmed": true,
+        "outSecurityGuard": outSecurityGuardController.text.trim(),
+      };
+
+      final response = await repository.saveMovement(body);
+
+      print("STATUS => ${response?.statusCode}");
+      print("RESPONSE => ${response?.data}");
+
+      if (response?.data["success"] == true) {
+        successToast("Exit Movement Saved");
+
+        await loadGatePassDetails();
+
+        Get.back(result: true);
+      }
+    } catch (e) {
+      errorToast(e.toString());
+    }
+  }
+
+  Future<void> updateReturnMovement() async {
+    try {
+      final data = gatePass.value!;
+
+      if (data.movementId == null || data.movementId!.isEmpty) {
+        errorToast("Movement ID not found");
+        return;
+      }
+
+      final body = {
+        "returnConfirmed": true,
+        "returnSecurityGuard": returnSecurityGuardController.text.trim(),
+      };
+
+      print("PUT ID => ${data.movementId}");
+      print("PUT BODY => $body");
+
+      final response = await repository.updateMovement(
+        data.movementId!,
+        body,
+      );
+
+      print("PUT RESPONSE => ${response?.data}");
+
+      if (response?.data["success"] == true) {
+        successToast("Return Movement Saved");
+
+        await loadGatePassDetails();
+
+        Get.back(result: true);
+      }
+    } on DioException catch (e) {
+      print("PUT STATUS => ${e.response?.statusCode}");
+      print("PUT DATA => ${e.response?.data}");
+
+      errorToast(
+        e.response?.data?["message"]?.toString() ?? "Update Failed",
+      );
+    } catch (e) {
+      errorToast(e.toString());
     }
   }
 
