@@ -436,18 +436,12 @@ class AddMovementView extends GetView<AddMovementController> {
                             // FIRST SCAN
                             if (!outDone) {
                               await controller.createOutMovement();
-                            }
-
-                            // SECOND SCAN
-                            else if (outDone &&
-                                !returnDone &&
-                                (data.movementId?.isNotEmpty ?? false)) {
+                            } else if (outDone && !returnDone) {
                               await controller.updateReturnMovement();
-                            }
-
-                            // BOTH COMPLETED
-                            else {
-                              errorToast("Movement Already Completed");
+                            } else {
+                              errorToast(
+                                "Movement Already Completed",
+                              );
                             }
                           },
                     style: ElevatedButton.styleFrom(

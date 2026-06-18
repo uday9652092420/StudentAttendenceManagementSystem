@@ -25,8 +25,8 @@ class LoginController extends GetxController {
       isLoading.value = true;
 
       /// SECURITY GUARD STATIC LOGIN
-      if (usernameController.text.trim() == "uday" &&
-          passwordController.text.trim() == "uday123") {
+      if (usernameController.text.trim() == "security" &&
+          passwordController.text.trim() == "security123") {
         await SharedPrefsHelper.setString(
           "username",
           "uday",
@@ -41,6 +41,28 @@ class LoginController extends GetxController {
 
         Get.offAllNamed(
           Routes.securityDashboard,
+        );
+
+        return;
+      }
+
+      /// WARDEN STATIC LOGIN
+      if (usernameController.text.trim() == "warden" &&
+          passwordController.text.trim() == "warden123") {
+        await SharedPrefsHelper.setString(
+          "username",
+          "warden",
+        );
+
+        await SharedPrefsHelper.setString(
+          "roleName",
+          "warden",
+        );
+
+        successToast("Warden Login Successful");
+
+        Get.offAllNamed(
+          Routes.WARDEN_ATTENDANCE,
         );
 
         return;

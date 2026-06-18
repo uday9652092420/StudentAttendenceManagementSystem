@@ -2,8 +2,12 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_binding.dart';
 import 'package:my_new_app/app/bindings/security/add_movement_binding.dart';
 import 'package:my_new_app/app/bindings/security/security_dashboard_binding.dart';
+import 'package:my_new_app/app/bindings/warden/take_attendance_binding.dart';
+import 'package:my_new_app/app/bindings/warden/warden_attendance_dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
 import 'package:my_new_app/app/views/security/security_dashboard.dart';
+import 'package:my_new_app/app/views/wardenattendance/take_attendance_view.dart';
+import 'package:my_new_app/app/views/wardenattendance/warden_attendance_dashboard_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -63,6 +67,16 @@ class AppPages {
       name: Routes.addMovement,
       page: () => const AddMovementView(),
       binding: AddMovementBinding(),
+    ),
+    GetPage(
+      name: Routes.WARDEN_ATTENDANCE,
+      page: () => const WardenAttendanceDashboardView(),
+      binding: WardenAttendanceDashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.takeAttendance,
+      page: () => const TakeAttendanceView(),
+      binding: TakeAttendanceBinding(),
     ),
   ];
 }

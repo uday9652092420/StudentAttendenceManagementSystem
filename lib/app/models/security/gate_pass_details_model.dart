@@ -43,5 +43,15 @@ class GatePassDetailsModel {
 
     returnConfirmed = json["return_confirmed"];
     returnSecurityGuard = json["return_security_guard"];
+    movementId = json["movement_id"] ?? json["id"];
+
+    outConfirmed = json["out_confirmed"] ?? json["outConfirmed"];
+
+    returnConfirmed = json["return_confirmed"] ?? json["returnConfirmed"];
+
+    outSecurityGuard = json["out_security_guard"] ?? json["outSecurityGuard"];
+
+    returnSecurityGuard =
+        json["return_security_guard"] ?? json["returnSecurityGuard"];
   }
 }

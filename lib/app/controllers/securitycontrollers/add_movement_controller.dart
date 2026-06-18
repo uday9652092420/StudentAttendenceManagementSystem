@@ -215,11 +215,16 @@ class AddMovementController extends GetxController {
       print("RESPONSE => ${response?.data}");
 
       if (response?.data["success"] == true) {
+        final movementData = response?.data["data"];
+
+        if (movementData != null) {
+          gatePass.value?.movementId = movementData["id"]?.toString();
+        }
         successToast("Exit Movement Saved");
 
         await loadGatePassDetails();
 
-        Get.back(result: true);
+        // Get.back(result: true);
       }
     } catch (e) {
       errorToast(e.toString());
@@ -242,6 +247,19 @@ class AddMovementController extends GetxController {
 
       print("PUT ID => ${data.movementId}");
       print("PUT BODY => $body");
+      if (!confirmStudentReturned.value) {
+        errorToast(
+          "Please confirm student has returned",
+        );
+        return;
+      }
+
+      if (returnSecurityGuardController.text.trim().isEmpty) {
+        errorToast(
+          "Enter Return Security Guard",
+        );
+        return;
+      }
 
       final response = await repository.updateMovement(
         data.movementId!,
