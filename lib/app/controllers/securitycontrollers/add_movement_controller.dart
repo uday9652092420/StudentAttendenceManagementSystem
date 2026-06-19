@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/security/movement_save_model.dart';
+import 'package:my_new_app/app/models/security/saved_movement_detiles.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
 import 'package:dio/dio.dart';
@@ -19,6 +20,7 @@ class AddMovementController extends GetxController {
 
   String gatePassId = "";
 
+  Rxn<MovementDetailsModel> movement = Rxn<MovementDetailsModel>();
   // Security Guards
   final TextEditingController outSecurityGuardController =
       TextEditingController();
@@ -68,6 +70,10 @@ class AddMovementController extends GetxController {
         gatePass.value = GatePassDetailsModel.fromJson(
           apiResponse.data["data"],
         );
+        if (gatePass.value?.movementId != null &&
+            gatePass.value!.movementId!.isNotEmpty) {
+          await loadExistingMovement();
+        }
         final movement = gatePass.value!;
 
         outSecurityGuardController.text = movement.outSecurityGuard ?? "";
@@ -228,6 +234,60 @@ class AddMovementController extends GetxController {
       }
     } catch (e) {
       errorToast(e.toString());
+    }
+  }
+
+  Future<void> loadExistingMovement() async {
+    try {
+      final movementId = gatePass.value?.movementId;
+
+      if (movementId == null || movementId.isEmpty) {
+        return;
+      }
+
+      print("LOADING MOVEMENT => $movementId");
+
+      final response = await repository.getMovementDetails(
+        movementId,
+      );
+
+      print("MOVEMENT RESPONSE => ${response?.data}");
+
+      if (response != null &&
+          response.statusCode == 200 &&
+          response.data["success"] == true) {
+        final movementData = response.data["data"];
+
+        movement.value = MovementDetailsModel.fromJson(
+          movementData,
+        );
+
+        outSecurityGuardController.text =
+            movementData["outSecurityGuard"] ?? "";
+
+        returnSecurityGuardController.text =
+            movementData["returnSecurityGuard"] ?? "";
+
+        confirmStudentLeft.value = movementData["outConfirmed"] ?? false;
+
+        confirmStudentReturned.value = movementData["returnConfirmed"] ?? false;
+
+        gatePass.value?.outConfirmed = movementData["outConfirmed"] ?? false;
+
+        gatePass.value?.returnConfirmed =
+            movementData["returnConfirmed"] ?? false;
+
+        gatePass.value?.outSecurityGuard = movementData["outSecurityGuard"];
+
+        gatePass.value?.returnSecurityGuard =
+            movementData["returnSecurityGuard"];
+
+        gatePass.value?.outConfirmedAt = movementData["outConfirmedAt"];
+
+        gatePass.refresh();
+      }
+    } catch (e) {
+      print("LOAD MOVEMENT ERROR => $e");
     }
   }
 

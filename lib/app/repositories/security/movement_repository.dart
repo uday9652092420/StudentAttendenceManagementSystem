@@ -3,53 +3,56 @@ import 'package:my_new_app/app/services/api_service.dart';
 import 'package:my_new_app/app/services/endpoints.dart';
 
 class GatePassRepository {
+  /// GET GATE PASS DETAILS BY QR
   Future<Response?> getGatePassDetails(
     String gatePassId,
   ) async {
-    print(
-      "REPOSITORY URL => ${EndPoints.getGatePassDetails}$gatePassId",
-    );
-
     final response = await ApiService.get(
       "${EndPoints.getGatePassDetails}$gatePassId",
       requireAuthToken: true,
     );
 
-    print(
-      "REPOSITORY RESPONSE => ${response?.data}",
-    );
-
     return response;
   }
 
+  /// CREATE OUT MOVEMENT
   Future<Response?> saveMovement(
     Map<String, dynamic> body,
   ) async {
-    print("=================================");
-    print("POST URL => ${EndPoints.saveMovement}");
-    print("POST BODY => $body");
-    print("=================================");
-
-    final response = await ApiService.post(
+    return await ApiService.post(
       EndPoints.saveMovement,
       body,
       requireAuthToken: false,
     );
-
-    print("=================================");
-    print("POST STATUS => ${response?.statusCode}");
-    print("POST RESPONSE => ${response?.data}");
-    print("=================================");
-
-    return response;
   }
 
+  /// GET EXISTING MOVEMENT BY MOVEMENT ID
+  Future<Response?> getMovementDetails(
+    String movementId,
+  ) async {
+    return await ApiService.get(
+      "${EndPoints.updateMovement}/$movementId",
+      requireAuthToken: false,
+    );
+  }
+
+  /// GET MOVEMENT BY GATE PASS ID
+  Future<Response?> getMovementByGatePass(
+    String gatePassId,
+  ) async {
+    return await ApiService.get(
+      "${EndPoints.getGatePassDetails}$gatePassId",
+      requireAuthToken: false,
+    );
+  }
+
+  /// UPDATE RETURN MOVEMENT
   Future<Response?> updateMovement(
     String movementId,
     Map<String, dynamic> body,
   ) async {
     return await ApiService.put(
-      "${EndPoints.saveMovement}/$movementId",
+      "${EndPoints.updateMovement}/$movementId",
       body,
       requireAuthToken: false,
     );

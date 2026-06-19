@@ -57,9 +57,16 @@ class AddMovementView extends GetView<AddMovementController> {
 
         final data = controller.gatePass.value;
 
-        final bool outDone = data?.outConfirmed ?? false;
+        // final bool outDone = data?.outConfirmed ?? false;
 
-        final bool returnDone = data?.returnConfirmed ?? false;
+        // final bool returnDone = data?.returnConfirmed ?? false;
+
+        // final bool isReturnMode =
+        //     outDone && !returnDone && (data?.movementId?.isNotEmpty ?? false);
+
+        final outDone = controller.movement.value?.outConfirmed ?? false;
+
+        final returnDone = controller.movement.value?.returnConfirmed ?? false;
 
         final bool isReturnMode =
             outDone && !returnDone && (data?.movementId?.isNotEmpty ?? false);
@@ -221,9 +228,9 @@ class AddMovementView extends GetView<AddMovementController> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: formatDateTime(
-                          DateTime.now(),
-                        ),
+                        initialValue:
+                            controller.movement.value?.outConfirmedAt ??
+                                formatDateTime(DateTime.now()),
                         readOnly: true,
                         decoration: InputDecoration(
                           labelText: "Out Date & Time",
@@ -439,9 +446,7 @@ class AddMovementView extends GetView<AddMovementController> {
                             } else if (outDone && !returnDone) {
                               await controller.updateReturnMovement();
                             } else {
-                              errorToast(
-                                "Movement Already Completed",
-                              );
+                              errorToast("Movement Completed");
                             }
                           },
                     style: ElevatedButton.styleFrom(

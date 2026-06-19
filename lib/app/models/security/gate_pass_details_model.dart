@@ -21,6 +21,30 @@ class GatePassDetailsModel {
   bool? returnConfirmed;
   String? returnSecurityGuard;
 
+  String? outConfirmedAt;
+
+  GatePassDetailsModel({
+    this.gatePassId,
+    this.hostelAdmissionId,
+    this.studentId,
+    this.studentName,
+    this.roomNo,
+    this.courseName,
+    this.gatePassNo,
+    this.reason,
+    this.approvedBy,
+    this.issueDate,
+    this.returnTime,
+    this.photoPath,
+    this.movementExists,
+    this.movementId,
+    this.outConfirmed,
+    this.outSecurityGuard,
+    this.returnConfirmed,
+    this.returnSecurityGuard,
+    this.outConfirmedAt,
+  });
+
   GatePassDetailsModel.fromJson(Map<String, dynamic> json) {
     gatePassId = json["gate_pass_id"];
     hostelAdmissionId = json["hostel_admission_id"];
@@ -35,23 +59,20 @@ class GatePassDetailsModel {
     returnTime = json["return_time"];
     photoPath = json["photo_path"];
 
-    movementExists = json["movement_exists"];
-    movementId = json["movement_id"];
+    movementExists = json["movement_exists"] ?? false;
 
-    outConfirmed = json["out_confirmed"];
-    outSecurityGuard = json["out_security_guard"];
+    movementId = json["movement_id"]?.toString() ?? json["id"]?.toString();
 
-    returnConfirmed = json["return_confirmed"];
-    returnSecurityGuard = json["return_security_guard"];
-    movementId = json["movement_id"] ?? json["id"];
+    outConfirmed = json["out_confirmed"] ?? json["outConfirmed"] ?? false;
 
-    outConfirmed = json["out_confirmed"] ?? json["outConfirmed"];
-
-    returnConfirmed = json["return_confirmed"] ?? json["returnConfirmed"];
+    returnConfirmed =
+        json["return_confirmed"] ?? json["returnConfirmed"] ?? false;
 
     outSecurityGuard = json["out_security_guard"] ?? json["outSecurityGuard"];
 
     returnSecurityGuard =
         json["return_security_guard"] ?? json["returnSecurityGuard"];
+
+    outConfirmedAt = json["out_confirmed_at"] ?? json["outConfirmedAt"];
   }
 }
