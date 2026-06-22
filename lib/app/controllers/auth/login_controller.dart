@@ -24,51 +24,6 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
 
-      /// SECURITY GUARD STATIC LOGIN
-      if (usernameController.text.trim() == "security" &&
-          passwordController.text.trim() == "security123") {
-        await SharedPrefsHelper.setString(
-          "username",
-          "uday",
-        );
-
-        await SharedPrefsHelper.setString(
-          "roleName",
-          "security",
-        );
-
-        successToast("Security Login Successful");
-
-        Get.offAllNamed(
-          Routes.securityDashboard,
-        );
-
-        return;
-      }
-
-      /// WARDEN STATIC LOGIN
-      if (usernameController.text.trim() == "warden" &&
-          passwordController.text.trim() == "warden123") {
-        await SharedPrefsHelper.setString(
-          "username",
-          "warden",
-        );
-
-        await SharedPrefsHelper.setString(
-          "roleName",
-          "warden",
-        );
-
-        successToast("Warden Login Successful");
-
-        Get.offAllNamed(
-          Routes.WARDEN_ATTENDANCE,
-        );
-
-        return;
-      }
-
-      /// TEACHER LOGIN API
       final request = LoginModel(
         username: usernameController.text.trim(),
         password: passwordController.text.trim(),
@@ -90,6 +45,10 @@ class LoginController extends GetxController {
 
         final roleName = data["roleName"]?.toString() ?? "";
 
+        final username = data["username"]?.toString() ?? "";
+
+        final fullName = data["fullName"]?.toString() ?? "";
+
         await SharedPrefsHelper.setString(
           SharedPrefsHelper.accessToken,
           accessToken,
@@ -97,7 +56,12 @@ class LoginController extends GetxController {
 
         await SharedPrefsHelper.setString(
           "username",
-          data["username"]?.toString() ?? "",
+          username,
+        );
+
+        await SharedPrefsHelper.setString(
+          "fullName",
+          fullName,
         );
 
         await SharedPrefsHelper.setString(
@@ -107,12 +71,31 @@ class LoginController extends GetxController {
 
         successToast("Login Successful");
 
-        /// ROLE BASED NAVIGATION
+        print("ROLE => $roleName");
+
+        /// SECURITY
         if (roleName.toLowerCase() == "security") {
           Get.offAllNamed(
             Routes.securityDashboard,
           );
-        } else {
+        }
+
+        /// WARDEN
+        else if (roleName.toLowerCase() == "warden") {
+          Get.offAllNamed(
+            Routes.WARDEN_ATTENDANCE,
+          );
+        }
+
+        /// TEACHER
+        else if (roleName.toLowerCase() == "teacher") {
+          Get.offAllNamed(
+            Routes.dashboard,
+          );
+        }
+
+        /// ADMIN OR OTHER ROLES
+        else {
           Get.offAllNamed(
             Routes.dashboard,
           );

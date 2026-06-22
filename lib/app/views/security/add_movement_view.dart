@@ -9,7 +9,6 @@ import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 class AddMovementView extends GetView<AddMovementController> {
   const AddMovementView({super.key});
-
   String formatDate(String? date) {
     if (date == null || date.isEmpty) return "-";
 
@@ -27,6 +26,62 @@ class AddMovementView extends GetView<AddMovementController> {
       "dd MMM yyyy • hh:mm a",
     ).format(dateTime);
   }
+
+  String formatMovementDateTime(String? dateTime) {
+    if (dateTime == null || dateTime.trim().isEmpty) {
+      return "-";
+    }
+
+    try {
+      DateTime dt;
+
+      // Handles:
+      // 2026-06-20 13:19:58
+      if (dateTime.contains(" ") && !dateTime.contains("T")) {
+        dt = DateTime.parse(
+          dateTime.replaceFirst(" ", "T"),
+        );
+      } else {
+        dt = DateTime.parse(dateTime);
+      }
+
+      return DateFormat(
+        "dd MMM yyyy • hh:mm a",
+      ).format(dt);
+    } catch (e) {
+      print("DATE FORMAT ERROR => $dateTime");
+      return dateTime;
+    }
+  }
+  // String formatDate(String? date) {
+  //   if (date == null || date.isEmpty) return "-";
+
+  //   try {
+  //     return DateFormat(
+  //       "dd MMM yyyy",
+  //     ).format(DateTime.parse(date));
+  //   } catch (_) {
+  //     return date;
+  //   }
+  // }
+
+  // String formatMovementDateTime(String? value) {
+  //   if (value == null || value.isEmpty) return "-";
+
+  //   try {
+  //     return DateFormat(
+  //       "dd MMM yyyy • hh:mm a",
+  //     ).format(DateTime.parse(value));
+  //   } catch (_) {
+  //     return value;
+  //   }
+  // }
+
+  // String formatDateTime(DateTime dateTime) {
+  //   return DateFormat(
+  //     "dd MMM yyyy • hh:mm a",
+  //   ).format(dateTime);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -228,9 +283,11 @@ class AddMovementView extends GetView<AddMovementController> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue:
-                            controller.movement.value?.outConfirmedAt ??
-                                formatDateTime(DateTime.now()),
+                        controller: TextEditingController(
+                          text: formatMovementDateTime(
+                            controller.movement.value?.outConfirmedAt,
+                          ),
+                        ),
                         readOnly: true,
                         decoration: InputDecoration(
                           labelText: "Out Date & Time",
@@ -332,8 +389,8 @@ class AddMovementView extends GetView<AddMovementController> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
-                        initialValue: formatDateTime(
-                          DateTime.now(),
+                        initialValue: formatMovementDateTime(
+                          controller.gatePass.value?.returnConfirmedAt,
                         ),
                         readOnly: true,
                         decoration: InputDecoration(

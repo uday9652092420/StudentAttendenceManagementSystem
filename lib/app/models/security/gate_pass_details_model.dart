@@ -2,6 +2,9 @@ class GatePassDetailsModel {
   String? gatePassId;
   String? hostelAdmissionId;
   String? studentId;
+
+  String? outConfirmedAt;
+  String? returnConfirmedAt;
   String? studentName;
   String? roomNo;
   String? courseName;
@@ -10,6 +13,7 @@ class GatePassDetailsModel {
   String? approvedBy;
   String? issueDate;
   String? returnTime;
+
   String? photoPath;
 
   bool? movementExists;
@@ -20,8 +24,6 @@ class GatePassDetailsModel {
 
   bool? returnConfirmed;
   String? returnSecurityGuard;
-
-  String? outConfirmedAt;
 
   GatePassDetailsModel({
     this.gatePassId,
@@ -43,6 +45,7 @@ class GatePassDetailsModel {
     this.returnConfirmed,
     this.returnSecurityGuard,
     this.outConfirmedAt,
+    this.returnConfirmedAt,
   });
 
   GatePassDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -60,8 +63,7 @@ class GatePassDetailsModel {
     photoPath = json["photo_path"];
 
     movementExists = json["movement_exists"] ?? false;
-
-    movementId = json["movement_id"]?.toString() ?? json["id"]?.toString();
+    movementId = json["movement_id"]?.toString();
 
     outConfirmed = json["out_confirmed"] ?? json["outConfirmed"] ?? false;
 
@@ -74,5 +76,8 @@ class GatePassDetailsModel {
         json["return_security_guard"] ?? json["returnSecurityGuard"];
 
     outConfirmedAt = json["out_confirmed_at"] ?? json["outConfirmedAt"];
+
+    returnConfirmedAt =
+        json["return_confirmed_at"] ?? json["returnConfirmedAt"];
   }
 }

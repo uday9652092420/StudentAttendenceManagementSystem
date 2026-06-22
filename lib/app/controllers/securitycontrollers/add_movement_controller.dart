@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
-import 'package:my_new_app/app/models/security/movement_save_model.dart';
+
 import 'package:my_new_app/app/models/security/saved_movement_detiles.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
 import 'package:dio/dio.dart';
+
+import 'package:intl/intl.dart';
 import '../../repositories/security/movement_repository.dart';
 
 class AddMovementController extends GetxController {
@@ -27,10 +29,29 @@ class AddMovementController extends GetxController {
 
   final TextEditingController returnSecurityGuardController =
       TextEditingController();
-
+  final outDateController = TextEditingController();
+  final returnDateController = TextEditingController();
 // Checkboxes
   RxBool confirmStudentLeft = false.obs;
   RxBool confirmStudentReturned = false.obs;
+
+  String formatMovementDateTime(String? dateTime) {
+    if (dateTime == null || dateTime.isEmpty) {
+      return "-";
+    }
+
+    try {
+      final dt = DateTime.parse(
+        dateTime.replaceFirst(" ", "T"),
+      );
+
+      return DateFormat(
+        "dd MMM yyyy • hh:mm a",
+      ).format(dt);
+    } catch (e) {
+      return dateTime;
+    }
+  }
 
   @override
   void onInit() {
@@ -203,6 +224,10 @@ class AddMovementController extends GetxController {
     try {
       final data = gatePass.value!;
 
+      final now = DateFormat(
+        "yyyy-MM-dd HH:mm:ss",
+      ).format(DateTime.now());
+
       final body = {
         "gatePassId": data.gatePassId,
         "hostelAdmissionId": data.hostelAdmissionId,
@@ -212,6 +237,7 @@ class AddMovementController extends GetxController {
         "courseName": data.courseName,
         "gatePassNo": data.gatePassNo,
         "outConfirmed": true,
+        "outConfirmedAt": now,
         "outSecurityGuard": outSecurityGuardController.text.trim(),
       };
 
@@ -237,6 +263,7 @@ class AddMovementController extends GetxController {
     }
   }
 
+// Load existing movement details if movementId exists
   Future<void> loadExistingMovement() async {
     try {
       final movementId = gatePass.value?.movementId;
@@ -244,8 +271,6 @@ class AddMovementController extends GetxController {
       if (movementId == null || movementId.isEmpty) {
         return;
       }
-
-      print("LOADING MOVEMENT => $movementId");
 
       final response = await repository.getMovementDetails(
         movementId,
@@ -262,11 +287,30 @@ class AddMovementController extends GetxController {
           movementData,
         );
 
-        outSecurityGuardController.text =
-            movementData["outSecurityGuard"] ?? "";
+        gatePass.value?.outConfirmedAt = movement.value?.outConfirmedAt;
 
-        returnSecurityGuardController.text =
-            movementData["returnSecurityGuard"] ?? "";
+        gatePass.value?.returnConfirmedAt = movement.value?.returnConfirmedAt;
+
+        gatePass.refresh();
+        movement.refresh();
+        update();
+
+        print(
+          "OUT DATE FROM MOVEMENT => ${movement.value?.outConfirmedAt}",
+        );
+
+        print(
+          "RETURN DATE FROM MOVEMENT => ${movement.value?.returnConfirmedAt}",
+        );
+
+        print(
+          "RAW MOVEMENT DATA => $movementData",
+        );
+        print("MOVEMENT RESPONSE => ${response.data}");
+
+        outDateController.text = movement.value?.outConfirmedAt ?? "";
+
+        returnDateController.text = movement.value?.returnConfirmedAt ?? "";
 
         confirmStudentLeft.value = movementData["outConfirmed"] ?? false;
 
@@ -284,6 +328,8 @@ class AddMovementController extends GetxController {
 
         gatePass.value?.outConfirmedAt = movementData["outConfirmedAt"];
 
+        gatePass.value?.returnConfirmedAt = movementData["returnConfirmedAt"];
+
         gatePass.refresh();
       }
     } catch (e) {
@@ -291,9 +337,14 @@ class AddMovementController extends GetxController {
     }
   }
 
+//update return movement
   Future<void> updateReturnMovement() async {
     try {
       final data = gatePass.value!;
+
+      final now = DateFormat(
+        "yyyy-MM-dd HH:mm:ss",
+      ).format(DateTime.now());
 
       if (data.movementId == null || data.movementId!.isEmpty) {
         errorToast("Movement ID not found");
@@ -303,6 +354,7 @@ class AddMovementController extends GetxController {
       final body = {
         "returnConfirmed": true,
         "returnSecurityGuard": returnSecurityGuardController.text.trim(),
+        "returnConfirmedAt": now,
       };
 
       print("PUT ID => ${data.movementId}");
