@@ -303,7 +303,8 @@ class AddMovementView extends GetView<AddMovementController> {
 
                       TextField(
                         controller: controller.outSecurityGuardController,
-                        readOnly: outDone,
+                        readOnly:
+                            controller.isSecondScan || controller.isThirdScan,
                         decoration: InputDecoration(
                           labelText: "Out Security Guard",
                           prefixIcon: const Icon(Icons.security),
@@ -406,7 +407,7 @@ class AddMovementView extends GetView<AddMovementController> {
                       const SizedBox(height: 15),
                       TextField(
                         controller: controller.returnSecurityGuardController,
-                        readOnly: !isReturnMode,
+                        readOnly: !controller.isSecondScan,
                         decoration: InputDecoration(
                           labelText: "Return Security Guard",
                           prefixIcon: const Icon(Icons.security),
@@ -435,7 +436,7 @@ class AddMovementView extends GetView<AddMovementController> {
                           title: const Text(
                             "Confirm student has returned to the hostel",
                           ),
-                          onChanged: isReturnMode
+                          onChanged: controller.isSecondScan
                               ? (value) {
                                   controller.confirmStudentReturned.value =
                                       value ?? false;
@@ -449,45 +450,52 @@ class AddMovementView extends GetView<AddMovementController> {
               ),
               const SizedBox(height: 25),
 
-              Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.note_alt_outlined, color: Colors.blue),
-                          SizedBox(width: 8),
-                          Text(
-                            "Notes",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      TextField(
-                        controller: controller.outNotesController,
-                        maxLines: 4,
-                        decoration: InputDecoration(
-                          hintText: "Enter remarks / notes",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+              Obx(() => IgnorePointer(
+                    ignoring: controller.isFirstScan,
+                    child: Opacity(
+                      opacity: controller.isFirstScan ? 0.5 : 1,
+                      child: Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: const [
+                                  Icon(Icons.note_alt_outlined,
+                                      color: Colors.blue),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Notes",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              TextField(
+                                controller: controller.outNotesController,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                  hintText: "Enter remarks / notes",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  )),
 
               const SizedBox(height: 25),
               SizedBox(

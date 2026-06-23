@@ -3,12 +3,15 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 import 'package:my_new_app/app/models/security/saved_movement_detiles.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 
 import '../../models/security/gate_pass_details_model.dart';
 import 'package:dio/dio.dart';
 
 import 'package:intl/intl.dart';
 import '../../repositories/security/movement_repository.dart';
+
+import 'package:my_new_app/app/helpers/shared_preferences.dart';
 
 class AddMovementController extends GetxController {
   final GatePassRepository repository = GatePassRepository();
@@ -23,6 +26,23 @@ class AddMovementController extends GetxController {
   String gatePassId = "";
 
   Rxn<MovementDetailsModel> movement = Rxn<MovementDetailsModel>();
+
+  String loggedInSecurityName = "";
+
+  bool get isFirstScan {
+    return !(movement.value?.outConfirmed ?? false);
+  }
+
+  bool get isSecondScan {
+    return (movement.value?.outConfirmed ?? false) &&
+        !(movement.value?.returnConfirmed ?? false);
+  }
+
+  bool get isThirdScan {
+    return (movement.value?.outConfirmed ?? false) &&
+        (movement.value?.returnConfirmed ?? false);
+  }
+
   // Security Guards
   final TextEditingController outSecurityGuardController =
       TextEditingController();
@@ -57,20 +77,19 @@ class AddMovementController extends GetxController {
   void onInit() {
     super.onInit();
 
-    print("################################");
-    print("ADD MOVEMENT CONTROLLER RUNNING");
-    print("################################");
-
     final args = Get.arguments;
-
-    print("GET ARGUMENTS => $args");
-    print("ARGS TYPE => ${args.runtimeType}");
 
     gatePassId = args.toString();
 
-    print("FINAL GATEPASS ID => $gatePassId");
+    initData();
+  }
 
-    loadGatePassDetails();
+  Future<void> initData() async {
+    await loadLoggedInSecurity();
+
+    print("LOGGED SECURITY => $loggedInSecurityName");
+
+    await loadGatePassDetails();
   }
 
   Future<void> loadGatePassDetails() async {
@@ -91,16 +110,23 @@ class AddMovementController extends GetxController {
         gatePass.value = GatePassDetailsModel.fromJson(
           apiResponse.data["data"],
         );
+
+        final movement = gatePass.value!;
+
         if (gatePass.value?.movementId != null &&
             gatePass.value!.movementId!.isNotEmpty) {
           await loadExistingMovement();
+        } else {
+          // First Scan
+
+          outSecurityGuardController.text = loggedInSecurityName;
+
+          returnSecurityGuardController.clear();
+
+          confirmStudentLeft.value = false;
+
+          confirmStudentReturned.value = false;
         }
-        final movement = gatePass.value!;
-
-        outSecurityGuardController.text = movement.outSecurityGuard ?? "";
-
-        returnSecurityGuardController.text = movement.returnSecurityGuard ?? "";
-
         confirmStudentLeft.value = movement.outConfirmed ?? false;
 
         confirmStudentReturned.value = movement.returnConfirmed ?? false;
@@ -189,7 +215,7 @@ class AddMovementController extends GetxController {
           response.data["message"] ?? "Movement created successfully",
         );
 
-        await loadGatePassDetails();
+        successToast("Out Movement Saved");
 
         Get.back(result: true);
       } else {
@@ -220,6 +246,12 @@ class AddMovementController extends GetxController {
     }
   }
 
+  Future<void> loadLoggedInSecurity() async {
+    loggedInSecurityName = await SharedPrefsHelper.getString("fullName") ?? "";
+
+    print("LOGGED SECURITY => $loggedInSecurityName");
+  }
+
   Future<void> createOutMovement() async {
     try {
       final data = gatePass.value!;
@@ -246,24 +278,86 @@ class AddMovementController extends GetxController {
       print("STATUS => ${response?.statusCode}");
       print("RESPONSE => ${response?.data}");
 
-      if (response?.data["success"] == true) {
-        final movementData = response?.data["data"];
+      if (response != null &&
+          response.statusCode == 200 &&
+          response.data["success"] == true) {
+        final movementData = response.data["data"];
 
         if (movementData != null) {
           gatePass.value?.movementId = movementData["id"]?.toString();
         }
-        successToast("Exit Movement Saved");
 
-        await loadGatePassDetails();
+        successToast(
+          response.data["message"] ?? "Exit Movement Saved",
+        );
 
-        // Get.back(result: true);
+        // Go back to scanner/dashboard
+        Get.offAllNamed(Routes.securityDashboard);
+      } else {
+        errorToast(
+          response?.data["message"] ?? "Failed to save Exit Movement",
+        );
       }
+    } on DioException catch (e) {
+      print("DIO STATUS => ${e.response?.statusCode}");
+      print("DIO DATA => ${e.response?.data}");
+
+      errorToast(
+        e.response?.data?["message"]?.toString() ?? "Server Error",
+      );
     } catch (e) {
-      errorToast(e.toString());
+      print("CREATE OUT MOVEMENT ERROR => $e");
+      errorToast("Something went wrong");
     }
   }
+//cretae out movement
+  // Future<void> createOutMovement() async {
+  //   try {
+  //     final data = gatePass.value!;
 
-// Load existing movement details if movementId exists
+  //     final now = DateFormat(
+  //       "yyyy-MM-dd HH:mm:ss",
+  //     ).format(DateTime.now());
+
+  //     final body = {
+  //       "gatePassId": data.gatePassId,
+  //       "hostelAdmissionId": data.hostelAdmissionId,
+  //       "studentId": data.studentId,
+  //       "studentName": data.studentName,
+  //       "roomNo": data.roomNo,
+  //       "courseName": data.courseName,
+  //       "gatePassNo": data.gatePassNo,
+  //       "outConfirmed": true,
+  //       "outConfirmedAt": now,
+  //       "outSecurityGuard": outSecurityGuardController.text.trim(),
+  //     };
+
+  //     final response = await repository.saveMovement(body);
+
+  //     print("STATUS => ${response?.statusCode}");
+  //     print("RESPONSE => ${response?.data}");
+
+  //     if (response?.data["success"] == true) {
+  //       final movementData = response?.data["data"];
+
+  //       if (movementData != null) {
+  //         gatePass.value?.movementId = movementData["id"]?.toString();
+  //       }
+
+  //       successToast("Exit Movement Saved");
+
+  //       // Reload movement immediately
+  //       await loadGatePassDetails();
+
+  //       update();
+  //       gatePass.refresh();
+  //       movement.refresh();
+  //     }
+  //   } catch (e) {
+  //     errorToast(e.toString());
+  //   }
+  // }
+
   Future<void> loadExistingMovement() async {
     try {
       final movementId = gatePass.value?.movementId;
@@ -272,9 +366,7 @@ class AddMovementController extends GetxController {
         return;
       }
 
-      final response = await repository.getMovementDetails(
-        movementId,
-      );
+      final response = await repository.getMovementDetails(movementId);
 
       print("MOVEMENT RESPONSE => ${response?.data}");
 
@@ -283,34 +375,36 @@ class AddMovementController extends GetxController {
           response.data["success"] == true) {
         final movementData = response.data["data"];
 
-        movement.value = MovementDetailsModel.fromJson(
-          movementData,
-        );
+        movement.value = MovementDetailsModel.fromJson(movementData);
 
-        gatePass.value?.outConfirmedAt = movement.value?.outConfirmedAt;
+        final outDone = movement.value?.outConfirmed ?? false;
 
-        gatePass.value?.returnConfirmedAt = movement.value?.returnConfirmedAt;
+        final returnDone = movement.value?.returnConfirmed ?? false;
 
-        gatePass.refresh();
-        movement.refresh();
-        update();
+        // FIRST SCAN
+        if (!outDone) {
+          outSecurityGuardController.text = loggedInSecurityName;
 
-        print(
-          "OUT DATE FROM MOVEMENT => ${movement.value?.outConfirmedAt}",
-        );
+          returnSecurityGuardController.clear();
+        }
 
-        print(
-          "RETURN DATE FROM MOVEMENT => ${movement.value?.returnConfirmedAt}",
-        );
+        // SECOND SCAN
+        else if (outDone && !returnDone) {
+          outSecurityGuardController.text =
+              movement.value?.outSecurityGuard ?? "";
 
-        print(
-          "RAW MOVEMENT DATA => $movementData",
-        );
-        print("MOVEMENT RESPONSE => ${response.data}");
+          // Logged user should appear automatically
+          returnSecurityGuardController.text = loggedInSecurityName;
+        }
 
-        outDateController.text = movement.value?.outConfirmedAt ?? "";
+        // THIRD SCAN
+        else {
+          outSecurityGuardController.text =
+              movement.value?.outSecurityGuard ?? "";
 
-        returnDateController.text = movement.value?.returnConfirmedAt ?? "";
+          returnSecurityGuardController.text =
+              movement.value?.returnSecurityGuard ?? "";
+        }
 
         confirmStudentLeft.value = movementData["outConfirmed"] ?? false;
 
@@ -321,16 +415,21 @@ class AddMovementController extends GetxController {
         gatePass.value?.returnConfirmed =
             movementData["returnConfirmed"] ?? false;
 
-        gatePass.value?.outSecurityGuard = movementData["outSecurityGuard"];
-
-        gatePass.value?.returnSecurityGuard =
-            movementData["returnSecurityGuard"];
-
         gatePass.value?.outConfirmedAt = movementData["outConfirmedAt"];
 
         gatePass.value?.returnConfirmedAt = movementData["returnConfirmedAt"];
 
+        outDateController.text = movement.value?.outConfirmedAt ?? "";
+
+        returnDateController.text = movement.value?.returnConfirmedAt ?? "";
+
+        print("Logged User => $loggedInSecurityName");
+        print(
+            "Return Guard Controller => ${returnSecurityGuardController.text}");
+
         gatePass.refresh();
+        movement.refresh();
+        update();
       }
     } catch (e) {
       print("LOAD MOVEMENT ERROR => $e");
