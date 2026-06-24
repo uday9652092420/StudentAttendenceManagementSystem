@@ -9,6 +9,91 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    void _openScanner() {
+      final MobileScannerController scannerController =
+          MobileScannerController();
+
+      bool isScanned = false;
+
+      Get.bottomSheet(
+        SizedBox(
+          height: Get.height * 0.85,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(25),
+              ),
+            ),
+            child: Stack(
+              children: [
+                MobileScanner(
+                  controller: scannerController,
+                  onDetect: (capture) {
+                    if (isScanned) return;
+
+                    final barcode = capture.barcodes.first;
+
+                    final String? code = barcode.rawValue;
+
+                    if (code == null) return;
+
+                    isScanned = true;
+
+                    scannerController.dispose();
+
+                    Get.back();
+
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () {
+                        controller.handleScannedData(code);
+                      },
+                    );
+                  },
+                ),
+                Center(
+                  child: Container(
+                    width: 260,
+                    height: 260,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 4,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  right: 20,
+                  child: GestureDetector(
+                    onTap: () {
+                      scannerController.dispose();
+                      Get.back();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        isScrollControlled: true,
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xfff5f7fb),
       appBar: AppBar(
@@ -122,102 +207,12 @@ class DashboardView extends GetView<DashboardController> {
 
                 const SizedBox(height: 50),
 
-                /// BUTTON
                 SizedBox(
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      final MobileScannerController scannerController =
-                          MobileScannerController();
-
-                      bool isScanned = false;
-
-                      Get.bottomSheet(
-                        StatefulBuilder(
-                          builder: (context, setState) {
-                            return Container(
-                              height: Get.height * 0.85,
-                              decoration: const BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(25),
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  /// CAMERA SCANNER
-                                  MobileScanner(
-                                    controller: scannerController,
-                                    onDetect: (capture) {
-                                      if (isScanned) return;
-
-                                      final barcode = capture.barcodes.first;
-
-                                      final String? code = barcode.rawValue;
-
-                                      if (code == null) return;
-                                      isScanned = true;
-
-                                      Get.back();
-
-                                      Future.delayed(
-                                          const Duration(milliseconds: 300),
-                                          () {
-                                        controller.handleScannedData(code);
-                                      });
-
-                                      // isScanned = true;
-
-                                      // controller.handleScannedData(code);
-
-                                      // Get.back();
-                                    },
-                                  ),
-
-                                  /// SCAN BOX
-                                  Center(
-                                    child: Container(
-                                      width: 260,
-                                      height: 260,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 4,
-                                        ),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                  ),
-
-                                  /// CLOSE BUTTON
-                                  Positioned(
-                                    top: 40,
-                                    right: 20,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Get.back();
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.2),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                        isScrollControlled: true,
-                      );
+                      _openScanner();
                     },
                     icon: const Icon(Icons.qr_code_scanner),
                     label: const Text(
@@ -236,6 +231,147 @@ class DashboardView extends GetView<DashboardController> {
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 15),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await controller.pickQrFromGallery();
+                    },
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text(
+                      "Upload QR Image",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+                // /// BUTTON
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: 55,
+                //   child: ElevatedButton.icon(
+                //     onPressed: () {
+                //       final MobileScannerController scannerController =
+                //           MobileScannerController();
+
+                //       bool isScanned = false;
+
+                //       Get.bottomSheet(
+                //         StatefulBuilder(
+                //           builder: (context, setState) {
+                //             return Container(
+                //               height: Get.height * 0.85,
+                //               decoration: const BoxDecoration(
+                //                 color: Colors.black,
+                //                 borderRadius: BorderRadius.vertical(
+                //                   top: Radius.circular(25),
+                //                 ),
+                //               ),
+                //               child: Stack(
+                //                 children: [
+                //                   /// CAMERA SCANNER
+                //                   MobileScanner(
+                //                     controller: scannerController,
+                //                     onDetect: (capture) {
+                //                       if (isScanned) return;
+
+                //                       final barcode = capture.barcodes.first;
+
+                //                       final String? code = barcode.rawValue;
+
+                //                       if (code == null) return;
+                //                       isScanned = true;
+
+                //                       Get.back();
+
+                //                       Future.delayed(
+                //                           const Duration(milliseconds: 300),
+                //                           () {
+                //                         controller.handleScannedData(code);
+                //                       });
+
+                //                       // isScanned = true;
+
+                //                       // controller.handleScannedData(code);
+
+                //                       // Get.back();
+                //                     },
+                //                   ),
+
+                //                   /// SCAN BOX
+                //                   Center(
+                //                     child: Container(
+                //                       width: 260,
+                //                       height: 260,
+                //                       decoration: BoxDecoration(
+                //                         border: Border.all(
+                //                           color: Colors.white,
+                //                           width: 4,
+                //                         ),
+                //                         borderRadius: BorderRadius.circular(20),
+                //                       ),
+                //                     ),
+                //                   ),
+
+                //                   /// CLOSE BUTTON
+                //                   Positioned(
+                //                     top: 40,
+                //                     right: 20,
+                //                     child: GestureDetector(
+                //                       onTap: () {
+                //                         Get.back();
+                //                       },
+                //                       child: Container(
+                //                         padding: const EdgeInsets.all(10),
+                //                         decoration: BoxDecoration(
+                //                           color: Colors.white.withOpacity(0.2),
+                //                           shape: BoxShape.circle,
+                //                         ),
+                //                         child: const Icon(
+                //                           Icons.close,
+                //                           color: Colors.white,
+                //                         ),
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ],
+                //               ),
+                //             );
+                //           },
+                //         ),
+                //         isScrollControlled: true,
+                //       );
+                //     },
+                //     icon: const Icon(Icons.qr_code_scanner),
+                //     label: const Text(
+                //       "Scan QR",
+                //       style: TextStyle(
+                //         fontSize: 18,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.blue,
+                //       foregroundColor: Colors.white,
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(14),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
