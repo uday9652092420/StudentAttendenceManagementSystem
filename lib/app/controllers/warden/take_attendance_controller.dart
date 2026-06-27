@@ -5,6 +5,7 @@ import 'package:my_new_app/app/models/warden/take_attendance_model.dart';
 class TakeAttendanceController extends GetxController {
   RxString floorName = "".obs;
   RxString hostelName = "Happy Homes".obs;
+  RxList<String> floorList = <String>[].obs;
 
   RxList<StudentAttendanceModel> students = <StudentAttendanceModel>[].obs;
 
@@ -12,7 +13,12 @@ class TakeAttendanceController extends GetxController {
   void onInit() {
     super.onInit();
 
-    floorName.value = Get.arguments ?? "Level 1";
+    final args = Get.arguments;
+
+    if (args != null && args is Map) {
+      hostelName.value = args["hostelName"]?.toString() ?? "Happy Homes";
+      floorName.value = args["floorName"]?.toString() ?? "Level 1";
+    }
 
     loadStudents();
   }

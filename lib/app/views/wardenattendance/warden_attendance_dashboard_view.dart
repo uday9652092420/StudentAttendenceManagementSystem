@@ -242,7 +242,14 @@ class WardenAttendanceDashboardView
                               Expanded(
                                 child: InkWell(
                                   onTap: () {
-                                    // Navigate to Guest Detector
+                                    Get.toNamed(
+                                      Routes.takeAttendance,
+                                      arguments: {
+                                        "hostelName":
+                                            controller.selectedHostel.value,
+                                        "floorName": floor.floorName,
+                                      },
+                                    );
                                   },
                                   borderRadius: BorderRadius.circular(10),
                                   child: Container(
@@ -292,6 +299,9 @@ class WardenAttendanceDashboardView
             onPressed: () {
               Get.toNamed(
                 Routes.takeAttendance,
+                arguments: {
+                  "hostelName": controller.selectedHostel.value,
+                },
               );
             },
             icon: const Icon(Icons.add),
@@ -405,21 +415,42 @@ class WardenAttendanceDashboardView
   }
 
   Widget _hostelDropdown() {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade300,
+    return Obx(
+      () => InputDecorator(
+        decoration: InputDecoration(
+          labelText: "Select Hostel / Block",
+          labelStyle: const TextStyle(
+            color: Colors.black,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 4,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.grey.shade300,
+            ),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.blue,
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(12),
+            ),
+          ),
         ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: Obx(
-          () => DropdownButton<String>(
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
             value: controller.selectedHostel.value,
             isExpanded: true,
+            icon: const Icon(Icons.keyboard_arrow_down),
             items: const [
               DropdownMenuItem(
                 value: "Happy Homes",

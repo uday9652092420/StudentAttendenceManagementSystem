@@ -73,32 +73,18 @@ class LoginController extends GetxController {
 
         print("ROLE => $roleName");
 
-        /// SECURITY
-        if (roleName.toLowerCase() == "security") {
-          Get.offAllNamed(
-            Routes.securityDashboard,
-          );
-        }
+        final role = roleName.trim().toLowerCase();
 
-        /// WARDEN
-        else if (roleName.toLowerCase() == "warden") {
-          Get.offAllNamed(
-            Routes.WARDEN_ATTENDANCE,
-          );
-        }
+        print("ROLE => $role");
 
-        /// TEACHER
-        else if (roleName.toLowerCase() == "teacher") {
-          Get.offAllNamed(
-            Routes.dashboard,
-          );
-        }
-
-        /// ADMIN OR OTHER ROLES
-        else {
-          Get.offAllNamed(
-            Routes.dashboard,
-          );
+        if (role.contains("security")) {
+          Get.offAllNamed(Routes.securityDashboard);
+        } else if (role.contains("warden")) {
+          Get.offAllNamed(Routes.WARDEN_ATTENDANCE);
+        } else if (role.contains("teacher")) {
+          Get.offAllNamed(Routes.dashboard);
+        } else {
+          Get.offAllNamed(Routes.dashboard);
         }
       } else {
         errorToast(

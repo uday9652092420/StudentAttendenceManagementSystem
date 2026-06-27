@@ -1,14 +1,13 @@
 class StudentModel {
-  final String rollNo;
-  final String name;
-
-  /// P = Present
-  /// A = Absent
+  String studentId;
+  String rollNo;
+  String name;
   String status;
 
   StudentModel({
+    required this.studentId,
     required this.rollNo,
     required this.name,
-    this.status = "P",
+    required this.status,
   });
 }

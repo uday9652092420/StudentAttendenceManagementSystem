@@ -1,74 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
+import 'package:my_new_app/app/models/dashboard/class_details_model.dart';
 import 'package:my_new_app/app/models/dashboard/student_model.dart';
+import 'package:my_new_app/app/repositories/teacherstundentattendance/attendance_repository.dart';
 
 class AttendanceController extends GetxController {
   /// TEXT CONTROLLERS
   final TextEditingController courseController = TextEditingController();
-
   final TextEditingController classController = TextEditingController();
 
-  /// PERIODS
-  RxList<String> periods = <String>[].obs;
+  /// REPOSITORY
+  final AttendanceRepository repository = AttendanceRepository();
 
-  RxString selectedPeriod = "".obs;
+  /// CLASS DETAILS
+  Rxn<ClassDetailsModel> classDetails = Rxn<ClassDetailsModel>();
+
+  final TextEditingController periodController = TextEditingController();
 
   /// COUNTS
   RxInt presentCount = 0.obs;
   RxInt absentCount = 0.obs;
-//total students
   RxInt totalStudents = 0.obs;
+
+  RxBool isLoading = false.obs;
 
   /// STUDENTS
   RxList<StudentModel> students = <StudentModel>[].obs;
+
+  /// Hostel Block
+  RxString hostelName = "".obs;
 
   @override
   void onInit() {
     super.onInit();
 
-    final data = Get.arguments ?? {};
+    final Map<String, dynamic> args =
+        (Get.arguments as Map<String, dynamic>?) ?? {};
 
-    print("QR DATA ======> $data");
+    final String classId = args["classId"]?.toString() ?? "";
 
-    /// COURSE NAME
-    courseController.text = data["courseName"]?.toString() ?? "";
+    hostelName.value = args["hostelName"]?.toString() ?? "";
 
-    /// CLASS NAME
-    classController.text = data["className"]?.toString() ?? "";
-
-    /// PERIOD
-    final String qrPeriod = data["period"]?.toString() ?? "";
-
-    periods.clear();
-
-    if (qrPeriod.isNotEmpty) {
-      periods.add(qrPeriod);
-
-      selectedPeriod.value = qrPeriod;
+    if (classId.isNotEmpty) {
+      loadClassDetails(classId);
     }
+  }
 
-    /// STUDENTS
-    final List<dynamic> studentList = data["students"] ?? [];
+  Future<void> loadClassDetails(String classId) async {
+    try {
+      isLoading.value = true;
 
-    students.assignAll(
-      List.generate(studentList.length, (index) {
-        final student = studentList[index];
+      final response = await repository.getClassDetails(classId);
 
-        return StudentModel(
-          /// AUTO GENERATED ROLL NUMBER
-          rollNo: "${index + 1}",
-
-          /// NAME FROM QR
-          name: student["name"]?.toString() ?? "",
-
-          /// DEFAULT STATUS
-          status: "P",
+      if (response != null &&
+          response.statusCode == 200 &&
+          response.data["success"] == true) {
+        final model = ClassDetailsModel.fromJson(
+          response.data["data"],
         );
-      }),
-    );
 
-    calculateCounts();
+        classDetails.value = model;
+
+        courseController.text = model.courseName ?? "";
+
+        classController.text = model.className ?? "";
+
+        periodController.text = model.currentPeriodName ?? "";
+        students.assignAll(
+          List.generate(
+            model.students.length,
+            (index) => StudentModel(
+              studentId: model.students[index].studentId ?? "",
+              rollNo: "${index + 1}",
+              name: model.students[index].studentName ?? "",
+              status: "P",
+            ),
+          ),
+        );
+
+        calculateCounts();
+      }
+    } catch (e) {
+      errorToast(
+        "Failed to load class details",
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void toggleAttendance(int index) {
@@ -79,7 +98,6 @@ class AttendanceController extends GetxController {
     }
 
     students.refresh();
-
     calculateCounts();
   }
 
@@ -87,19 +105,38 @@ class AttendanceController extends GetxController {
     presentCount.value = students.where((e) => e.status == "P").length;
 
     absentCount.value = students.where((e) => e.status == "A").length;
+
     totalStudents.value = students.length;
   }
 
-  void saveAttendance() {
-    successToast("Attendance Saved Successfully");
+  Future<void> saveAttendance() async {
+    try {
+      final body = {
+        "classId": classDetails.value?.classId,
+        "periodId": classDetails.value?.currentPeriodId,
+        "attendance": students.map((e) {
+          return {
+            "studentId": e.studentId,
+            "status": e.status,
+          };
+        }).toList(),
+      };
+
+      print("ATTENDANCE BODY => $body");
+
+      // final response = await repository.saveAttendance(body);
+
+      successToast("Attendance Saved Successfully");
+    } catch (e) {
+      errorToast(e.toString());
+    }
   }
 
   @override
   void onClose() {
     courseController.dispose();
-
     classController.dispose();
-
     super.onClose();
+    periodController.dispose();
   }
 }

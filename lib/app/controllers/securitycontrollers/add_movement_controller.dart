@@ -49,7 +49,9 @@ class AddMovementController extends GetxController {
 
   final TextEditingController returnSecurityGuardController =
       TextEditingController();
+
   final outDateController = TextEditingController();
+
   final returnDateController = TextEditingController();
 // Checkboxes
   RxBool confirmStudentLeft = false.obs;
@@ -310,6 +312,7 @@ class AddMovementController extends GetxController {
       errorToast("Something went wrong");
     }
   }
+
 //cretae out movement
   // Future<void> createOutMovement() async {
   //   try {
