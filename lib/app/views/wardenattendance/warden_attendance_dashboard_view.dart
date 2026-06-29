@@ -21,7 +21,7 @@ class WardenAttendanceDashboardView
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "Warden Attendance",
+              "Warden Dashboard",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
