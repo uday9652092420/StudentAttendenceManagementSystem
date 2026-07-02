@@ -10,4 +10,7 @@ class EndPoints {
 
   // Get/Update Movement
   static const updateMovement = 'hostel-in-out-movements';
+
+  static const classroomdetails = "attendance/periodwise/context/";
+  static const classroomstudentsdetails = "attendance/periodwise/students/";
 }

@@ -23,6 +23,8 @@ import 'package:my_new_app/app/views/security/add_movement_view.dart';
 
 import 'package:my_new_app/app/bindings/dashboard/studentattendance_binding.dart';
 import 'package:my_new_app/app/views/dashboard/studentattendance_view.dart';
+import '../bindings/messbindings/mess_dashboard_binding.dart';
+import '../views/mess/mess_dashboard_view.dart';
 
 class AppPages {
   static const initialPage = Routes.splash;
@@ -32,6 +34,11 @@ class AppPages {
       name: Routes.splash,
       page: () => const SplashScreenView(),
       binding: SplashScreenBindings(),
+    ),
+    GetPage(
+      name: Routes.messDashboard,
+      page: () => const MessDashboardView(),
+      binding: MessDashboardBinding(),
     ),
     GetPage(
       name: Routes.langeSelection,

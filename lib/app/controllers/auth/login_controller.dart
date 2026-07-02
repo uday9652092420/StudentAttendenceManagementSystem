@@ -81,10 +81,10 @@ class LoginController extends GetxController {
           Get.offAllNamed(Routes.securityDashboard);
         } else if (role.contains("warden")) {
           Get.offAllNamed(Routes.WARDEN_ATTENDANCE);
-        } else if (role.contains("teacher")) {
+        } else if (role.contains("teacher") || role.contains("lecturer")) {
           Get.offAllNamed(Routes.dashboard);
-        } else {
-          Get.offAllNamed(Routes.dashboard);
+        } else if (role.contains("kitchen")) {
+          Get.offAllNamed(Routes.messDashboard);
         }
       } else {
         errorToast(

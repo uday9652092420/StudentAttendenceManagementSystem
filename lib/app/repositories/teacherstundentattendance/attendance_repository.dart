@@ -1,19 +1,43 @@
 import 'package:dio/dio.dart';
+import 'package:my_new_app/app/services/api_service.dart';
+import 'package:my_new_app/app/services/endpoints.dart';
 
 class AttendanceRepository {
-  final Dio dio = Dio();
+  /// Get Classroom Context
+  Future<Response?> getAttendanceContext({
+    required String classroomId,
+    required String teacherId,
+  }) async {
+    final response = await ApiService.get(
+      "${EndPoints.classroomdetails}$classroomId",
+      queryParameters: {
+        "teacherId": teacherId,
+      },
+    );
 
-  Future<Response?> getClassDetails(
-    String classId,
+    return response as Response?;
+  }
+
+  /// Get Students
+  Future<Response?> getAttendanceStudents({
+    required String classroomId,
+  }) async {
+    final response = await ApiService.get(
+      "${EndPoints.classroomstudentsdetails}$classroomId",
+    );
+
+    return response as Response?;
+  }
+
+  /// Save Attendance
+  Future<Response?> saveAttendance(
+    Map<String, dynamic> body,
   ) async {
-    try {
-      final response = await dio.get(
-        "http://YOUR_IP:3002/api/classroom/class-details/$classId",
-      );
+    final response = await ApiService.post(
+      "attendance/periodwise/save",
+      body,
+    );
 
-      return response;
-    } catch (e) {
-      return null;
-    }
+    return response as Response?;
   }
 }

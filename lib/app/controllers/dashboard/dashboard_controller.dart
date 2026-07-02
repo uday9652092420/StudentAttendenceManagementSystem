@@ -15,7 +15,9 @@ class DashboardController extends GetxController {
 
       Get.toNamed(
         Routes.studentAttendance,
-        arguments: data,
+        arguments: {
+          "classroomId": data["id"],
+        },
       );
     } catch (e) {
       errorToast("Invalid QR Code");

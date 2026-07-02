@@ -16,6 +16,9 @@ class AttendanceController extends GetxController {
   /// CLASS DETAILS
   Rxn<ClassDetailsModel> classDetails = Rxn<ClassDetailsModel>();
 
+  RxString classId = "".obs;
+  RxString periodId = "".obs;
+
   final TextEditingController periodController = TextEditingController();
 
   /// COUNTS
@@ -34,56 +37,114 @@ class AttendanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print("GET ARGUMENTS : ${Get.arguments}");
 
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
-
-    final String classId = args["classId"]?.toString() ?? "";
-
-    hostelName.value = args["hostelName"]?.toString() ?? "";
-
-    if (classId.isNotEmpty) {
-      loadClassDetails(classId);
+    final String classroomId = args["classroomId"]?.toString() ?? "";
+    print("CLASSROOM ID = $classroomId");
+    if (classroomId.isNotEmpty) {
+      loadAttendanceData(classroomId);
     }
   }
 
-  Future<void> loadClassDetails(String classId) async {
+  Future<void> loadAttendanceData(String classroomId) async {
     try {
       isLoading.value = true;
 
-      final response = await repository.getClassDetails(classId);
+      const teacherId = "staff_1782898786845_qpk54f2yq";
 
-      if (response != null &&
-          response.statusCode == 200 &&
-          response.data["success"] == true) {
-        final model = ClassDetailsModel.fromJson(
-          response.data["data"],
+      //-------------------------------
+      // Context API
+      //-------------------------------
+
+      final contextResponse = await repository.getAttendanceContext(
+        classroomId: classroomId,
+        teacherId: teacherId,
+      );
+
+      print("STATUS = ${contextResponse?.statusCode}");
+      print("BODY = ${contextResponse?.data}");
+
+      if (contextResponse != null && contextResponse.statusCode == 200) {
+        final data = contextResponse.data;
+
+        if (data["success"] == true) {
+          classId.value = data["classId"] ?? "";
+
+          periodId.value = data["subjectId"] ?? "";
+
+          courseController.text = data["courseName"] ?? "";
+
+          classController.text = data["className"] ?? "";
+
+          periodController.text =
+              "Period ${data["periodNumber"]} • ${data["subjectName"]}";
+        } else {
+          courseController.clear();
+
+          classController.clear();
+
+          periodController.clear();
+
+          courseController.clear();
+          classController.clear();
+          periodController.clear();
+
+          students.clear();
+
+          presentCount.value = 0;
+          absentCount.value = 0;
+          totalStudents.value = 0;
+
+          errorToast(data["message"]);
+
+          return;
+        }
+      }
+
+      //-------------------------------
+      // Students API
+      //-------------------------------
+
+      final studentResponse = await repository.getAttendanceStudents(
+        classroomId: classroomId,
+      );
+      print(studentResponse?.statusCode);
+      print(studentResponse?.data);
+
+      if (studentResponse != null && studentResponse.statusCode == 200) {
+        final List studentList = studentResponse.data as List;
+
+// Sort alphabetically by student name
+        studentList.sort(
+          (a, b) => (a["studentName"] ?? "").toString().toLowerCase().compareTo(
+                (b["studentName"] ?? "").toString().toLowerCase(),
+              ),
         );
 
-        classDetails.value = model;
-
-        courseController.text = model.courseName ?? "";
-
-        classController.text = model.className ?? "";
-
-        periodController.text = model.currentPeriodName ?? "";
         students.assignAll(
-          List.generate(
-            model.students.length,
-            (index) => StudentModel(
-              studentId: model.students[index].studentId ?? "",
-              rollNo: "${index + 1}",
-              name: model.students[index].studentName ?? "",
-              status: "P",
-            ),
-          ),
+          List.generate(studentList.length, (index) {
+            final e = studentList[index];
+
+            return StudentModel(
+              studentId: e["studentId"].toString(),
+
+              // Serial Number instead of Admission Number
+              rollNo: (index + 1).toString(),
+
+              name: e["studentName"] ?? "",
+
+              status: e["status"] == "present" ? "P" : "A",
+            );
+          }),
         );
 
         calculateCounts();
       }
     } catch (e) {
       errorToast(
-        "Failed to load class details",
+        e.toString(),
       );
     } finally {
       isLoading.value = false;

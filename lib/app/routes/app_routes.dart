@@ -14,4 +14,5 @@ abstract class Routes {
   static const addMovement = "/add-movement";
   static const WARDEN_ATTENDANCE = '/warden_attendance_dashboard_view';
   static const takeAttendance = '/take-attendance_view';
+  static const messDashboard = "/mess-dashboard_view";
 }

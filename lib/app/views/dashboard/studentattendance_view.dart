@@ -348,7 +348,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "Roll No",
+                              "No",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
