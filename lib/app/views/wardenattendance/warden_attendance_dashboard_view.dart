@@ -57,14 +57,11 @@ class WardenAttendanceDashboardView
           );
         }
 
-        final dashboard = controller.dashboard.value;
-
-        if (dashboard == null) {
+        if (controller.blocks.isEmpty) {
           return const Center(
-            child: Text("No Data Found"),
+            child: Text("No Blocks Found"),
           );
         }
-
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -87,7 +84,37 @@ class WardenAttendanceDashboardView
 
               const SizedBox(height: 20),
 
-              /// SUMMARY
+              // /// SUMMARY
+              // GridView.count(
+              //   shrinkWrap: true,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   crossAxisCount: 2,
+              //   crossAxisSpacing: 12,
+              //   mainAxisSpacing: 12,
+              //   childAspectRatio: 1.4,
+              //   children: [
+              //     _summaryCard(
+              //       "Present",
+              //       dashboard.present.toString(),
+              //       Colors.green,
+              //     ),
+              //     _summaryCard(
+              //       "Absent",
+              //       dashboard.absent.toString(),
+              //       Colors.red,
+              //     ),
+              //     _summaryCard(
+              //       "Leave",
+              //       dashboard.leave.toString(),
+              //       Colors.blue,
+              //     ),
+              //     _summaryCard(
+              //       "Out Pass",
+              //       dashboard.outPass.toString(),
+              //       Colors.purple,
+              //     ),
+              //   ],
+              // ),
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -98,22 +125,22 @@ class WardenAttendanceDashboardView
                 children: [
                   _summaryCard(
                     "Present",
-                    dashboard.present.toString(),
+                    controller.totalPresent.toString(),
                     Colors.green,
                   ),
                   _summaryCard(
                     "Absent",
-                    dashboard.absent.toString(),
+                    controller.totalAbsent.toString(),
                     Colors.red,
                   ),
                   _summaryCard(
                     "Leave",
-                    dashboard.leave.toString(),
+                    controller.totalLeave.toString(),
                     Colors.blue,
                   ),
                   _summaryCard(
                     "Out Pass",
-                    dashboard.outPass.toString(),
+                    controller.totalOutPass.toString(),
                     Colors.purple,
                   ),
                 ],
@@ -125,9 +152,9 @@ class WardenAttendanceDashboardView
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: dashboard.floors.length,
+                itemCount: controller.floorSummary.length,
                 itemBuilder: (context, index) {
-                  final floor = dashboard.floors[index];
+                  final summary = controller.floorSummary[index];
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 14),
@@ -153,7 +180,7 @@ class WardenAttendanceDashboardView
                               ),
                               Expanded(
                                 child: Text(
-                                  floor.floorName,
+                                  summary.floorName,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -171,60 +198,63 @@ class WardenAttendanceDashboardView
                           // ),
                           const SizedBox(height: 10),
                           const Divider(),
+
                           _infoRow(
                             "Total Students",
-                            floor.totalStudents.toString(),
+                            summary.totalStudents.toString(),
                           ),
+
                           _infoRow(
                             "Present",
-                            floor.present.toString(),
+                            summary.present.toString(),
                           ),
+
                           _infoRow(
                             "Absent",
-                            floor.absent.toString(),
+                            summary.absent.toString(),
                           ),
+
                           _infoRow(
                             "Leave",
-                            floor.leave.toString(),
+                            summary.leave.toString(),
                           ),
+
                           _infoRow(
                             "Out Pass",
-                            floor.outPass.toString(),
+                            summary.outPass.toString(),
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Text(
-                                "Session",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: floor.session == "locked"
-                                      ? Colors.white
-                                      : Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  floor.session,
-                                  style: TextStyle(
-                                    color: floor.session == "locked"
-                                        ? Colors.red
-                                        : Colors.green,
-                                    fontWeight: FontWeight.w600,
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                const Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    "Session",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    summary.sessionStatus,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: summary.sessionStatus == "locked"
+                                          ? Colors.red
+                                          : summary.sessionStatus == "submitted"
+                                              ? Colors.green
+                                              : Colors.orange,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 14),
+
                           const SizedBox(height: 14),
 
                           Row(
@@ -245,9 +275,12 @@ class WardenAttendanceDashboardView
                                     Get.toNamed(
                                       Routes.takeAttendance,
                                       arguments: {
-                                        "hostelName":
-                                            controller.selectedHostel.value,
-                                        "floorName": floor.floorName,
+                                        "blockId":
+                                            controller.selectedBlock.value!.id,
+                                        "blockName": controller
+                                            .selectedBlock.value!.blockName,
+                                        "floorId": summary.floorId,
+                                        "floorName": summary.floorName,
                                       },
                                     );
                                   },
@@ -300,7 +333,8 @@ class WardenAttendanceDashboardView
               Get.toNamed(
                 Routes.takeAttendance,
                 arguments: {
-                  "hostelName": controller.selectedHostel.value,
+                  "blockId": controller.selectedBlock.value?.id,
+                  "blockName": controller.selectedBlock.value?.blockName,
                 },
               );
             },
@@ -390,89 +424,71 @@ class WardenAttendanceDashboardView
   }
 
   Widget _dateField() {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.shade300,
+    return InkWell(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: Get.context!,
+          initialDate: controller.selectedDate.value,
+          firstDate: DateTime(2024),
+          lastDate: DateTime(2035),
+        );
+
+        if (picked != null) {
+          controller.selectedDate.value = picked;
+          controller.loadFloorAttendanceSummary();
+        }
+      },
+      child: Container(
+        height: 50,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
         ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.calendar_today),
-          const SizedBox(width: 10),
-          Obx(
-            () => Text(
-              controller.formattedDate,
-            ),
-          ),
-        ],
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_today),
+            const SizedBox(width: 10),
+            Obx(() => Text(controller.formattedDate)),
+          ],
+        ),
       ),
     );
   }
 
   Widget _hostelDropdown() {
-    return Obx(
-      () => InputDecorator(
+    return Obx(() {
+      return InputDecorator(
         decoration: InputDecoration(
           labelText: "Select Hostel / Block",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-          ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 4,
-          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.grey.shade300,
-            ),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.blue,
-            ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(12),
-            ),
           ),
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
-            value: controller.selectedHostel.value,
+            value: controller.selectedBlockId.value.isEmpty
+                ? null
+                : controller.selectedBlockId.value,
             isExpanded: true,
-            icon: const Icon(Icons.keyboard_arrow_down),
-            items: const [
-              DropdownMenuItem(
-                value: "Happy Homes",
-                child: Text("Happy Homes"),
-              ),
-              DropdownMenuItem(
-                value: "Hostel A",
-                child: Text("Hostel A"),
-              ),
-              DropdownMenuItem(
-                value: "Hostel B",
-                child: Text("Hostel B"),
-              ),
-            ],
-            onChanged: (value) {
+            hint: const Text("Select Block"),
+            items: controller.blocks.map((block) {
+              return DropdownMenuItem(
+                value: block.id,
+                child: Text(block.blockName),
+              );
+            }).toList(),
+            onChanged: (value) async {
               if (value != null) {
-                controller.selectedHostel.value = value;
+                await controller.changeBlock(value);
               }
             },
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

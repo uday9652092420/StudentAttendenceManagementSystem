@@ -38,13 +38,26 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton(
-                onPressed: controller.saveAttendance,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: controller.isSaving.value
+                      ? null
+                      : controller.saveAttendance,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: controller.isSaving.value
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text("Save Attendance"),
                 ),
-                child: const Text("Save Attendance"),
               ),
             ),
           ],
@@ -88,7 +101,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                       Obx(
                         () => TextFormField(
                           readOnly: true,
-                          initialValue: controller.hostelName.value,
+                          initialValue: controller.blockName.value,
                           decoration: InputDecoration(
                             labelText: "Hostel Block",
                             border: OutlineInputBorder(
@@ -98,42 +111,27 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        value: "Level 1",
-                        decoration: InputDecoration(
-                          labelText: "Floor",
-                          labelStyle: const TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Obx(
+                        () => DropdownButtonFormField<String>(
+                          value: controller.selectedFloorId.value,
+                          decoration: InputDecoration(
+                            labelText: "Floor",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 14,
-                          ),
+                          items: controller.floors.map((floor) {
+                            return DropdownMenuItem<String>(
+                              value: floor.id,
+                              child: Text(floor.floorLabel),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              controller.changeFloor(value);
+                            }
+                          },
                         ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: "Level 1",
-                            child: Text("Level 1"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Level 2",
-                            child: Text("Level 2"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Level 3",
-                            child: Text("Level 3"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Level 4",
-                            child: Text("Level 4"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Level 5",
-                            child: Text("Level 5"),
-                          ),
-                        ],
-                        onChanged: (_) {},
                       )
                     ],
                   ),
@@ -142,18 +140,19 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
 
               const SizedBox(height: 16),
 
-              /// COUNTS
-              Wrap(
-                spacing: 12,
-                runSpacing: 10,
-                children: [
-                  _countText(
-                      "Total Students", controller.totalStudents.toString()),
-                  _countText("Present", controller.presentCount.toString()),
-                  _countText("Absent", controller.absentCount.toString()),
-                  _countText("Leave", controller.leaveCount.toString()),
-                  _countText("Out Pass", controller.outPassCount.toString()),
-                ],
+              Obx(
+                () => Wrap(
+                  spacing: 12,
+                  runSpacing: 10,
+                  children: [
+                    _countText(
+                        "Total Students", controller.totalStudents.toString()),
+                    _countText("Present", controller.presentCount.toString()),
+                    _countText("Absent", controller.absentCount.toString()),
+                    _countText("Leave", controller.leaveCount.toString()),
+                    _countText("Out Pass", controller.outPassCount.toString()),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 18),
@@ -185,7 +184,8 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                   columnWidths: const {
                     0: FlexColumnWidth(2),
                     1: FlexColumnWidth(4),
-                    2: FlexColumnWidth(2),
+                    2: FlexColumnWidth(3),
+                    3: FlexColumnWidth(4),
                   },
                   children: [
                     /// Header
@@ -221,54 +221,85 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Center(
+                            child: Text(
+                              "Remarks",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
 
-                    /// Student Rows
                     ...controller.students.map(
                       (student) => TableRow(
                         children: [
+                          /// Room No
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: Center(
                               child: Text(student.roomNo),
                             ),
                           ),
+
+                          /// Student Name
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: Text(student.studentName),
                           ),
+
+                          /// Status
                           Padding(
                             padding: const EdgeInsets.all(6),
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  student.status = student.status == "Present"
-                                      ? "Absent"
-                                      : "Present";
-
-                                  controller.students.refresh();
-                                },
-                                child: Container(
-                                  width: 40,
-                                  height: 34,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: student.status == "Present"
-                                        ? Colors.green
-                                        : Colors.red,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    student.status == "Present" ? "P" : "A",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
+                            child: DropdownButtonFormField<String>(
+                              value: student.status,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                border: OutlineInputBorder(),
                               ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: "Present",
+                                  child: Text("Present"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "Absent",
+                                  child: Text("Absent"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "Leave",
+                                  child: Text("Leave"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "Out Pass",
+                                  child: Text("Out Pass"),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) {
+                                  student.status = value;
+                                  controller.students.refresh();
+                                }
+                              },
+                            ),
+                          ),
+
+                          /// Remarks
+                          Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: TextFormField(
+                              initialValue: student.remarks,
+                              decoration: const InputDecoration(
+                                hintText: "Remarks",
+                                isDense: true,
+                                border: OutlineInputBorder(),
+                              ),
+                              onChanged: (value) {
+                                student.remarks = value;
+                              },
                             ),
                           ),
                         ],
