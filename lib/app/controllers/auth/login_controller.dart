@@ -49,6 +49,23 @@ class LoginController extends GetxController {
 
         final fullName = data["fullName"]?.toString() ?? "";
 
+        final dynamic staffIdData = data["staffId"];
+
+        if (staffIdData != null &&
+            staffIdData.toString().trim().isNotEmpty &&
+            staffIdData.toString().toLowerCase() != "null") {
+          await SharedPrefsHelper.setString(
+            "staffId",
+            staffIdData.toString(),
+          );
+
+          print("STAFF ID SAVED => ${staffIdData.toString()}");
+        } else {
+          // Remove any previously saved teacher staffId
+          await SharedPrefsHelper.remove("staffId");
+
+          print("NO STAFF ID FOUND");
+        }
         await SharedPrefsHelper.setString(
           SharedPrefsHelper.accessToken,
           accessToken,

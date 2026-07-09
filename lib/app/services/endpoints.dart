@@ -19,5 +19,5 @@ class EndPoints {
       "hostel-night-attendance/session/by-filter";
 
   static const floorwisestudents = "hostel-night-attendance/session/";
-  static const saveAttendance = "hostel-night-attendance";
+  static const saveAttendance = "attendance/periodwise";
 }

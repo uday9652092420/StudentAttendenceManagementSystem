@@ -29,12 +29,9 @@ class AttendanceRepository {
     return response as Response?;
   }
 
-  /// Save Attendance
-  Future<Response?> saveAttendance(
-    Map<String, dynamic> body,
-  ) async {
+  Future<Response?> saveAttendance(Map<String, dynamic> body) async {
     final response = await ApiService.post(
-      "attendance/periodwise/save",
+      EndPoints.saveAttendance,
       body,
     );
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/dashboard/class_details_model.dart';
 import 'package:my_new_app/app/models/dashboard/student_model.dart';
+import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/repositories/teacherstundentattendance/attendance_repository.dart';
 
 class AttendanceController extends GetxController {
@@ -17,6 +19,7 @@ class AttendanceController extends GetxController {
   Rxn<ClassDetailsModel> classDetails = Rxn<ClassDetailsModel>();
 
   RxString classId = "".obs;
+
   RxString periodId = "".obs;
 
   final TextEditingController periodController = TextEditingController();
@@ -34,6 +37,12 @@ class AttendanceController extends GetxController {
   /// Hostel Block
   RxString hostelName = "".obs;
 
+  RxString courseId = "".obs;
+  RxString attendanceId = "".obs;
+  RxString period = "".obs;
+  RxString academicYear = "".obs;
+  RxBool locked = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -49,20 +58,20 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> loadAttendanceData(String classroomId) async {
+    final teacherId = await SharedPrefsHelper.getString("staffId");
+
+    if (teacherId.isEmpty) {
+      errorToast("Teacher information not found.");
+      return;
+    }
+
     try {
       isLoading.value = true;
-
-      const teacherId = "staff_1782898786845_qpk54f2yq";
-
-      //-------------------------------
-      // Context API
-      //-------------------------------
 
       final contextResponse = await repository.getAttendanceContext(
         classroomId: classroomId,
         teacherId: teacherId,
       );
-
       print("STATUS = ${contextResponse?.statusCode}");
       print("BODY = ${contextResponse?.data}");
 
@@ -78,6 +87,15 @@ class AttendanceController extends GetxController {
 
           classController.text = data["className"] ?? "";
 
+          courseId.value = data["courseId"] ?? "";
+
+          attendanceId.value = data["id"] ?? "";
+
+          academicYear.value = data["academicYear"] ?? "";
+
+          locked.value = data["locked"] ?? false;
+
+          period.value = "Period ${data["periodNumber"]}";
           periodController.text =
               "Period ${data["periodNumber"]} • ${data["subjectName"]}";
         } else {
@@ -173,21 +191,39 @@ class AttendanceController extends GetxController {
   Future<void> saveAttendance() async {
     try {
       final body = {
-        "classId": classDetails.value?.classId,
-        "periodId": classDetails.value?.currentPeriodId,
-        "attendance": students.map((e) {
+        "id": attendanceId.value.isEmpty ? null : attendanceId.value,
+        "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
+        "courseId": courseId.value,
+        "classId": classId.value,
+        "period": period.value,
+        "locked": locked.value,
+        "students": students.map((e) {
           return {
             "studentId": e.studentId,
-            "status": e.status,
+            "status": e.status == "P" ? "present" : "absent",
+            "remarks": "",
           };
         }).toList(),
+        "academicYear": academicYear.value,
       };
 
-      print("ATTENDANCE BODY => $body");
+      print("SAVE REQUEST");
+      print(body);
 
-      // final response = await repository.saveAttendance(body);
+      final response = await repository.saveAttendance(body);
 
-      successToast("Attendance Saved Successfully");
+      print("STATUS : ${response?.statusCode}");
+      print("BODY : ${response?.data}");
+
+      if (response != null &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
+        successToast("Attendance Saved Successfully");
+        Get.back(result: true);
+      } else {
+        errorToast(
+          response?.data["message"] ?? "Failed to save attendance",
+        );
+      }
     } catch (e) {
       errorToast(e.toString());
     }
