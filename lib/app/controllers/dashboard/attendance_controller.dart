@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/dashboard/class_details_model.dart';
 import 'package:my_new_app/app/models/dashboard/student_model.dart';
@@ -169,6 +170,10 @@ class AttendanceController extends GetxController {
     }
   }
 
+  String generateAttendanceId() {
+    return DateTime.now().millisecondsSinceEpoch.toRadixString(36);
+  }
+
   void toggleAttendance(int index) {
     if (students[index].status == "P") {
       students[index].status = "A";
@@ -191,7 +196,9 @@ class AttendanceController extends GetxController {
   Future<void> saveAttendance() async {
     try {
       final body = {
-        "id": attendanceId.value.isEmpty ? null : attendanceId.value,
+        "id": attendanceId.value.isEmpty
+            ? generateAttendanceId()
+            : attendanceId.value,
         "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
         "courseId": courseId.value,
         "classId": classId.value,
