@@ -1,10 +1,14 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_binding.dart';
+import 'package:my_new_app/app/bindings/kitchen/kitchen_dashboard_binding.dart';
+import 'package:my_new_app/app/bindings/kitchen/meal_checkin_binding.dart';
 import 'package:my_new_app/app/bindings/security/add_movement_binding.dart';
 import 'package:my_new_app/app/bindings/security/security_dashboard_binding.dart';
 import 'package:my_new_app/app/bindings/warden/take_attendance_binding.dart';
 import 'package:my_new_app/app/bindings/warden/warden_attendance_dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
+import 'package:my_new_app/app/views/kitchen/kitchen_dashboard_view.dart';
+import 'package:my_new_app/app/views/kitchen/meal_checkin_view.dart';
 import 'package:my_new_app/app/views/security/security_dashboard.dart';
 import 'package:my_new_app/app/views/wardenattendance/take_attendance_view.dart';
 import 'package:my_new_app/app/views/wardenattendance/warden_attendance_dashboard_view.dart';
@@ -23,8 +27,6 @@ import 'package:my_new_app/app/views/security/add_movement_view.dart';
 
 import 'package:my_new_app/app/bindings/dashboard/studentattendance_binding.dart';
 import 'package:my_new_app/app/views/dashboard/studentattendance_view.dart';
-import '../bindings/messbindings/mess_dashboard_binding.dart';
-import '../views/mess/mess_dashboard_view.dart';
 
 class AppPages {
   static const initialPage = Routes.splash;
@@ -35,11 +37,11 @@ class AppPages {
       page: () => const SplashScreenView(),
       binding: SplashScreenBindings(),
     ),
-    GetPage(
-      name: Routes.messDashboard,
-      page: () => const MessDashboardView(),
-      binding: MessDashboardBinding(),
-    ),
+    // GetPage(
+    //   name: Routes.messDashboard,
+    //   page: () => const MessDashboardView(),
+    //   binding: MessDashboardBinding(),
+    // ),
     GetPage(
       name: Routes.langeSelection,
       page: () => const LangSelectionView(),
@@ -84,6 +86,16 @@ class AppPages {
       name: Routes.takeAttendance,
       page: () => const TakeAttendanceView(),
       binding: TakeAttendanceBinding(),
+    ),
+    GetPage(
+      name: Routes.kitchenDashboard,
+      page: () => const KitchenDashboardView(),
+      binding: KitchenDashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.mealCheckin,
+      page: () => const MealCheckinView(),
+      binding: MealCheckinBinding(),
     ),
   ];
 }

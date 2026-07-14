@@ -13,6 +13,7 @@ class DashboardController extends GetxController {
   final AttendanceRepository repository = AttendanceRepository();
 
   Future<void> handleScannedData(String qrData) async {
+    print("QR SCANNED");
     try {
       final Map<String, dynamic> data = jsonDecode(qrData);
 

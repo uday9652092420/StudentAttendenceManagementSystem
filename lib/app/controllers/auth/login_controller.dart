@@ -101,7 +101,7 @@ class LoginController extends GetxController {
         } else if (role.contains("teacher") || role.contains("lecturer")) {
           Get.offAllNamed(Routes.dashboard);
         } else if (role.contains("kitchen")) {
-          Get.offAllNamed(Routes.messDashboard);
+          Get.offAllNamed(Routes.kitchenDashboard);
         }
       } else {
         errorToast(

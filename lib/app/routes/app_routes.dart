@@ -8,6 +8,7 @@ abstract class Routes {
   static const dashboard = '/dashboard_view';
 
   static const otpPage = '/otp_view_page';
+  static const mealCheckin = "/meal_checkin_view";
 
   static const studentAttendance = '/studentattendance_view';
   static const securityDashboard = "/security-dashboard";
@@ -15,4 +16,6 @@ abstract class Routes {
   static const WARDEN_ATTENDANCE = '/warden_attendance_dashboard_view';
   static const takeAttendance = '/take-attendance_view';
   static const messDashboard = "/mess-dashboard_view";
+  // Add this
+  static const kitchenDashboard = "/kitchen-dashboard";
 }
