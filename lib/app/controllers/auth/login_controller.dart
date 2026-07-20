@@ -33,11 +33,6 @@ class LoginController extends GetxController {
         request.toJson(),
       );
 
-      if (response == null) {
-        errorToast("Unable to connect to server");
-        return;
-      }
-
       if (response.statusCode == 200) {
         final data = response.data;
 

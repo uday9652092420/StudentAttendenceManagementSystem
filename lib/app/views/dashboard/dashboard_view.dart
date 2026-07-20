@@ -9,7 +9,7 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    void _openScanner() {
+    void openScanner() {
       final MobileScannerController scannerController =
           MobileScannerController();
 
@@ -212,7 +212,7 @@ class DashboardView extends GetView<DashboardController> {
                   height: 55,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      _openScanner();
+                      openScanner();
                     },
                     icon: const Icon(Icons.qr_code_scanner),
                     label: const Text(

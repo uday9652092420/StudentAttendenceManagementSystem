@@ -36,13 +36,6 @@ class KitchenDashboardController extends GetxController {
   /// Scanner
   final MobileScannerController scannerController = MobileScannerController();
 
-  @override
-  void onInit() {
-    super.onInit();
-
-    // loadDashboard();
-  }
-
   // Future<void> loadDashboard() async {
   //   await Future.wait([
   //     getMealCounts(),
@@ -81,6 +74,8 @@ class KitchenDashboardController extends GetxController {
         arguments: {
           "studentId": data["studentId"],
           "studentName": data["studentName"],
+          "courseName": data["courseName"],
+          "className": data["className"],
           "meal": selectedMeal.value,
         },
       );

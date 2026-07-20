@@ -14,9 +14,9 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "Take Attendance",
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -113,7 +113,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                       const SizedBox(height: 12),
                       Obx(
                         () => DropdownButtonFormField<String>(
-                          value: controller.selectedFloorId.value,
+                          initialValue: controller.selectedFloorId.value,
                           decoration: InputDecoration(
                             labelText: "Floor",
                             border: OutlineInputBorder(
@@ -189,11 +189,11 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                   },
                   children: [
                     /// Header
-                    TableRow(
+                    const TableRow(
                       decoration: BoxDecoration(
                         color: Colors.white,
                       ),
-                      children: const [
+                      children: [
                         Padding(
                           padding: EdgeInsets.all(10),
                           child: Center(
@@ -254,7 +254,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           Padding(
                             padding: const EdgeInsets.all(6),
                             child: DropdownButtonFormField<String>(
-                              value: student.status,
+                              initialValue: student.status,
                               isExpanded: true,
                               decoration: const InputDecoration(
                                 isDense: true,

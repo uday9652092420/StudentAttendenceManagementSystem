@@ -69,7 +69,7 @@ class WardenAttendanceDashboardView
             children: [
               const SizedBox(height: 6),
 
-              Text(
+              const Text(
                 "Take and manage daily student attendance by floor.",
                 style: TextStyle(
                   color: Colors.black,
@@ -292,7 +292,7 @@ class WardenAttendanceDashboardView
                                       color: Colors.blue,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       "Take Attendance",
                                       style: TextStyle(
                                         fontSize: 14,
