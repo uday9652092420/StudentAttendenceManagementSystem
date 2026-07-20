@@ -97,6 +97,8 @@ class LoginController extends GetxController {
           Get.offAllNamed(Routes.dashboard);
         } else if (role.contains("kitchen")) {
           Get.offAllNamed(Routes.kitchenDashboard);
+        } else if (role.contains("masjid incharge")) {
+          Get.offAllNamed(Routes.masjidDashboard);
         }
       } else {
         errorToast(
