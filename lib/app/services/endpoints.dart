@@ -20,4 +20,7 @@ class EndPoints {
 
   static const floorwisestudents = "hostel-night-attendance/session/";
   static const saveAttendance = "attendance/periodwise";
+  static const getStudents = "students/master";
+
+  static const saveMasjidAttendance = "masjid-attendance";
 }

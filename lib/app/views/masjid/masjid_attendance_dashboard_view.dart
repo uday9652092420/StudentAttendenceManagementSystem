@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/masjid/masjid_dashboard_controller.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 
 class MasjidDashboardView extends GetView<MasjidDashboardController> {
   const MasjidDashboardView({super.key});
@@ -10,19 +11,36 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
         backgroundColor: Colors.blue,
         centerTitle: true,
+        elevation: 0,
         title: const Text(
           "Masjid Attendance",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
             color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              Get.defaultDialog(
+                title: "Logout",
+                middleText: "Are you sure you want to logout?",
+                textConfirm: "Yes",
+                textCancel: "No",
+                confirmTextColor: Colors.white,
+                onConfirm: () {
+                  Get.offAllNamed(Routes.login);
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Obx(
-        () => SingleChildScrollView(
+        () => Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
@@ -32,7 +50,6 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                   Expanded(
                     child: Card(
                       color: Colors.white,
-                      elevation: 1,
                       child: Padding(
                         padding: const EdgeInsets.all(15),
                         child: Column(
@@ -44,15 +61,10 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                             const SizedBox(height: 8),
                             const Text(
                               "Date",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                              controller.currentDate.value,
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                            Text(controller.currentDate.value),
                           ],
                         ),
                       ),
@@ -62,7 +74,6 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                   Expanded(
                     child: Card(
                       color: Colors.white,
-                      elevation: 1,
                       child: Padding(
                         padding: const EdgeInsets.all(15),
                         child: Column(
@@ -74,15 +85,10 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                             const SizedBox(height: 8),
                             const Text(
                               "Time",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                              controller.currentTime.value,
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                            Text(controller.currentTime.value),
                           ],
                         ),
                       ),
@@ -94,189 +100,129 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
               const SizedBox(height: 20),
 
               /// Prayer Dropdown
-              Card(
-                color: Colors.white,
-                elevation: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: DropdownButtonFormField<String>(
-                    value: controller.selectedPrayer.value,
-                    decoration: const InputDecoration(
-                      labelText: "Prayer",
-                      border: OutlineInputBorder(),
-                    ),
-                    items: controller.prayers
-                        .map(
-                          (e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      controller.selectedPrayer.value = value!;
-                    },
+              DropdownButtonFormField<String>(
+                value: controller.selectedPrayer.value,
+                decoration: InputDecoration(
+                  labelText: "Prayer",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                ),
+                items: controller.prayers
+                    .map(
+                      (e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(e),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  controller.selectedPrayer.value = value!;
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              /// Search
+              TextField(
+                controller: controller.searchController,
+                decoration: InputDecoration(
+                  hintText: "Search Student",
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onChanged: controller.searchStudent,
+              ),
+
+              const SizedBox(height: 15),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Students",
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
-              /// Scan QR
+              Expanded(
+                child: controller.isLoading.value
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : controller.filteredStudents.isEmpty
+                        ? const Center(
+                            child: Text("No Students Found"),
+                          )
+                        : ListView.builder(
+                            itemCount: controller.filteredStudents.length,
+                            itemBuilder: (_, index) {
+                              final student =
+                                  controller.filteredStudents[index];
+
+                              return Obx(
+                                () => Card(
+                                  color: Colors.white,
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  child: CheckboxListTile(
+                                    value: student.isPresent.value,
+                                    onChanged: (value) {
+                                      student.isPresent.value = value ?? false;
+                                    },
+                                    activeColor: Colors.blue,
+                                    controlAffinity:
+                                        ListTileControlAffinity.trailing,
+                                    secondary: CircleAvatar(
+                                      backgroundColor: Colors.blue,
+                                      child: Text(
+                                        student.studentName
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      student.studentName,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "ID : ${student.studentId}",
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+              ),
+              const SizedBox(height: 15),
+
+              /// Save Button
               SizedBox(
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white, // Icon & text color
-                    minimumSize: const Size(double.infinity, 55),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    foregroundColor: Colors.white,
+                  ),
+                  icon: const Icon(Icons.save),
+                  label: const Text(
+                    "Save Attendance",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  icon: const Icon(Icons.qr_code_scanner),
-                  label: const Text(
-                    "Scan Student QR",
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  onPressed: controller.scanStudent,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white, // Icon & text color
-                    minimumSize: const Size(double.infinity, 55),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.image),
-                  label: const Text(
-                    "Upload QR Image",
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  onPressed: controller.uploadQr,
-                ),
-              ),
-
-              /// Upload QR
-
-              const SizedBox(height: 25),
-
-              /// Today's Attendance
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Today's Attendance",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              Card(
-                elevation: 1,
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          const Text(
-                            "Present",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "${controller.presentCount.value}",
-                            style: const TextStyle(
-                              fontSize: 28,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 60,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                      Column(
-                        children: [
-                          const Text(
-                            "Prayer",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            controller.selectedPrayer.value,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Recent Attendance",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Card(
-                elevation: 1,
-                color: Colors.white,
-                child: SizedBox(
-                  height: 250,
-                  child: controller.recentStudents.isEmpty
-                      ? const Center(
-                          child: Text("No attendance recorded"),
-                        )
-                      : ListView.builder(
-                          itemCount: controller.recentStudents.length,
-                          itemBuilder: (_, index) {
-                            final student = controller.recentStudents[index];
-
-                            return ListTile(
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.person),
-                              ),
-                              title: Text(student.studentName),
-                              subtitle: Text(student.studentId),
-                              trailing: const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
-                            );
-                          },
-                        ),
+                  onPressed: controller.saveAttendance,
                 ),
               ),
             ],

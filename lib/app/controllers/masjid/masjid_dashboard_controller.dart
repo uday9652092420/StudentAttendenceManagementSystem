@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:my_new_app/app/models/masjid/masjid_attendance_repository.dart';
+import 'package:my_new_app/app/models/masjid/studentmodel.dart';
 
 class RecentStudent {
   final String studentId;
@@ -12,6 +15,9 @@ class RecentStudent {
 }
 
 class MasjidDashboardController extends GetxController {
+  final MasjidRepository repository = MasjidRepository();
+  RxBool isLoading = false.obs;
+
   /// Date
   RxString currentDate = "".obs;
 
@@ -20,6 +26,12 @@ class MasjidDashboardController extends GetxController {
 
   /// Prayer
   RxString selectedPrayer = "Fajr".obs;
+
+  final searchController = TextEditingController();
+
+  RxList<MasjidStudentModel> students = <MasjidStudentModel>[].obs;
+
+  RxList<MasjidStudentModel> filteredStudents = <MasjidStudentModel>[].obs;
 
   final List<String> prayers = [
     "Fajr",
@@ -42,10 +54,7 @@ class MasjidDashboardController extends GetxController {
     loadDateTime();
     autoPrayer();
 
-    // Dummy data
-    presentCount.value = 0;
-
-    recentStudents.assignAll([]);
+    getStudents();
   }
 
   void loadDateTime() {
@@ -72,15 +81,99 @@ class MasjidDashboardController extends GetxController {
     }
   }
 
-  void scanStudent() {
-    // TODO
+  Future<void> getStudents() async {
+    try {
+      isLoading.value = true;
+
+      final response = await repository.getStudents();
+
+      if (response != null && response.statusCode == 200) {
+        final List data = response.data["data"];
+
+        students.assignAll(
+          data.map((e) {
+            final student = MasjidStudentModel.fromJson(e);
+
+            // Select all students by default
+            student.isPresent.value = true;
+
+            return student;
+          }).toList(),
+        );
+
+        filteredStudents.assignAll(students);
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to load students",
+      );
+      print(e);
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void uploadQr() {
-    // TODO
+  void searchStudent(String value) {
+    if (value.isEmpty) {
+      filteredStudents.assignAll(students);
+      return;
+    }
+
+    filteredStudents.assignAll(
+      students.where(
+        (e) =>
+            e.studentName.toLowerCase().contains(value.toLowerCase()) ||
+            e.studentId.toLowerCase().contains(value.toLowerCase()),
+      ),
+    );
   }
 
-  void openStudentSearch() {
-    // TODO
+  Future<void> saveAttendance() async {
+    final selected = students.where((e) => e.isPresent.value).toList();
+
+    if (selected.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Select at least one student",
+      );
+      return;
+    }
+
+    final body = {
+      "attendanceDate": DateFormat("yyyy-MM-dd").format(DateTime.now()),
+      "attendanceTime": currentTime.value,
+      "prayerType": selectedPrayer.value,
+      "students": selected
+          .map(
+            (e) => {
+              "studentId": e.studentId,
+              "studentName": e.studentName,
+            },
+          )
+          .toList(),
+    };
+
+    final response = await repository.saveMasjidAttendance(body);
+
+    if (response != null &&
+        (response.statusCode == 200 || response.statusCode == 201)) {
+      Get.snackbar(
+        "Success",
+        "Attendance Saved",
+      );
+
+      for (var s in students) {
+        s.isPresent.value = false;
+      }
+    }
   }
+
+  // void scanStudent() {
+  //   // TODO
+  // }
+
+  // void uploadQr() {
+  //   // TODO
+  // }
 }
