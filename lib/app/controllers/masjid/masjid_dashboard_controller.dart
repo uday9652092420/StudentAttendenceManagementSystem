@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:my_new_app/app/models/masjid/masjid_attendance_repository.dart';
+
 import 'package:my_new_app/app/models/masjid/studentmodel.dart';
+import 'package:my_new_app/app/repositories/masjidattendance/masjid_attendance_repository.dart';
 
 class RecentStudent {
   final String studentId;
