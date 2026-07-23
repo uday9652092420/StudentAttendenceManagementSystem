@@ -118,6 +118,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                     .toList(),
                 onChanged: (value) {
                   controller.selectedPrayer.value = value!;
+                  controller.loadAttendance();
                 },
               ),
 
@@ -169,9 +170,12 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: CheckboxListTile(
                                     value: student.isPresent.value,
-                                    onChanged: (value) {
-                                      student.isPresent.value = value ?? false;
-                                    },
+                                    onChanged: controller.attendanceTaken.value
+                                        ? null
+                                        : (value) {
+                                            student.isPresent.value =
+                                                value ?? false;
+                                          },
                                     activeColor: Colors.blue,
                                     controlAffinity:
                                         ListTileControlAffinity.trailing,
@@ -205,26 +209,31 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
               ),
               const SizedBox(height: 15),
 
-              /// Save Button
               SizedBox(
                 width: double.infinity,
                 height: 55,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                  icon: const Icon(Icons.save),
-                  label: const Text(
-                    "Save Attendance",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                child: Obx(
+                  () => ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
                     ),
+                    icon: const Icon(Icons.save),
+                    label: Text(
+                      controller.attendanceTaken.value
+                          ? "Attendance Taken"
+                          : "Save Attendance",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: controller.attendanceTaken.value
+                        ? null
+                        : controller.saveAttendance,
                   ),
-                  onPressed: controller.saveAttendance,
                 ),
-              ),
+              )
             ],
           ),
         ),

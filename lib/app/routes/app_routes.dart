@@ -19,4 +19,5 @@ abstract class Routes {
   // Add this
   static const kitchenDashboard = "/kitchen-dashboard";
   static const masjidDashboard = "/masjid-dashboard";
+  static const sponsorDashboard = "/sponsor-dashboard";
 }

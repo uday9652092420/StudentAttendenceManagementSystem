@@ -23,4 +23,5 @@ class EndPoints {
   static const getStudents = "students/master";
 
   static const saveMasjidAttendance = "masjid-attendance";
+  static const loadMasjidAttendance = "masjid-attendance/load";
 }

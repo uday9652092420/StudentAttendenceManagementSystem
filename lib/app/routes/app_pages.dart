@@ -5,6 +5,7 @@ import 'package:my_new_app/app/bindings/kitchen/meal_checkin_binding.dart';
 import 'package:my_new_app/app/bindings/masjid/masjid_attendance_dashboardbinding.dart';
 import 'package:my_new_app/app/bindings/security/add_movement_binding.dart';
 import 'package:my_new_app/app/bindings/security/security_dashboard_binding.dart';
+import 'package:my_new_app/app/bindings/sponsor/sponsor_dashboard_binding.dart';
 import 'package:my_new_app/app/bindings/warden/take_attendance_binding.dart';
 import 'package:my_new_app/app/bindings/warden/warden_attendance_dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
@@ -12,6 +13,7 @@ import 'package:my_new_app/app/views/kitchen/kitchen_dashboard_view.dart';
 import 'package:my_new_app/app/views/kitchen/meal_checkin_view.dart';
 import 'package:my_new_app/app/views/masjid/masjid_attendance_dashboard_view.dart';
 import 'package:my_new_app/app/views/security/security_dashboard.dart';
+import 'package:my_new_app/app/views/sponsor/sponsor_dashboard_view.dart';
 import 'package:my_new_app/app/views/wardenattendance/take_attendance_view.dart';
 import 'package:my_new_app/app/views/wardenattendance/warden_attendance_dashboard_view.dart';
 
@@ -103,6 +105,11 @@ class AppPages {
       name: Routes.mealCheckin,
       page: () => const MealCheckinView(),
       binding: MealCheckinBinding(),
+    ),
+    GetPage(
+      name: Routes.sponsorDashboard,
+      page: () => const SponsorDashboardView(),
+      binding: SponsorDashboardBinding(),
     ),
   ];
 }

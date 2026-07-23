@@ -3,6 +3,15 @@ import 'package:my_new_app/app/services/api_service.dart';
 import 'package:my_new_app/app/services/endpoints.dart';
 
 class MasjidRepository {
+  Future<Response?> loadMasjidAttendance({
+    required String date,
+    required String prayerType,
+  }) async {
+    return await ApiService.get(
+      "${EndPoints.loadMasjidAttendance}?date=$date&prayerType=$prayerType",
+    );
+  }
+
   Future<Response?> getStudents() async {
     return await ApiService.get(
       EndPoints.getStudents,

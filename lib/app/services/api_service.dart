@@ -50,9 +50,11 @@ class ApiService {
       //SANDEEP CAHNGE FOR DYNAMIC
       // const accessToken =
       //     "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiS0lSQU4sICBTQUVFRCIsIkFwcE1Vc2VySWQiOiI3IiwiRmlsZU5vIjoiMjgxNjY1IiwiTW9iaWxlIjoiMDU2ODc0NzcyMCIsIlBhdGllbnRNYXN0ZXJJZCI6IjE5NTI3MiIsIlNCVUlkIjoiMSIsIkxhbmciOiJlbiIsImV4cCI6MTc0MjkwOTU2MiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNDMiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDM0MyJ9.xXUT51cDU_PqSvMZhDchIVGVJfw9YJ5dbtLU75wVCEI";
-      final accessToken = await FlutterSecureStore().getSingleValue(
+      final accessToken = await SharedPrefsHelper.getString(
         SharedPrefsHelper.accessToken,
       );
+
+      print("TOKEN FROM PREFS => $accessToken");
       // final refreshToken = await FlutterSecureStore().getSingleValue(Storage.refreshToken);
 
       String? authToken = accessToken;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
+import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/models/masjid/studentmodel.dart';
 import 'package:my_new_app/app/repositories/masjidattendance/masjid_attendance_repository.dart';
 
@@ -16,13 +16,15 @@ class RecentStudent {
 }
 
 class MasjidDashboardController extends GetxController {
+  RxString loggedUserId = "".obs;
+
   final MasjidRepository repository = MasjidRepository();
+
   RxBool isLoading = false.obs;
+  RxBool attendanceTaken = false.obs;
 
-  /// Date
+  /// Date & Time
   RxString currentDate = "".obs;
-
-  /// Time
   RxString currentTime = "".obs;
 
   /// Prayer
@@ -31,7 +33,6 @@ class MasjidDashboardController extends GetxController {
   final searchController = TextEditingController();
 
   RxList<MasjidStudentModel> students = <MasjidStudentModel>[].obs;
-
   RxList<MasjidStudentModel> filteredStudents = <MasjidStudentModel>[].obs;
 
   final List<String> prayers = [
@@ -42,20 +43,112 @@ class MasjidDashboardController extends GetxController {
     "Isha",
   ];
 
-  /// Today's Present Count
   RxInt presentCount = 0.obs;
 
-  /// Recent Students
   RxList<RecentStudent> recentStudents = <RecentStudent>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    init();
+  }
+
+  Future<void> init() async {
+    await loadLoggedUser();
 
     loadDateTime();
     autoPrayer();
 
-    getStudents();
+    await loadAttendance();
+  }
+
+  Future<void> loadLoggedUser() async {
+    loggedUserId.value = await SharedPrefsHelper.getString("userId");
+
+    print("Logged User ID : ${loggedUserId.value}");
+  }
+
+  ///-------------------------------------------------------
+  /// CHECK ATTENDANCE STATUS
+  ///-------------------------------------------------------
+  Future<void> loadAttendance() async {
+    try {
+      isLoading.value = true;
+
+      final response = await repository.loadMasjidAttendance(
+        date: DateFormat("yyyy-MM-dd").format(DateTime.now()),
+        prayerType: selectedPrayer.value,
+      );
+
+      if (response != null && response.statusCode == 200) {
+        print("LOAD RESPONSE => ${response.data}");
+
+        if (response.data["attendanceTaken"] == true) {
+          attendanceTaken.value = true;
+
+          students.clear();
+          filteredStudents.clear();
+
+          Get.snackbar(
+            "Attendance",
+            response.data["message"] ?? "Attendance already taken",
+          );
+        } else {
+          attendanceTaken.value = false;
+
+          await getStudents();
+        }
+      }
+    } catch (e) {
+      print("LOAD ATTENDANCE ERROR => $e");
+
+      Get.snackbar(
+        "Error",
+        "Failed to check attendance status",
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  ///-------------------------------------------------------
+  /// LOAD ALL STUDENTS
+  ///-------------------------------------------------------
+  Future<void> getStudents() async {
+    try {
+      isLoading.value = true;
+
+      final response = await repository.getStudents();
+
+      print("STUDENT RESPONSE => ${response?.data}");
+
+      if (response != null && response.statusCode == 200) {
+        final List data = response.data["data"] ?? [];
+
+        students.assignAll(
+          data.map((e) {
+            final student = MasjidStudentModel.fromJson(e);
+
+            student.isPresent.value = true;
+
+            return student;
+          }).toList(),
+        );
+
+        filteredStudents.assignAll(students);
+
+        print("TOTAL STUDENTS LOADED => ${students.length}");
+      }
+    } catch (e) {
+      print("GET STUDENTS ERROR => $e");
+
+      Get.snackbar(
+        "Error",
+        "Failed to load students",
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void loadDateTime() {
@@ -79,39 +172,6 @@ class MasjidDashboardController extends GetxController {
       selectedPrayer.value = "Maghrib";
     } else {
       selectedPrayer.value = "Isha";
-    }
-  }
-
-  Future<void> getStudents() async {
-    try {
-      isLoading.value = true;
-
-      final response = await repository.getStudents();
-
-      if (response != null && response.statusCode == 200) {
-        final List data = response.data["data"];
-
-        students.assignAll(
-          data.map((e) {
-            final student = MasjidStudentModel.fromJson(e);
-
-            // Select all students by default
-            student.isPresent.value = true;
-
-            return student;
-          }).toList(),
-        );
-
-        filteredStudents.assignAll(students);
-      }
-    } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Failed to load students",
-      );
-      print(e);
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -143,13 +203,14 @@ class MasjidDashboardController extends GetxController {
 
     final body = {
       "attendanceDate": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-      "attendanceTime": currentTime.value,
       "prayerType": selectedPrayer.value,
-      "students": selected
+      "takenByUserId": loggedUserId.value,
+      "students": students
           .map(
             (e) => {
               "studentId": e.studentId,
               "studentName": e.studentName,
+              "attendanceStatus": e.isPresent.value ? "Present" : "Absent",
             },
           )
           .toList(),
@@ -159,22 +220,18 @@ class MasjidDashboardController extends GetxController {
 
     if (response != null &&
         (response.statusCode == 200 || response.statusCode == 201)) {
+      attendanceTaken.value = true;
+
       Get.snackbar(
         "Success",
-        "Attendance Saved",
+        "Attendance Saved Successfully",
       );
-
-      for (var s in students) {
-        s.isPresent.value = false;
-      }
     }
   }
 
-  // void scanStudent() {
-  //   // TODO
-  // }
-
-  // void uploadQr() {
-  //   // TODO
-  // }
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
+  }
 }
