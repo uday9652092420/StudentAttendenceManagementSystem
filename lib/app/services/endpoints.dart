@@ -11,17 +11,20 @@ class EndPoints {
   // Get/Update Movement
   static const updateMovement = 'hostel-in-out-movements';
 
+  // Teacher Attendance
   static const classroomdetails = "attendance/periodwise/context/";
   static const classroomstudentsdetails = "attendance/periodwise/students/";
+  static const saveAttendance = "attendance/periodwise";
 
+  // Hostel
   static const hostelblocksstructure = "hostel-rooms/blocks-structure";
   static const hostelFloorAttendance =
       "hostel-night-attendance/session/by-filter";
-
   static const floorwisestudents = "hostel-night-attendance/session/";
-  static const saveAttendance = "attendance/periodwise";
+
+  // Students
   static const getStudents = "students/master";
 
+  // Masjid Attendance
   static const saveMasjidAttendance = "masjid-attendance";
-  static const loadMasjidAttendance = "masjid-attendance/load";
 }

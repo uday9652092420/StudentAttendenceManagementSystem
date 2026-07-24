@@ -58,8 +58,8 @@ class MasjidDashboardController extends GetxController {
 
     loadDateTime();
     autoPrayer();
-
-    await loadAttendance();
+    await checkAttendance();
+    // await loadAttendance();
   }
 
   Future<void> loadLoggedUser() async {
@@ -68,48 +68,91 @@ class MasjidDashboardController extends GetxController {
     print("Logged User ID : ${loggedUserId.value}");
   }
 
-  ///-------------------------------------------------------
-  /// CHECK ATTENDANCE STATUS
-  ///-------------------------------------------------------
-  Future<void> loadAttendance() async {
+  Future<void> checkAttendance() async {
     try {
       isLoading.value = true;
 
-      final response = await repository.loadMasjidAttendance(
-        date: DateFormat("yyyy-MM-dd").format(DateTime.now()),
-        prayerType: selectedPrayer.value,
-      );
+      students.clear();
+      filteredStudents.clear();
+
+      final date = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+      final response = await repository.getAttendanceByDate(date);
 
       if (response != null && response.statusCode == 200) {
-        print("LOAD RESPONSE => ${response.data}");
+        final List sessions = response.data ?? [];
 
-        if (response.data["attendanceTaken"] == true) {
-          attendanceTaken.value = true;
+        final alreadyTaken = sessions.any(
+          (e) =>
+              e["prayer_type"].toString().toLowerCase() ==
+              selectedPrayer.value.toLowerCase(),
+        );
 
-          students.clear();
-          filteredStudents.clear();
+        attendanceTaken.value = alreadyTaken;
 
+        if (!alreadyTaken) {
+          await getStudents();
+        } else {
           Get.snackbar(
             "Attendance",
-            response.data["message"] ?? "Attendance already taken",
+            "${selectedPrayer.value} attendance already taken.",
           );
-        } else {
-          attendanceTaken.value = false;
-
-          await getStudents();
         }
       }
     } catch (e) {
-      print("LOAD ATTENDANCE ERROR => $e");
+      print("CHECK ATTENDANCE ERROR => $e");
 
       Get.snackbar(
         "Error",
-        "Failed to check attendance status",
+        "Unable to check attendance.",
       );
     } finally {
       isLoading.value = false;
     }
   }
+
+  ///-------------------------------------------------------
+  // /// CHECK ATTENDANCE STATUS
+  // ///-------------------------------------------------------
+  // Future<void> loadAttendance() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     final response = await repository.loadMasjidAttendance(
+  //       date: DateFormat("yyyy-MM-dd").format(DateTime.now()),
+  //       prayerType: selectedPrayer.value,
+  //     );
+
+  //     if (response != null && response.statusCode == 200) {
+  //       print("LOAD RESPONSE => ${response.data}");
+
+  //       if (response.data["attendanceTaken"] == true) {
+  //         attendanceTaken.value = true;
+
+  //         students.clear();
+  //         filteredStudents.clear();
+
+  //         Get.snackbar(
+  //           "Attendance",
+  //           response.data["message"] ?? "Attendance already taken",
+  //         );
+  //       } else {
+  //         attendanceTaken.value = false;
+
+  //         await getStudents();
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("LOAD ATTENDANCE ERROR => $e");
+
+  //     Get.snackbar(
+  //       "Error",
+  //       "Failed to check attendance status",
+  //     );
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   ///-------------------------------------------------------
   /// LOAD ALL STUDENTS
@@ -220,12 +263,12 @@ class MasjidDashboardController extends GetxController {
 
     if (response != null &&
         (response.statusCode == 200 || response.statusCode == 201)) {
-      attendanceTaken.value = true;
-
       Get.snackbar(
         "Success",
         "Attendance Saved Successfully",
       );
+
+      await checkAttendance();
     }
   }
 

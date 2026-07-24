@@ -118,7 +118,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                     .toList(),
                 onChanged: (value) {
                   controller.selectedPrayer.value = value!;
-                  controller.loadAttendance();
+                  controller.checkAttendance();
                 },
               ),
 

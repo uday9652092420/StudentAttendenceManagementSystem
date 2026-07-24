@@ -13,8 +13,8 @@ class MasjidStudentModel {
 
   factory MasjidStudentModel.fromJson(Map<String, dynamic> json) {
     final model = MasjidStudentModel(
-      studentId: json["studentId"] ?? "",
-      studentName: json["studentName"] ?? "",
+      studentId: (json["id"] ?? "").toString(),
+      studentName: (json["studentName"] ?? "").toString(),
     );
 
     model.isPresent.value = json["isPresent"] ?? true;
