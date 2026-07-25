@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:my_new_app/app/repositories/kitchen/kitchen_repository.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
+
 import 'package:my_new_app/app/models/kitchen/meal_scan_model.dart';
 
 import 'package:my_new_app/app/routes/app_routes.dart';
@@ -35,6 +36,8 @@ class KitchenDashboardController extends GetxController {
 
   /// Scanner
   final MobileScannerController scannerController = MobileScannerController();
+
+  final KitchenRepository repository = KitchenRepository();
 
   // Future<void> loadDashboard() async {
   //   await Future.wait([
@@ -67,22 +70,64 @@ class KitchenDashboardController extends GetxController {
 
   Future<void> handleScannedData(String qrCode) async {
     try {
-      final data = jsonDecode(qrCode);
+      if (isLoading.value) return;
+
+      isLoading.value = true;
+
+      String studentId = "";
+
+      // QR contains JSON
+      if (qrCode.trim().startsWith("{")) {
+        final data = jsonDecode(qrCode);
+
+        studentId = data["studentId"]?.toString() ?? "";
+      } else {
+        // QR contains only ID
+        studentId = qrCode.trim();
+      }
+
+      if (studentId.isEmpty) {
+        errorToast("Invalid QR Code");
+        return;
+      }
+
+      print("STUDENT ID => $studentId");
+
+      final response = await repository.getStudentByQr(studentId);
+
+      print(response?.data);
+
+      if (response == null || response.statusCode != 200) {
+        errorToast("Student not found");
+        return;
+      }
+
+      if (response.data["success"] != true) {
+        errorToast("Student not found");
+        return;
+      }
+
+      final student = response.data["data"];
 
       Get.toNamed(
         Routes.mealCheckin,
         arguments: {
-          "studentId": data["studentId"],
-          "studentName": data["studentName"],
-          "courseName": data["courseName"],
-          "className": data["className"],
+          "studentId": student["studentId"]?.toString() ?? "",
+          "studentCode": student["studentCode"]?.toString() ?? "",
+          "studentName": student["studentName"] ?? "",
+          "courseName": student["courseName"] ?? "",
+          "className": student["className"] ?? "",
           "meal": selectedMeal.value,
         },
       );
     } catch (e) {
-      errorToast("Invalid QR Code");
+      print(e);
+      errorToast("Unable to load student details");
+    } finally {
+      isLoading.value = false;
     }
   }
+
   // Future<void> handleScannedData(String qrCode) async {
   //   print("========== QR SCANNED ==========");
   //   print(qrCode);

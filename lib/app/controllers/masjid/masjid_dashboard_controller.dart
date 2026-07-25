@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/models/masjid/studentmodel.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/repositories/masjidattendance/masjid_attendance_repository.dart';
 
 class RecentStudent {
@@ -82,30 +83,23 @@ class MasjidDashboardController extends GetxController {
       if (response != null && response.statusCode == 200) {
         final List sessions = response.data ?? [];
 
-        final alreadyTaken = sessions.any(
+        attendanceTaken.value = sessions.any(
           (e) =>
               e["prayer_type"].toString().toLowerCase() ==
               selectedPrayer.value.toLowerCase(),
         );
 
-        attendanceTaken.value = alreadyTaken;
-
-        if (!alreadyTaken) {
-          await getStudents();
+        if (attendanceTaken.value) {
+          errorToast("${selectedPrayer.value} attendance already taken.");
         } else {
-          Get.snackbar(
-            "Attendance",
-            "${selectedPrayer.value} attendance already taken.",
-          );
+          await getStudents();
         }
+      } else {
+        errorToast("Unable to check attendance.");
       }
     } catch (e) {
-      print("CHECK ATTENDANCE ERROR => $e");
-
-      Get.snackbar(
-        "Error",
-        "Unable to check attendance.",
-      );
+      print(e);
+      errorToast("Unable to check attendance.");
     } finally {
       isLoading.value = false;
     }
@@ -163,32 +157,24 @@ class MasjidDashboardController extends GetxController {
 
       final response = await repository.getStudents();
 
-      print("STUDENT RESPONSE => ${response?.data}");
-
       if (response != null && response.statusCode == 200) {
         final List data = response.data["data"] ?? [];
 
         students.assignAll(
           data.map((e) {
             final student = MasjidStudentModel.fromJson(e);
-
             student.isPresent.value = true;
-
             return student;
           }).toList(),
         );
 
         filteredStudents.assignAll(students);
-
-        print("TOTAL STUDENTS LOADED => ${students.length}");
+      } else {
+        errorToast("Failed to load students.");
       }
     } catch (e) {
-      print("GET STUDENTS ERROR => $e");
-
-      Get.snackbar(
-        "Error",
-        "Failed to load students",
-      );
+      print(e);
+      errorToast("Failed to load students.");
     } finally {
       isLoading.value = false;
     }
@@ -234,41 +220,40 @@ class MasjidDashboardController extends GetxController {
   }
 
   Future<void> saveAttendance() async {
-    final selected = students.where((e) => e.isPresent.value).toList();
-
-    if (selected.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Select at least one student",
-      );
+    if (students.where((e) => e.isPresent.value).isEmpty) {
+      errorToast("Select at least one student.");
       return;
     }
 
-    final body = {
-      "attendanceDate": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-      "prayerType": selectedPrayer.value,
-      "takenByUserId": loggedUserId.value,
-      "students": students
-          .map(
-            (e) => {
-              "studentId": e.studentId,
-              "studentName": e.studentName,
-              "attendanceStatus": e.isPresent.value ? "Present" : "Absent",
-            },
-          )
-          .toList(),
-    };
+    try {
+      final body = {
+        "attendanceDate": DateFormat("yyyy-MM-dd").format(DateTime.now()),
+        "prayerType": selectedPrayer.value,
+        "takenByUserId": loggedUserId.value,
+        "students": students
+            .map(
+              (e) => {
+                "studentId": e.studentId,
+                "studentName": e.studentName,
+                "attendanceStatus": e.isPresent.value ? "Present" : "Absent",
+              },
+            )
+            .toList(),
+      };
 
-    final response = await repository.saveMasjidAttendance(body);
+      final response = await repository.saveMasjidAttendance(body);
 
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Get.snackbar(
-        "Success",
-        "Attendance Saved Successfully",
-      );
+      if (response != null &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
+        successToast("Attendance Saved Successfully");
 
-      await checkAttendance();
+        await checkAttendance();
+      } else {
+        errorToast("Unable to save attendance.");
+      }
+    } catch (e) {
+      print(e);
+      errorToast("Something went wrong.");
     }
   }
 

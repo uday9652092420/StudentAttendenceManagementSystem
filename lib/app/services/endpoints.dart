@@ -27,4 +27,7 @@ class EndPoints {
 
   // Masjid Attendance
   static const saveMasjidAttendance = "masjid-attendance";
+
+  // Kitchen
+  static const kitchenStudentByQr = "kitchen-meal-forecast/qr/student/";
 }

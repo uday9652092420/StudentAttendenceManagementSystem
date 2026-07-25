@@ -60,6 +60,12 @@ class MealCheckinView extends GetView<MealCheckinController> {
                   ),
                   const SizedBox(height: 15),
                   _textField(
+                    "Student Code",
+                    controller.studentCodeController,
+                    Icons.qr_code,
+                  ),
+                  const SizedBox(height: 15),
+                  _textField(
                     "Student Name",
                     controller.studentNameController,
                     Icons.person,

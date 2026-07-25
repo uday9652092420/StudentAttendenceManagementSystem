@@ -10,6 +10,7 @@ class MealCheckinController extends GetxController {
   final studentNameController = TextEditingController();
 
   final mealController = TextEditingController();
+  final studentCodeController = TextEditingController();
 
   final dateController = TextEditingController();
 
@@ -25,13 +26,18 @@ class MealCheckinController extends GetxController {
 
     final args = Get.arguments;
 
-    studentIdController.text = args["studentId"] ?? "";
+    studentIdController.text = args["studentId"]?.toString() ?? "";
+
+    studentCodeController.text = args["studentCode"]?.toString() ?? "";
+
     studentNameController.text = args["studentName"] ?? "";
 
     courseNameController.text = args["courseName"] ?? "";
+
     classNameController.text = args["className"] ?? "";
 
     mealController.text = args["meal"] ?? "";
+
     dateController.text = DateFormat("dd-MM-yyyy").format(DateTime.now());
 
     timeController.text = DateFormat("hh:mm a").format(DateTime.now());
