@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:my_new_app/app/services/api_service.dart';
+import 'package:my_new_app/app/services/endpoints.dart';
 
 class KitchenRepository {
   /// Today's Meal Counts
@@ -32,14 +33,11 @@ class KitchenRepository {
     return response as Response?;
   }
 
-  /// Get Student Details using QR Code
   Future<Response?> getStudentByQr(
-    String qrCode,
+    String studentId,
   ) async {
-    final response = await ApiService.get(
-      "meal-attendance/student/$qrCode",
+    return await ApiService.get(
+      "${EndPoints.kitchenStudentByQr}$studentId",
     );
-
-    return response as Response?;
   }
 }

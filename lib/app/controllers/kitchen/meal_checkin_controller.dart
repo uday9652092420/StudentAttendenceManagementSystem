@@ -13,10 +13,13 @@ class MealCheckinController extends GetxController {
   final classNameController = TextEditingController();
 
   final mealController = TextEditingController();
+  final studentCodeController = TextEditingController();
 
   final dateController = TextEditingController();
 
   final timeController = TextEditingController();
+  final courseNameController = TextEditingController();
+  final classNameController = TextEditingController();
 
   RxBool isSaving = false.obs;
 
@@ -26,9 +29,15 @@ class MealCheckinController extends GetxController {
 
     final args = Get.arguments;
 
-    studentIdController.text = args["studentId"] ?? "";
+    studentIdController.text = args["studentId"]?.toString() ?? "";
+
+    studentCodeController.text = args["studentCode"]?.toString() ?? "";
 
     studentNameController.text = args["studentName"] ?? "";
+    courseNameController.text = args["courseName"] ?? "";
+
+    classNameController.text = args["className"] ?? "";
+
     courseNameController.text = args["courseName"] ?? "";
 
     classNameController.text = args["className"] ?? "";
@@ -47,11 +56,12 @@ class MealCheckinController extends GetxController {
       final body = {
         "studentId": studentIdController.text,
         "studentName": studentNameController.text,
+        "courseName": courseNameController.text,
+        "className": classNameController.text,
         "mealType": mealController.text,
         "date": dateController.text,
         "time": timeController.text,
       };
-
       final response = await repository.saveMealAttendance(body);
 
       if (response != null &&

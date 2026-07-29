@@ -18,4 +18,6 @@ abstract class Routes {
   static const messDashboard = "/mess-dashboard_view";
   // Add this
   static const kitchenDashboard = "/kitchen-dashboard";
+  static const masjidDashboard = "/masjid-dashboard";
+  static const sponsorDashboard = "/sponsor-dashboard";
 }
