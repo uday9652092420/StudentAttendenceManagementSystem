@@ -18,8 +18,6 @@ class MealCheckinController extends GetxController {
   final dateController = TextEditingController();
 
   final timeController = TextEditingController();
-  final courseNameController = TextEditingController();
-  final classNameController = TextEditingController();
 
   RxBool isSaving = false.obs;
 
@@ -34,10 +32,6 @@ class MealCheckinController extends GetxController {
     studentCodeController.text = args["studentCode"]?.toString() ?? "";
 
     studentNameController.text = args["studentName"] ?? "";
-    courseNameController.text = args["courseName"] ?? "";
-
-    classNameController.text = args["className"] ?? "";
-
     courseNameController.text = args["courseName"] ?? "";
 
     classNameController.text = args["className"] ?? "";

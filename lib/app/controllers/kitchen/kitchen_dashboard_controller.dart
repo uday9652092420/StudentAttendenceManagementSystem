@@ -37,11 +37,8 @@ class KitchenDashboardController extends GetxController {
   /// Scanner
   final MobileScannerController scannerController = MobileScannerController();
 
-<<<<<<< HEAD
-=======
   final KitchenRepository repository = KitchenRepository();
 
->>>>>>> 412e3ad5cfd34256d2d9e4ad0a8355fdde34c1c6
   // Future<void> loadDashboard() async {
   //   await Future.wait([
   //     getMealCounts(),
@@ -115,18 +112,11 @@ class KitchenDashboardController extends GetxController {
       Get.toNamed(
         Routes.mealCheckin,
         arguments: {
-<<<<<<< HEAD
-          "studentId": data["studentId"] ?? "",
-          "studentName": data["studentName"] ?? "",
-          "courseName": data["courseName"] ?? "",
-          "className": data["className"] ?? "",
-=======
           "studentId": student["studentId"]?.toString() ?? "",
           "studentCode": student["studentCode"]?.toString() ?? "",
           "studentName": student["studentName"] ?? "",
           "courseName": student["courseName"] ?? "",
           "className": student["className"] ?? "",
->>>>>>> 412e3ad5cfd34256d2d9e4ad0a8355fdde34c1c6
           "meal": selectedMeal.value,
         },
       );

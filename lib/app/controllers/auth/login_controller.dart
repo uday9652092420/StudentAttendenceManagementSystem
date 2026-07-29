@@ -29,14 +29,7 @@ class LoginController extends GetxController {
         password: passwordController.text.trim(),
       );
 
-<<<<<<< HEAD
-      final response = await authRepository.postlogin(
-        request.toJson(),
-      );
-=======
       final response = await authRepository.postlogin(request.toJson());
->>>>>>> 412e3ad5cfd34256d2d9e4ad0a8355fdde34c1c6
-
       if (response.statusCode == 200) {
         final data = response.data;
 
