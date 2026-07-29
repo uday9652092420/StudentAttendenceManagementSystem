@@ -64,6 +64,18 @@ class MealCheckinView extends GetView<MealCheckinController> {
                     controller.studentNameController,
                     Icons.person,
                   ),
+                  const SizedBox(height: 15),
+                  _textField(
+                    "Course Name",
+                    controller.courseNameController,
+                    Icons.menu_book,
+                  ),
+                  const SizedBox(height: 15),
+                  _textField(
+                    "Class Name",
+                    controller.classNameController,
+                    Icons.class_,
+                  ),
                   const SizedBox(height: 30),
                   SizedBox(
                     width: double.infinity,

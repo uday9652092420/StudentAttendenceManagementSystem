@@ -343,8 +343,8 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                   child: Column(
                     children: [
                       /// HEADER
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Expanded(
                             flex: 2,
                             child: Text(

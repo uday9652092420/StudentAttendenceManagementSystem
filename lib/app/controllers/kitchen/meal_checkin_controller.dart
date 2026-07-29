@@ -9,6 +9,9 @@ class MealCheckinController extends GetxController {
 
   final studentNameController = TextEditingController();
 
+  final courseNameController = TextEditingController();
+  final classNameController = TextEditingController();
+
   final mealController = TextEditingController();
 
   final dateController = TextEditingController();
@@ -26,6 +29,9 @@ class MealCheckinController extends GetxController {
     studentIdController.text = args["studentId"] ?? "";
 
     studentNameController.text = args["studentName"] ?? "";
+    courseNameController.text = args["courseName"] ?? "";
+
+    classNameController.text = args["className"] ?? "";
 
     mealController.text = args["meal"] ?? "";
 

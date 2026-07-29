@@ -152,7 +152,7 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
 
               /// Meal Dropdown
               DropdownButtonFormField<String>(
-                value: controller.selectedMeal.value,
+                initialValue: controller.selectedMeal.value,
                 decoration: InputDecoration(
                   labelText: "Meal Type",
                   border: OutlineInputBorder(

@@ -93,8 +93,8 @@ class AddMovementView extends GetView<AddMovementController> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: Center(
-          child: const Text(
+        title: const Center(
+          child: Text(
             "Security Check Movement",
             style: TextStyle(
               color: Colors.white,
@@ -465,8 +465,8 @@ class AddMovementView extends GetView<AddMovementController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: const [
+                              const Row(
+                                children: [
                                   Icon(Icons.note_alt_outlined,
                                       color: Colors.blue),
                                   SizedBox(width: 8),
