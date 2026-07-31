@@ -150,26 +150,29 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
 
               const SizedBox(height: 25),
 
-              /// Meal Dropdown
-              DropdownButtonFormField<String>(
-                initialValue: controller.selectedMeal.value,
-                decoration: InputDecoration(
-                  labelText: "Meal Type",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: controller.selectedMeal.value,
+                  decoration: InputDecoration(
+                    labelText: "Meal Type",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  items: controller.mealTypes
+                      .map(
+                        (e) => DropdownMenuItem<String>(
+                          value: e,
+                          child: Text(e),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.selectedMeal.value = value;
+                    }
+                  },
                 ),
-                items: controller.mealTypes
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  controller.selectedMeal.value = value!;
-                },
               ),
 
               const SizedBox(height: 25),
@@ -241,6 +244,7 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                         final student = controller.recentScans[index];
 
                         return Card(
+                          color: Colors.white,
                           elevation: 3,
                           margin: const EdgeInsets.only(bottom: 10),
                           shape: RoundedRectangleBorder(
@@ -268,7 +272,9 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                               ],
                             ),
                             trailing: Text(
-                              student.scannedTime,
+                              DateFormat("dd MMM yyyy hh:mm a").format(
+                                DateTime.parse(student.scannedTime).toLocal(),
+                              ),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

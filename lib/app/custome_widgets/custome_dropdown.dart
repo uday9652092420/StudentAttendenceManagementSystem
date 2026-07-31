@@ -125,11 +125,13 @@ class CustomDropdown extends StatelessWidget {
                       borderRadius: const BorderRadius.all(Radius.circular(25)),
                     ),
                     errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: customTheme.errorColor, width: 1),
+                      borderSide:
+                          BorderSide(color: customTheme.errorColor, width: 1),
                       borderRadius: const BorderRadius.all(Radius.circular(25)),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: customTheme.errorColor, width: 1),
+                      borderSide:
+                          BorderSide(color: customTheme.errorColor, width: 1),
                       borderRadius: const BorderRadius.all(Radius.circular(25)),
                     ),
                   ),

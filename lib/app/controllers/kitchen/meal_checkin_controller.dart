@@ -5,18 +5,14 @@ import 'package:my_new_app/app/repositories/kitchen/kitchen_repository.dart';
 
 class MealCheckinController extends GetxController {
   final KitchenRepository repository = KitchenRepository();
+
   final studentIdController = TextEditingController();
-
+  final studentCodeController = TextEditingController();
   final studentNameController = TextEditingController();
-
   final courseNameController = TextEditingController();
   final classNameController = TextEditingController();
-
   final mealController = TextEditingController();
-  final studentCodeController = TextEditingController();
-
   final dateController = TextEditingController();
-
   final timeController = TextEditingController();
 
   RxBool isSaving = false.obs;
@@ -25,22 +21,26 @@ class MealCheckinController extends GetxController {
   void onInit() {
     super.onInit();
 
-    final args = Get.arguments;
+    final args = Get.arguments ?? {};
 
     studentIdController.text = args["studentId"]?.toString() ?? "";
 
     studentCodeController.text = args["studentCode"]?.toString() ?? "";
 
-    studentNameController.text = args["studentName"] ?? "";
-    courseNameController.text = args["courseName"] ?? "";
+    studentNameController.text = args["studentName"]?.toString() ?? "";
 
-    classNameController.text = args["className"] ?? "";
+    courseNameController.text = args["courseName"]?.toString() ?? "";
 
-    mealController.text = args["meal"] ?? "";
+    classNameController.text = args["className"]?.toString() ?? "";
 
-    dateController.text = DateFormat("dd-MM-yyyy").format(DateTime.now());
+    mealController.text = args["meal"]?.toString() ?? "";
 
-    timeController.text = DateFormat("hh:mm a").format(DateTime.now());
+    // Backend expects yyyy-MM-dd
+    dateController.text = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+    // Backend accepts this format
+    timeController.text = DateFormat("HH:mm").format(DateTime.now());
+    print("Meal Type = ${mealController.text}");
   }
 
   Future<void> saveMeal() async {
@@ -48,21 +48,30 @@ class MealCheckinController extends GetxController {
       isSaving.value = true;
 
       final body = {
+        "currentDate": dateController.text,
+        "currentTime": timeController.text,
         "studentId": studentIdController.text,
+        "studentCode": studentCodeController.text,
         "studentName": studentNameController.text,
         "courseName": courseNameController.text,
         "className": classNameController.text,
-        "mealType": mealController.text,
-        "date": dateController.text,
-        "time": timeController.text,
+        "mealType": mealController.text.toLowerCase(),
+        "checkedInBy": "Kitchen Supervisor",
+        "source": "mobile",
       };
-      final response = await repository.saveMealAttendance(body);
 
+      print(body);
+
+      final response = await repository.saveMealAttendance(body);
       if (response != null &&
           (response.statusCode == 200 || response.statusCode == 201)) {
-        Get.snackbar("Success", "Meal Attendance Saved");
-
         Get.back(result: true);
+
+        Get.snackbar(
+          "Success",
+          response.data["message"] ?? "Meal Attendance Saved",
+          snackPosition: SnackPosition.BOTTOM,
+        );
       } else {
         Get.snackbar(
           "Error",
@@ -70,9 +79,26 @@ class MealCheckinController extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      Get.snackbar(
+        "Error",
+        e.toString(),
+      );
     } finally {
       isSaving.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    studentIdController.dispose();
+    studentCodeController.dispose();
+    studentNameController.dispose();
+    courseNameController.dispose();
+    classNameController.dispose();
+    mealController.dispose();
+    dateController.dispose();
+    timeController.dispose();
+
+    super.onClose();
   }
 }

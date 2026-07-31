@@ -39,6 +39,46 @@ class KitchenDashboardController extends GetxController {
 
   final KitchenRepository repository = KitchenRepository();
 
+  @override
+  void onInit() {
+    super.onInit();
+    loadDashboard();
+  }
+
+  Future<void> loadDashboard() async {
+    try {
+      isLoading.value = true;
+
+      final response = await repository.getDashboard();
+
+      print(response?.data);
+
+      if (response == null ||
+          response.statusCode != 200 ||
+          response.data["success"] != true) {
+        return;
+      }
+
+      final data = response.data;
+
+      final counts = data["counts"];
+
+      breakfastCount.value = int.tryParse(counts["breakfast"].toString()) ?? 0;
+
+      lunchCount.value = int.tryParse(counts["lunch"].toString()) ?? 0;
+
+      dinnerCount.value = int.tryParse(counts["dinner"].toString()) ?? 0;
+
+      recentScans.assignAll(
+        (data["recentScans"] as List)
+            .map((e) => MealScanModel.fromJson(e))
+            .toList(),
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // Future<void> loadDashboard() async {
   //   await Future.wait([
   //     getMealCounts(),
@@ -106,10 +146,9 @@ class KitchenDashboardController extends GetxController {
         errorToast("Student not found");
         return;
       }
-
       final student = response.data["data"];
 
-      Get.toNamed(
+      final result = await Get.toNamed(
         Routes.mealCheckin,
         arguments: {
           "studentId": student["studentId"]?.toString() ?? "",
@@ -120,6 +159,10 @@ class KitchenDashboardController extends GetxController {
           "meal": selectedMeal.value,
         },
       );
+
+      if (result == true) {
+        await loadDashboard();
+      }
     } catch (e) {
       print(e);
       errorToast("Unable to load student details");

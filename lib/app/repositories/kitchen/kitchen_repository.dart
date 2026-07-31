@@ -3,34 +3,37 @@ import 'package:my_new_app/app/services/api_service.dart';
 import 'package:my_new_app/app/services/endpoints.dart';
 
 class KitchenRepository {
-  /// Today's Meal Counts
-  Future<Response?> getTodayMealCount() async {
-    final response = await ApiService.get(
-      "kitchen-dashboard/today-count",
-    );
+  // /// Today's Meal Counts
+  // Future<Response?> getTodayMealCount() async {
+  //   final response = await ApiService.get(
+  //     "kitchen-dashboard/today-count",
+  //   );
 
-    return response as Response?;
+  //   return response as Response?;
+  // }
+
+  // /// Recent Scanned Students
+  // Future<Response?> getRecentScans() async {
+  //   final response = await ApiService.get(
+  //     "meal-attendance/recent",
+  //   );
+
+  //   return response as Response?;
+  // }
+
+  Future<Response?> getDashboard() async {
+    return await ApiService.get(
+      EndPoints.kitchenDashboard,
+    );
   }
 
-  /// Recent Scanned Students
-  Future<Response?> getRecentScans() async {
-    final response = await ApiService.get(
-      "meal-attendance/recent",
-    );
-
-    return response as Response?;
-  }
-
-  /// Save Meal Attendance
   Future<Response?> saveMealAttendance(
     Map<String, dynamic> body,
   ) async {
-    final response = await ApiService.post(
-      "meal-attendance",
+    return await ApiService.post(
+      "kitchen-meal-forecast/check-in",
       body,
     );
-
-    return response as Response?;
   }
 
   Future<Response?> getStudentByQr(
