@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/sponsor/sponsor_dashboard_response.dart';
 import 'package:my_new_app/app/models/sponsor/sponsor_student_model.dart';
 import 'package:my_new_app/app/repositories/sponsor/sponsordashboardrepository.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class SponsorDashboardController extends GetxController {
   final SponsorRepository repository = SponsorRepository();
@@ -63,16 +65,49 @@ class SponsorDashboardController extends GetxController {
   }
 
   void logout() {
-    Get.defaultDialog(
-      title: "Logout",
-      middleText: "Are you sure you want to logout?",
-      textConfirm: "Logout",
-      textCancel: "Cancel",
-      confirmTextColor: Get.theme.colorScheme.onPrimary,
-      onConfirm: () {
-        Get.back();
-        Get.offAllNamed(Routes.login);
-      },
+    _showLogoutDialog();
+  }
+
+  Future<void> _showLogoutDialog() async {
+    final result = await Get.dialog<bool>(
+      AlertDialog(
+        backgroundColor: AppColors.bgLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: const Text(
+          'Logout',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.black87),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.black87),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.blue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
     );
+
+    if (result == true) {
+      Get.offAllNamed(Routes.login);
+    }
   }
 }

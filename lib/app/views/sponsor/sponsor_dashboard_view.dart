@@ -60,7 +60,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -132,7 +132,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                         'No Sponsored Students Found',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -200,8 +200,8 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                                                   : student.courseName,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: Colors.grey,
+                                              style: TextStyle(
+                                                color: Colors.grey.shade700,
                                               ),
                                             ),
                                           ],
@@ -266,148 +266,159 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                     },
                   ),
                 const SizedBox(height: 20),
-                Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Kitchen Dashboard',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _smallCard(
-                                'Meals Served',
-                                dashboard.kitchen.mealsServed.toString(),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _smallCard(
-                                'Cost Covered',
-                                dashboard.kitchen.costCovered == 0
-                                    ? '₹0'
-                                    : '₹${dashboard.kitchen.costCovered.toStringAsFixed(0)}',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _smallCard(
-                                'Utilization',
-                                dashboard.kitchen.utilizationPercentage == 0
-                                    ? 'N/A'
-                                    : '${dashboard.kitchen.utilizationPercentage}%',
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _smallCard(
-                                'Certification',
-                                dashboard.kitchen.certificationMessage.isEmpty
-                                    ? 'Meals Prepared Hygienically'
-                                    : dashboard.kitchen.certificationMessage,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                SizedBox(
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Kitchen Photos',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Kitchen Dashboard',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 15),
-                        SizedBox(
-                          height: 120,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
+                          const SizedBox(height: 16),
+                          Row(
                             children: [
-                              kitchenPhoto(
-                                'https://images.unsplash.com/photo-1556910103-1c02745aae4d',
+                              Expanded(
+                                child: _smallCard(
+                                  'Meals Served',
+                                  dashboard.kitchen.mealsServed.toString(),
+                                ),
                               ),
-                              kitchenPhoto(
-                                'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-                              ),
-                              kitchenPhoto(
-                                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _smallCard(
+                                  'Cost Covered',
+                                  dashboard.kitchen.costCovered == 0
+                                      ? '₹0'
+                                      : '₹${dashboard.kitchen.costCovered.toStringAsFixed(0)}',
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _smallCard(
+                                  'Utilization',
+                                  dashboard.kitchen.utilizationPercentage == 0
+                                      ? 'N/A'
+                                      : '${dashboard.kitchen.utilizationPercentage}%',
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _smallCard(
+                                  'Certification',
+                                  dashboard.kitchen.certificationMessage.isEmpty
+                                      ? 'Meals Prepared Hygienically'
+                                      : dashboard.kitchen.certificationMessage,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Progress Report',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
+                SizedBox(
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Kitchen Photos',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 15),
-                        reportItem(
-                          'Sponsor Status',
-                          dashboard.sponsor.activePlan ? 'Active' : 'Inactive',
-                        ),
-                        reportItem(
-                          'Billing Cycle',
-                          dashboard.sponsor.billingCycle.isEmpty
-                              ? 'Not Available'
-                              : dashboard.sponsor.billingCycle,
-                        ),
-                        reportItem(
-                          'Sponsorship Category',
-                          dashboard.sponsor.sponsorshipCategory.isEmpty
-                              ? 'Not Available'
-                              : dashboard.sponsor.sponsorshipCategory,
-                        ),
-                      ],
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            height: 120,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                kitchenPhoto(
+                                  'https://images.unsplash.com/photo-1556910103-1c02745aae4d',
+                                ),
+                                kitchenPhoto(
+                                  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+                                ),
+                                kitchenPhoto(
+                                  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Progress Report',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          reportItem(
+                            'Sponsor Status',
+                            dashboard.sponsor.activePlan
+                                ? 'Active'
+                                : 'Inactive',
+                          ),
+                          reportItem(
+                            'Billing Cycle',
+                            dashboard.sponsor.billingCycle.isEmpty
+                                ? 'Not Available'
+                                : dashboard.sponsor.billingCycle,
+                          ),
+                          reportItem(
+                            'Sponsorship Category',
+                            dashboard.sponsor.sponsorshipCategory.isEmpty
+                                ? 'Not Available'
+                                : dashboard.sponsor.sponsorshipCategory,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -511,7 +522,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
         children: [
           Text(
             title,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.black87),
           ),
           const SizedBox(height: 8),
           Text(
@@ -536,7 +547,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
         children: [
           Text(
             title,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.black87),
           ),
           const SizedBox(height: 4),
           Text(
@@ -561,12 +572,18 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
         children: [
           Text(
             title,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
