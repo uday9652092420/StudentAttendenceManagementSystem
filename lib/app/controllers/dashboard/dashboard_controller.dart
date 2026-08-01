@@ -99,20 +99,14 @@ class DashboardController extends GetxController {
       await barcodeScanner.close();
 
       if (barcodes.isEmpty) {
-        Get.snackbar(
-          "Error",
-          "No QR Code found in image",
-        );
+        errorToast("No QR Code found in image");
         return;
       }
 
       final qrCode = barcodes.first.rawValue;
 
       if (qrCode == null || qrCode.isEmpty) {
-        Get.snackbar(
-          "Error",
-          "Invalid QR Code",
-        );
+        errorToast("Invalid QR Code");
         return;
       }
 
@@ -122,10 +116,7 @@ class DashboardController extends GetxController {
     } catch (e) {
       print("QR GALLERY ERROR => $e");
 
-      Get.snackbar(
-        "Error",
-        "Unable to read QR Code",
-      );
+      errorToast("Unable to read QR Code");
     }
   }
 }

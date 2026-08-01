@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 import 'package:my_new_app/app/controllers/kitchen/kitchen_dashboard_controller.dart';
 
@@ -32,15 +33,36 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
             onPressed: () async {
               final logout = await Get.dialog<bool>(
                 AlertDialog(
-                  title: const Text("Logout"),
-                  content: const Text("Are you sure you want to logout?"),
+                  backgroundColor: AppColors.bgLight,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  title: const Text(
+                    "Logout",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  content: const Text(
+                    "Are you sure you want to logout?",
+                    style: TextStyle(color: Colors.black87),
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(result: false),
-                      child: const Text("Cancel"),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.black87),
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () => Get.back(result: true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       child: const Text("Logout"),
                     ),
                   ],
@@ -152,7 +174,7 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
 
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: controller.selectedMeal.value,
+                  initialValue: controller.selectedMeal.value,
                   decoration: InputDecoration(
                     labelText: "Meal Type",
                     border: OutlineInputBorder(

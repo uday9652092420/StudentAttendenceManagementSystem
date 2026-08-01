@@ -67,22 +67,16 @@ class MealCheckinController extends GetxController {
           (response.statusCode == 200 || response.statusCode == 201)) {
         Get.back(result: true);
 
-        Get.snackbar(
-          "Success",
+        successToast(
           response.data["message"] ?? "Meal Attendance Saved",
-          snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        Get.snackbar(
-          "Error",
+        errorToast(
           response?.data["message"] ?? "Unable to Save",
         );
       }
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      errorToast(e.toString());
     } finally {
       isSaving.value = false;
     }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -114,26 +115,48 @@ class DashboardView extends GetView<DashboardController> {
               Icons.logout,
               color: Colors.white,
             ),
-            onPressed: () {
-              Get.defaultDialog(
-                title: "Logout",
-                middleText: "Are you sure you want to logout?",
-                textConfirm: "Logout",
-                textCancel: "Cancel",
-                confirmTextColor: Colors.white,
-                buttonColor: Colors.blue,
-                onConfirm: () async {
-                  /// Clear saved data
-                  // await SharedPrefsHelper.remove("accessToken");
-                  // await SharedPrefsHelper.remove("username");
-                  // await SharedPrefsHelper.remove("roleName");
-
-                  Get.back();
-
-                  /// Redirect Login Screen
-                  Get.offAllNamed(Routes.login);
-                },
+            onPressed: () async {
+              final result = await Get.dialog<bool>(
+                AlertDialog(
+                  backgroundColor: AppColors.bgLight,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  title: const Text(
+                    'Logout',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  content: const Text(
+                    'Are you sure you want to logout?',
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Get.back(result: false),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Get.back(result: true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
               );
+
+              if (result == true) {
+                Get.offAllNamed(Routes.login);
+              }
             },
           ),
         ],

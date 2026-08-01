@@ -49,23 +49,14 @@ class MessDashboardController extends GetxController {
   }
 
   void recalculateMeals() {
-    Get.snackbar(
-      "Success",
-      "Meals recalculated successfully",
-    );
+    successToast("Meals recalculated successfully");
   }
 
   void printForecast() {
-    Get.snackbar(
-      "Print",
-      "Printing Forecast...",
-    );
+    successToast("Printing forecast...");
   }
 
   void sendKitchen() {
-    Get.snackbar(
-      "Success",
-      "Forecast sent to Kitchen",
-    );
+    successToast("Forecast sent to Kitchen");
   }
 }

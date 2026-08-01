@@ -200,18 +200,12 @@ class TakeAttendanceController extends GetxController {
 
       if (response != null &&
           (response.statusCode == 200 || response.statusCode == 201)) {
-        Get.snackbar(
-          "Success",
-          "Attendance Saved Successfully",
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        successToast("Attendance Saved Successfully");
 
         Get.back(result: true);
       } else {
-        Get.snackbar(
-          "Error",
+        errorToast(
           response?.data?["message"] ?? "Failed to save attendance",
-          snackPosition: SnackPosition.BOTTOM,
         );
       }
     } finally {

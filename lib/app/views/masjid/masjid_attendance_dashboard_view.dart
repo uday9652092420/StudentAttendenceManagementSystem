@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/masjid/masjid_dashboard_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class MasjidDashboardView extends GetView<MasjidDashboardController> {
   const MasjidDashboardView({super.key});
@@ -22,20 +23,56 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              Get.defaultDialog(
-                title: "Logout",
-                middleText: "Are you sure you want to logout?",
-                textConfirm: "Yes",
-                textCancel: "No",
-                confirmTextColor: Colors.white,
-                onConfirm: () {
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: const Icon(Icons.logout_rounded, color: Colors.white),
+              onPressed: () async {
+                final result = await Get.dialog<bool>(
+                  AlertDialog(
+                    backgroundColor: AppColors.bgLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    content: const Text(
+                      'Are you sure you want to logout?',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(result: false),
+                        child: const Text(
+                          'No',
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Get.back(result: true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.blue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (result == true) {
                   Get.offAllNamed(Routes.login);
-                },
-              );
-            },
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -101,7 +138,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
 
               /// Prayer Dropdown
               DropdownButtonFormField<String>(
-                value: controller.selectedPrayer.value,
+                initialValue: controller.selectedPrayer.value,
                 decoration: InputDecoration(
                   labelText: "Prayer",
                   border: OutlineInputBorder(

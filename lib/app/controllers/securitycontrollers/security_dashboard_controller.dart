@@ -35,10 +35,7 @@ class SecurityDashboardController extends GetxController {
       );
 
       if (image == null) {
-        Get.snackbar(
-          "Cancelled",
-          "No image selected",
-        );
+        errorToast("No image selected");
         return;
       }
 
@@ -59,10 +56,7 @@ class SecurityDashboardController extends GetxController {
       await barcodeScanner.close();
 
       if (barcodes.isEmpty) {
-        Get.snackbar(
-          "Invalid QR",
-          "No QR code found in image",
-        );
+        errorToast("No QR code found in image");
         return;
       }
 
@@ -85,10 +79,7 @@ class SecurityDashboardController extends GetxController {
       );
 
       if (gatePassId.isEmpty) {
-        Get.snackbar(
-          "Error",
-          "Gate Pass ID not found in QR",
-        );
+        errorToast("Gate Pass ID not found in QR");
         return;
       }
 
@@ -101,10 +92,7 @@ class SecurityDashboardController extends GetxController {
     } catch (e) {
       print("QR ERROR => $e");
 
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      errorToast(e.toString());
     }
   }
 
@@ -137,10 +125,7 @@ class SecurityDashboardController extends GetxController {
     } catch (e) {
       print("SCAN ERROR => $e");
 
-      Get.snackbar(
-        "Error",
-        e.toString(),
-      );
+      errorToast(e.toString());
     } finally {
       isLoading.value = false;
     }

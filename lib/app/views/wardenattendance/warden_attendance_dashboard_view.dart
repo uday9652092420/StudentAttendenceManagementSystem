@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/warden/warden_attendance_dashboard_controller.dart';
 import 'package:my_new_app/app/custome_widgets/logout.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class WardenAttendanceDashboardView
     extends GetView<WardenAttendanceDashboardController> {
@@ -28,19 +29,48 @@ class WardenAttendanceDashboardView
               ),
             ),
             IconButton(
-              onPressed: () {
-                Get.defaultDialog(
-                  title: "Logout",
-                  middleText: "Are you sure you want to logout?",
-                  textConfirm: "Yes",
-                  textCancel: "No",
-                  confirmTextColor: Colors.white,
-                  buttonColor: Colors.blue,
-                  onConfirm: () async {
-                    Get.back();
-                    await logout();
-                  },
+              onPressed: () async {
+                final result = await Get.dialog<bool>(
+                  AlertDialog(
+                    backgroundColor: AppColors.bgLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                    content: const Text(
+                      'Are you sure you want to logout?',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(result: false),
+                        child: const Text(
+                          'No',
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Get.back(result: true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.blue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
                 );
+
+                if (result == true) {
+                  await logout();
+                }
               },
               icon: const Icon(
                 Icons.logout,
