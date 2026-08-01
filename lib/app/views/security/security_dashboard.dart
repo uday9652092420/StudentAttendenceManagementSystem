@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 import '../../controllers/securitycontrollers/security_dashboard_controller.dart';
 import '../../custome_widgets/logout.dart';
