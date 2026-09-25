@@ -27,7 +27,11 @@ class AttendanceController extends GetxController {
   /// COUNTS
   RxInt presentCount = 0.obs;
   RxInt absentCount = 0.obs;
+  RxInt sickCount = 0.obs;
+  RxInt lateCount = 0.obs;
   RxInt totalStudents = 0.obs;
+
+  static const List<String> _statusOrder = ["P", "A", "S", "L"];
 
   RxBool isLoading = false.obs;
 
@@ -113,6 +117,8 @@ class AttendanceController extends GetxController {
 
           presentCount.value = 0;
           absentCount.value = 0;
+          sickCount.value = 0;
+          lateCount.value = 0;
           totalStudents.value = 0;
 
           errorToast(data["message"]);
@@ -153,7 +159,7 @@ class AttendanceController extends GetxController {
 
               name: e["studentName"] ?? "",
 
-              status: e["status"] == "present" ? "P" : "A",
+              status: normalizeStatus(e["status"]?.toString() ?? "P"),
             );
           }),
         );
@@ -169,16 +175,51 @@ class AttendanceController extends GetxController {
     }
   }
 
+  String normalizeStatus(String status) {
+    switch (status.trim().toUpperCase()) {
+      case "P":
+      case "PRESENT":
+        return "P";
+      case "A":
+      case "ABSENT":
+        return "A";
+      case "S":
+      case "SICK":
+        return "S";
+      case "L":
+      case "LATE":
+      case "LEAVE":
+        return "L";
+      default:
+        return "P";
+    }
+  }
+
+  String toApiStatus(String status) {
+    switch (normalizeStatus(status)) {
+      case "P":
+        return "present";
+      case "A":
+        return "absent";
+      case "S":
+        return "sick";
+      case "L":
+        return "late";
+      default:
+        return "present";
+    }
+  }
+
   String generateAttendanceId() {
     return DateTime.now().millisecondsSinceEpoch.toRadixString(36);
   }
 
   void toggleAttendance(int index) {
-    if (students[index].status == "P") {
-      students[index].status = "A";
-    } else {
-      students[index].status = "P";
-    }
+    final currentStatus = normalizeStatus(students[index].status);
+    final currentIndex = _statusOrder.indexOf(currentStatus);
+    final nextIndex = (currentIndex + 1) % _statusOrder.length;
+
+    students[index].status = _statusOrder[nextIndex];
 
     students.refresh();
     calculateCounts();
@@ -186,9 +227,9 @@ class AttendanceController extends GetxController {
 
   void calculateCounts() {
     presentCount.value = students.where((e) => e.status == "P").length;
-
     absentCount.value = students.where((e) => e.status == "A").length;
-
+    sickCount.value = students.where((e) => e.status == "S").length;
+    lateCount.value = students.where((e) => e.status == "L").length;
     totalStudents.value = students.length;
   }
 
@@ -206,7 +247,7 @@ class AttendanceController extends GetxController {
         "students": students.map((e) {
           return {
             "studentId": e.studentId,
-            "status": e.status == "P" ? "present" : "absent",
+            "status": toApiStatus(e.status),
             "remarks": "",
           };
         }).toList(),

@@ -159,103 +159,45 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                       ),
 
                       const SizedBox(height: 20),
-                      Row(
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        runSpacing: 8,
+                        spacing: 6,
                         children: [
-                          /// PRESENT
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Present",
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "${controller.presentCount.value}",
-                                    style: const TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _buildSummaryCard(
+                            label: "Present",
+                            value: "${controller.presentCount.value}",
+                            color: Colors.green,
+                            bgColor: Colors.green.withOpacity(0.1),
+                            width: 58,
                           ),
-
-                          const SizedBox(width: 10),
-
-                          /// ABSENT
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Absent",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "${controller.absentCount.value}",
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _buildSummaryCard(
+                            label: "Absent",
+                            value: "${controller.absentCount.value}",
+                            color: Colors.red,
+                            bgColor: Colors.red.withOpacity(0.1),
+                            width: 58,
                           ),
-
-                          const SizedBox(width: 10),
-
-                          /// TOTAL
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Total",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "${controller.totalStudents.value}",
-                                    style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          _buildSummaryCard(
+                            label: "Sick",
+                            value: "${controller.sickCount.value}",
+                            color: Colors.orange,
+                            bgColor: Colors.orange.withOpacity(0.1),
+                            width: 58,
+                          ),
+                          _buildSummaryCard(
+                            label: "Late",
+                            value: "${controller.lateCount.value}",
+                            color: Colors.amber,
+                            bgColor: Colors.amber.withOpacity(0.1),
+                            width: 58,
+                          ),
+                          _buildSummaryCard(
+                            label: "Total",
+                            value: "${controller.totalStudents.value}",
+                            color: Colors.blue,
+                            bgColor: Colors.blue.withOpacity(0.1),
+                            width: 58,
                           ),
                         ],
                       ),
@@ -427,14 +369,26 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                                             decoration: BoxDecoration(
                                               color: student.status == "P"
                                                   ? Colors.green
-                                                      .withOpacity(0.1)
-                                                  : Colors.red.withOpacity(0.1),
+                                                      .withOpacity(0.12)
+                                                  : student.status == "A"
+                                                      ? Colors.red
+                                                          .withOpacity(0.12)
+                                                      : student.status == "S"
+                                                          ? Colors.orange
+                                                              .withOpacity(0.12)
+                                                          : Colors.amber
+                                                              .withOpacity(
+                                                                  0.12),
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                               border: Border.all(
                                                 color: student.status == "P"
                                                     ? Colors.green
-                                                    : Colors.red,
+                                                    : student.status == "A"
+                                                        ? Colors.red
+                                                        : student.status == "S"
+                                                            ? Colors.orange
+                                                            : Colors.amber,
                                                 width: 2,
                                               ),
                                             ),
@@ -445,7 +399,11 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                                                 fontWeight: FontWeight.bold,
                                                 color: student.status == "P"
                                                     ? Colors.green
-                                                    : Colors.red,
+                                                    : student.status == "A"
+                                                        ? Colors.red
+                                                        : student.status == "S"
+                                                            ? Colors.orange
+                                                            : Colors.amber,
                                               ),
                                             ),
                                           ),
@@ -493,5 +451,53 @@ class StudentAttendanceView extends GetView<AttendanceController> {
             ),
           );
         }));
+  }
+
+  Widget _buildSummaryCard({
+    required String label,
+    required String value,
+    required Color color,
+    required Color bgColor,
+    required double width,
+  }) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: TextStyle(
+                color: color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
