@@ -37,4 +37,19 @@ class AttendanceRepository {
 
     return response as Response?;
   }
+
+  Future<Response?> recordStaffQrScan({
+    required String classroomId,
+    required String staffId,
+  }) async {
+    final response = await ApiService.post(
+      EndPoints.staffPeriodAttendanceQrScan,
+      {
+        "classroomId": classroomId,
+        "staffId": staffId,
+      },
+    );
+
+    return response as Response?;
+  }
 }

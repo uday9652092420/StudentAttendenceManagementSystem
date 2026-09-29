@@ -45,7 +45,26 @@ class DashboardController extends GetxController {
           final body = response.data;
 
           if (body["success"] == true) {
-            successToast("Successfully Scanned");
+            var checkInRecorded = false;
+            try {
+              final checkInResponse = await repository.recordStaffQrScan(
+                classroomId: classroomId,
+                staffId: staffId,
+              );
+
+              checkInRecorded = checkInResponse != null &&
+                  checkInResponse.statusCode != null &&
+                  checkInResponse.statusCode! >= 200 &&
+                  checkInResponse.statusCode! < 300;
+            } catch (e) {
+              print("TEACHER CHECK-IN ERROR => $e");
+            }
+
+            if (checkInRecorded) {
+              successToast("Successfully Scanned");
+            } else {
+              errorToast("Unable to record teacher check-in");
+            }
 
             Get.toNamed(
               Routes.studentAttendance,
