@@ -215,27 +215,6 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                 ),
               ),
 
-              const SizedBox(height: 15),
-
-              /// Upload QR
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text(
-                    "Upload QR Image",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  onPressed: () {
-                    controller.pickQrFromGallery();
-                  },
-                ),
-              ),
-
               const SizedBox(height: 25),
 
               const Align(

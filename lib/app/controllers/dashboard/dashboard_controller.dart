@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
@@ -96,46 +94,6 @@ class DashboardController extends GetxController {
     } catch (e) {
       print("QR ERROR => $e");
       errorToast("Invalid QR Code");
-    }
-  }
-
-  Future<void> pickQrFromGallery() async {
-    try {
-      final picker = ImagePicker();
-
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-      );
-
-      if (image == null) return;
-
-      final inputImage = InputImage.fromFilePath(image.path);
-
-      final barcodeScanner = BarcodeScanner();
-
-      final barcodes = await barcodeScanner.processImage(inputImage);
-
-      await barcodeScanner.close();
-
-      if (barcodes.isEmpty) {
-        errorToast("No QR Code found in image");
-        return;
-      }
-
-      final qrCode = barcodes.first.rawValue;
-
-      if (qrCode == null || qrCode.isEmpty) {
-        errorToast("Invalid QR Code");
-        return;
-      }
-
-      print("QR FROM GALLERY => $qrCode");
-
-      await handleScannedData(qrCode);
-    } catch (e) {
-      print("QR GALLERY ERROR => $e");
-
-      errorToast("Unable to read QR Code");
     }
   }
 }

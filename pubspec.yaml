@@ -48,7 +48,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  # flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.14.4
   # rename_app: ^1.6.3
   # change_app_package_name: ^1.5.0
 
@@ -77,7 +77,11 @@ flutter:
         - asset: assets/fonts/Montserrat-Light.ttf
           weight: 300
 
-# flutter_launcher_icons:
-#   android: true
-#   ios: true
-#   image_path: "assets/app_icon/app_icon.png"
+# App launcher icon (shown on the device home screen / app list after install)
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/applogo.png"
+  adaptive_icon_background: "#3B302F"
+  adaptive_icon_foreground: "assets/applogo.png"
+  remove_alpha_ios: true
