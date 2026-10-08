@@ -64,7 +64,7 @@ class LoginController extends GetxController {
           accessToken,
         );
 
-        print("ACCESS TOKEN SAVED => $accessToken");
+        print("ACCESS TOKEN SAVED => ${accessToken.isNotEmpty}");
 
         // Save Common User Details
         await SharedPrefsHelper.setString("username", username);

@@ -151,6 +151,28 @@ class SecurityDashboard extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await controller.pickQrFromGallery();
+                    },
+                    icon: const Icon(Icons.photo_library),
+                    label: const Text(
+                      "Upload QR Image",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

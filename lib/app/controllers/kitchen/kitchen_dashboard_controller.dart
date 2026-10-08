@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:my_new_app/app/repositories/kitchen/kitchen_repository.dart';
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
@@ -214,6 +219,46 @@ class KitchenDashboardController extends GetxController {
   //     isLoading.value = false;
   //   }
   // }
+
+  Future<void> pickQrFromGallery() async {
+    try {
+      final picker = ImagePicker();
+
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (image == null) return;
+
+      final inputImage = InputImage.fromFilePath(image.path);
+
+      final barcodeScanner = BarcodeScanner();
+
+      final barcodes = await barcodeScanner.processImage(inputImage);
+
+      await barcodeScanner.close();
+
+      if (barcodes.isEmpty) {
+        errorToast("No QR Code Found");
+        return;
+      }
+
+      final qrCode = barcodes.first.rawValue;
+
+      if (qrCode == null || qrCode.isEmpty) {
+        errorToast("Invalid QR Code");
+        return;
+      }
+
+      print("QR FROM IMAGE");
+      print(qrCode);
+
+      await handleScannedData(qrCode);
+    } catch (e) {
+      print(e);
+      errorToast("Unable to read QR Image");
+    }
+  }
 
   @override
   void onClose() {

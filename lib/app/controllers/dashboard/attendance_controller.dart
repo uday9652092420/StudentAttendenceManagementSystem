@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/models/dashboard/class_details_model.dart';
 import 'package:my_new_app/app/models/dashboard/student_model.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/repositories/teacherstundentattendance/attendance_repository.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/services/endpoints.dart';
 
 class AttendanceController extends GetxController {
   /// TEXT CONTROLLERS
@@ -19,7 +22,8 @@ class AttendanceController extends GetxController {
   Rxn<ClassDetailsModel> classDetails = Rxn<ClassDetailsModel>();
 
   RxString classId = "".obs;
-
+  RxString sessionId = "".obs;
+  RxString timetableScheduleItemId = "".obs;
   RxString periodId = "".obs;
 
   final TextEditingController periodController = TextEditingController();
@@ -34,6 +38,9 @@ class AttendanceController extends GetxController {
   static const List<String> _statusOrder = ["P", "A", "S", "L"];
 
   RxBool isLoading = false.obs;
+  RxBool isSaving = false.obs;
+  String? _pendingSaveRequestId;
+  String? _pendingSavePayload;
 
   /// STUDENTS
   RxList<StudentModel> students = <StudentModel>[].obs;
@@ -42,7 +49,6 @@ class AttendanceController extends GetxController {
   RxString hostelName = "".obs;
 
   RxString courseId = "".obs;
-  RxString attendanceId = "".obs;
   RxString period = "".obs;
   RxString academicYear = "".obs;
   RxBool locked = false.obs;
@@ -54,8 +60,16 @@ class AttendanceController extends GetxController {
 
     final Map<String, dynamic> args =
         (Get.arguments as Map<String, dynamic>?) ?? {};
+
     final String classroomId = args["classroomId"]?.toString() ?? "";
+
+    sessionId.value = args["sessionId"]?.toString() ?? "";
+    timetableScheduleItemId.value =
+        args["timetableScheduleItemId"]?.toString() ?? "";
+
     print("CLASSROOM ID = $classroomId");
+    print("SESSION ID = ${sessionId.value}");
+
     if (classroomId.isNotEmpty) {
       loadAttendanceData(classroomId);
     }
@@ -93,7 +107,9 @@ class AttendanceController extends GetxController {
 
           courseId.value = data["courseId"] ?? "";
 
-          attendanceId.value = data["id"] ?? "";
+          timetableScheduleItemId.value =
+              data["timetableScheduleItemId"]?.toString() ??
+                  timetableScheduleItemId.value;
 
           academicYear.value = data["academicYear"] ?? "";
 
@@ -204,14 +220,10 @@ class AttendanceController extends GetxController {
       case "S":
         return "sick";
       case "L":
-        return "late";
+        return "leave";
       default:
         return "present";
     }
-  }
-
-  String generateAttendanceId() {
-    return DateTime.now().millisecondsSinceEpoch.toRadixString(36);
   }
 
   void toggleAttendance(int index) {
@@ -234,46 +246,115 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> saveAttendance() async {
+    if (isSaving.value) return;
+
     try {
-      final body = {
-        "id": attendanceId.value.isEmpty
-            ? generateAttendanceId()
-            : attendanceId.value,
-        "date": DateFormat("yyyy-MM-dd").format(DateTime.now()),
-        "courseId": courseId.value,
-        "classId": classId.value,
-        "period": period.value,
-        "locked": locked.value,
-        "students": students.map((e) {
-          return {
-            "studentId": e.studentId,
-            "status": toApiStatus(e.status),
-            "remarks": "",
-          };
-        }).toList(),
-        "academicYear": academicYear.value,
+      if (sessionId.value.isEmpty) {
+        errorToast("Attendance session not found.");
+        return;
+      }
+
+      if (timetableScheduleItemId.value.isEmpty) {
+        errorToast("Timetable schedule item not found.");
+        return;
+      }
+
+      if (students.isEmpty) {
+        errorToast("No students are available to save.");
+        return;
+      }
+
+      const allowedStatuses = {"present", "absent", "leave", "sick"};
+      final attendanceStudents = <Map<String, String>>[];
+      for (final student in students) {
+        final studentId = student.studentId.trim();
+        final status = toApiStatus(student.status);
+        if (studentId.isEmpty || !allowedStatuses.contains(status)) {
+          errorToast(
+            "Every student must have an ID and valid attendance status.",
+          );
+          return;
+        }
+
+        attendanceStudents.add({
+          "studentId": studentId,
+          "status": status,
+        });
+      }
+
+      final savePayload = {
+        "timetableScheduleItemId": timetableScheduleItemId.value,
+        "students": attendanceStudents,
       };
+      final savePayloadKey = jsonEncode(savePayload);
+      if (_pendingSaveRequestId == null ||
+          _pendingSavePayload != savePayloadKey) {
+        _pendingSaveRequestId =
+            "attendance-save-${DateTime.now().microsecondsSinceEpoch}";
+        _pendingSavePayload = savePayloadKey;
+      }
+      final requestId = _pendingSaveRequestId!;
+      final requestBody = {"requestId": requestId, ...savePayload};
+      final endpoint =
+          "${EndPoints.staffAttendanceSessions}/${sessionId.value}/student-attendance";
 
-      print("SAVE REQUEST");
-      print(body);
+      isSaving.value = true;
+      print("SAVE BUTTON CLICKED");
+      print("Session ID: ${sessionId.value}");
+      print("Timetable schedule item ID: ${timetableScheduleItemId.value}");
+      print("POST endpoint: $endpoint");
+      print("POST body: ${jsonEncode(requestBody)}");
 
-      final response = await repository.saveAttendance(body);
+      final response = await repository.saveAttendance(
+        sessionId: sessionId.value,
+        requestId: requestId,
+        timetableScheduleItemId: timetableScheduleItemId.value,
+        students: attendanceStudents,
+      );
 
-      print("STATUS : ${response?.statusCode}");
-      print("BODY : ${response?.data}");
-
+      final responseBody = response?.data;
+      print("Save attendance status: ${response?.statusCode}");
+      print("Save attendance response: $responseBody");
+      final backendRejected =
+          responseBody is Map && responseBody["success"] == false;
       if (response != null &&
-          (response.statusCode == 200 || response.statusCode == 201)) {
+          (response.statusCode == 200 || response.statusCode == 201) &&
+          !backendRejected) {
+        _pendingSaveRequestId = null;
+        _pendingSavePayload = null;
         successToast("Attendance Saved Successfully");
-        Get.back(result: true);
-      } else {
-        errorToast(
-          response?.data["message"] ?? "Failed to save attendance",
+
+        if (sessionId.value.isEmpty) {
+          errorToast("Attendance session not found.");
+          return;
+        }
+
+        Get.offNamed(
+          Routes.staffAttendanceSession,
+          arguments: {
+            "sessionId": sessionId.value,
+          },
         );
+      } else {
+        errorToast(_getSaveErrorMessage(responseBody));
       }
     } catch (e) {
-      errorToast(e.toString());
+      print("Save attendance exception: ${e.runtimeType}");
+      errorToast("Failed to save attendance. Please retry.");
+    } finally {
+      isSaving.value = false;
     }
+  }
+
+  String _getSaveErrorMessage(dynamic responseBody) {
+    if (responseBody is Map) {
+      final message = responseBody["message"] ?? responseBody["error"];
+      if (message != null && message.toString().trim().isNotEmpty) {
+        return message.toString();
+      }
+    }
+
+    return "Failed to save attendance";
   }
 
   @override

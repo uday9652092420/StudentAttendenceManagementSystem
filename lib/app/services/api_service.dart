@@ -36,8 +36,8 @@ class ApiService {
   static Dio dio = Dio(
     BaseOptions(
       baseUrl: Environment.baseUrl,
-      connectTimeout: const Duration(seconds: 15000),
-      receiveTimeout: const Duration(seconds: 15000),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
     ),
   );
 
@@ -54,7 +54,7 @@ class ApiService {
         SharedPrefsHelper.accessToken,
       );
 
-      print("TOKEN FROM PREFS => $accessToken");
+      print("ACCESS TOKEN AVAILABLE => ${accessToken.isNotEmpty}");
       // final refreshToken = await FlutterSecureStore().getSingleValue(Storage.refreshToken);
 
       String? authToken = accessToken;
@@ -66,6 +66,45 @@ class ApiService {
   // static void setNavigationCallback(NavigationCallback callback) {
   //   _navigateToLogin = callback;
   // }
+
+  static Map<String, dynamic> _redactHeaders(Map<String, dynamic> headers) {
+    return headers.map((key, value) {
+      if (key.toLowerCase() == 'authorization') {
+        return MapEntry(key, 'Bearer [REDACTED]');
+      }
+
+      return MapEntry(key, value);
+    });
+  }
+
+  static dynamic _redactSensitiveData(dynamic value) {
+    if (value is Map) {
+      return value.map((key, nestedValue) {
+        final normalizedKey = key.toString().toLowerCase();
+        if (normalizedKey.contains('token') ||
+            normalizedKey.contains('password') ||
+            normalizedKey == 'authorization') {
+          return MapEntry(key, '[REDACTED]');
+        }
+
+        return MapEntry(key, _redactSensitiveData(nestedValue));
+      });
+    }
+
+    if (value is List) {
+      return value.map(_redactSensitiveData).toList();
+    }
+
+    if (value is String) {
+      try {
+        return jsonEncode(_redactSensitiveData(jsonDecode(value)));
+      } catch (_) {
+        return value;
+      }
+    }
+
+    return value;
+  }
 
   static void _addInterceptors() {
     if (!interceptorsAdded) {
@@ -88,9 +127,11 @@ class ApiService {
             }
 
             if (!isProduction) {
+              final safeHeaders = _redactHeaders(options.headers);
+              final safeData = _redactSensitiveData(options.data);
               // if (options.data != null) {
               log(
-                ''' '\x1B[38;5;230m' -- API Request -- \n URL: ${options.uri}\n Method: ${options.method} \n Headers: ${options.headers} \n ${options.data != null ? "Body: ${options.data}" : ""} ''',
+                ''' '\x1B[38;5;230m' -- API Request -- \n URL: ${options.uri}\n Method: ${options.method} \n Headers: $safeHeaders \n ${safeData != null ? "Body: $safeData" : ""} ''',
               );
               // logger.i('Body: ${options.data}');
               // }
@@ -101,7 +142,7 @@ class ApiService {
           onResponse: (response, handler) async {
             if (!isProduction) {
               log(
-                " '\x1B[32m'-- API Response -- \n Status Code: ${response.statusCode} \n Data: ${jsonEncode(response.data)} ",
+                " '\x1B[32m'-- API Response -- \n Status Code: ${response.statusCode} \n Data: ${jsonEncode(_redactSensitiveData(response.data))} ",
               );
               // logger.i('-- Response -- \n Status Code: ${response.statusCode} \n Data: ${jsonEncode(response.data)}');
             }

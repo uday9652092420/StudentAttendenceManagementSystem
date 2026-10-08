@@ -35,4 +35,13 @@ class EndPoints {
   static const kitchenDashboard = "kitchen-meal-forecast/dashboard";
 
   static const sponsorDashboard = "sponsor-dashboard";
+  static const String staffAttendanceSessions =
+      "staff-period-attendance/sessions";
+  static const String staffAttendanceStudentAttendance =
+      "staff-period-attendance/sessions";
+
+  static const String staffAttendanceCheckIn =
+      "staff-period-attendance/sessions/check-in";
+  static const String staffAttendanceSessionHistory =
+      "staff-period-attendance/sessions/history";
 }

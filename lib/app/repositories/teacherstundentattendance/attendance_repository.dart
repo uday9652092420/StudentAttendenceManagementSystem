@@ -29,10 +29,44 @@ class AttendanceRepository {
     return response as Response?;
   }
 
-  Future<Response?> saveAttendance(Map<String, dynamic> body) async {
+  Future<Response?> checkInStaffAttendance({
+    required String classroomId,
+    required String requestId,
+  }) async {
     final response = await ApiService.post(
-      EndPoints.saveAttendance,
-      body,
+      EndPoints.staffAttendanceCheckIn,
+      {
+        "classroomId": classroomId,
+        "requestId": requestId,
+      },
+    );
+
+    return response as Response?;
+  }
+
+  Future<Response?> getStaffAttendanceSessionStudents({
+    required String sessionId,
+  }) async {
+    final response = await ApiService.get(
+      "${EndPoints.staffAttendanceSessions}/$sessionId/students",
+    );
+
+    return response as Response?;
+  }
+
+  Future<Response?> saveAttendance({
+    required String sessionId,
+    required String requestId,
+    required String timetableScheduleItemId,
+    required List<Map<String, String>> students,
+  }) async {
+    final response = await ApiService.post(
+      "${EndPoints.staffAttendanceStudentAttendance}/$sessionId/student-attendance",
+      {
+        "requestId": requestId,
+        "timetableScheduleItemId": timetableScheduleItemId,
+        "students": students,
+      },
     );
 
     return response as Response?;
@@ -47,6 +81,48 @@ class AttendanceRepository {
       {
         "classroomId": classroomId,
         "staffId": staffId,
+      },
+    );
+
+    return response as Response?;
+  }
+
+  /// Get Teacher Attendance Session
+  Future<Response?> getStaffAttendanceSession({
+    required String sessionId,
+  }) async {
+    final response = await ApiService.get(
+      "${EndPoints.staffAttendanceSessions}/$sessionId",
+    );
+
+    return response as Response?;
+  }
+
+  /// Teacher Check Out
+  Future<Response?> checkOutStaffAttendance({
+    required String sessionId,
+    required String requestId,
+  }) async {
+    final response = await ApiService.post(
+      "${EndPoints.staffAttendanceSessions}/$sessionId/check-out",
+      {
+        "requestId": requestId,
+      },
+    );
+
+    return response as Response?;
+  }
+
+  /// Teacher Attendance History
+  Future<Response?> getStaffAttendanceHistory({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final response = await ApiService.get(
+      EndPoints.staffAttendanceSessionHistory,
+      queryParameters: {
+        "page": page,
+        "limit": limit,
       },
     );
 

@@ -6,7 +6,7 @@ abstract class Routes {
   static const login = '/login';
 
   static const dashboard = '/dashboard_view';
-
+  static const String staffAttendanceSession = '/staff-attendance-session';
   static const otpPage = '/otp_view_page';
   static const mealCheckin = "/meal_checkin_view";
 
