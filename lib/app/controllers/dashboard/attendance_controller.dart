@@ -22,6 +22,7 @@ class AttendanceController extends GetxController {
   Rxn<ClassDetailsModel> classDetails = Rxn<ClassDetailsModel>();
 
   RxString classId = "".obs;
+  RxString classroomId = "".obs;
   RxString sessionId = "".obs;
   RxString timetableScheduleItemId = "".obs;
   RxString periodId = "".obs;
@@ -39,6 +40,7 @@ class AttendanceController extends GetxController {
 
   RxBool isLoading = false.obs;
   RxBool isSaving = false.obs;
+  RxBool studentAttendanceReadOnly = false.obs;
   String? _pendingSaveRequestId;
   String? _pendingSavePayload;
 
@@ -76,6 +78,12 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> loadAttendanceData(String classroomId) async {
+    this.classroomId.value = classroomId;
+    if (sessionId.value.isNotEmpty) {
+      await _loadSessionAttendanceData();
+      return;
+    }
+
     final teacherId = await SharedPrefsHelper.getString("staffId");
 
     if (teacherId.isEmpty) {
@@ -191,6 +199,221 @@ class AttendanceController extends GetxController {
     }
   }
 
+  Future<void> _loadSessionAttendanceData() async {
+    try {
+      isLoading.value = true;
+      final arguments = Get.arguments is Map ? Get.arguments as Map : {};
+      dynamic context = arguments["sessionStudentsContext"];
+      if (context == null) {
+        final response = await repository.getStaffAttendanceSessionStudents(
+          sessionId: sessionId.value,
+        );
+        if (response == null || response.statusCode != 200) {
+          errorToast(_getSaveErrorMessage(response?.data));
+          return;
+        }
+        context = response.data;
+      }
+
+      final data = _unwrapSessionContext(context);
+      studentAttendanceReadOnly.value = _hasSavedAttendance(data);
+      final requestedScheduleId =
+          arguments["timetableScheduleItemId"]?.toString().trim() ?? "";
+      timetableScheduleItemId.value =
+          _findScheduleItemId(data) ?? requestedScheduleId;
+      if (timetableScheduleItemId.value.isEmpty) {
+        errorToast("Timetable schedule item not found for this session.");
+        return;
+      }
+
+      classId.value = _findValue(data, ["classId", "class_id"]) ?? "";
+      courseId.value = _findValue(data, ["courseId", "subjectId"]) ?? "";
+      classController.text =
+          _findValue(data, ["className", "classroomName", "class_name"]) ?? "";
+      courseController.text =
+          _findValue(data, ["subjectName", "courseName", "subject_name"]) ?? "";
+      period.value = _findValue(data, ["periodNumber", "period_number"]) ?? "";
+      periodController.text = _findPeriodLabel(data);
+
+      final roster = _findSessionStudents(data);
+      if (roster == null || roster.isEmpty) {
+        students.clear();
+        calculateCounts();
+        errorToast("No students are available for this attendance session.");
+        return;
+      }
+
+      final sortedRoster = [...roster]..sort((left, right) =>
+          (left["studentName"] ?? left["name"] ?? "")
+              .toString()
+              .toLowerCase()
+              .compareTo((right["studentName"] ?? right["name"] ?? "")
+                  .toString()
+                  .toLowerCase()));
+      students.assignAll(
+        List.generate(sortedRoster.length, (index) {
+          final row = sortedRoster[index];
+          return StudentModel(
+            studentId:
+                (row["studentId"] ?? row["student_id"] ?? row["id"] ?? "")
+                    .toString(),
+            rollNo: (row["studentCode"] ??
+                    row["rollNo"] ??
+                    row["student_code"] ??
+                    index + 1)
+                .toString(),
+            name:
+                (row["studentName"] ?? row["name"] ?? row["student_name"] ?? "")
+                    .toString(),
+            status: normalizeStatus(
+              (row["status"] ?? row["attendanceStatus"] ?? "present")
+                  .toString(),
+            ),
+          );
+        }),
+      );
+      calculateCounts();
+    } catch (error) {
+      errorToast("Unable to load teacher session attendance context.");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Map<String, dynamic> _unwrapSessionContext(dynamic value) {
+    dynamic current = value;
+    for (var depth = 0; depth < 4; depth++) {
+      if (current is Map && current["data"] is Map) {
+        current = current["data"];
+      } else if (current is Map && current["session"] is Map) {
+        current = current["session"];
+      } else {
+        break;
+      }
+    }
+    if (current is List) return {"students": current};
+    return current is Map ? Map<String, dynamic>.from(current) : {};
+  }
+
+  bool _hasSavedAttendance(dynamic value) {
+    if (value is Map) {
+      if (value["attendanceSaved"] == true ||
+          value["saved"] == true ||
+          (value["savedStudentAttendance"] is List &&
+              (value["savedStudentAttendance"] as List).isNotEmpty)) {
+        return true;
+      }
+      return value.values.any(_hasSavedAttendance);
+    }
+    if (value is List) return value.any(_hasSavedAttendance);
+    return false;
+  }
+
+  String? _findValue(dynamic value, List<String> keys) {
+    if (value is Map) {
+      for (final key in keys) {
+        final found = value[key];
+        if (found != null && found.toString().trim().isNotEmpty) {
+          return found.toString();
+        }
+      }
+      for (final nested in value.values) {
+        final found = _findValue(nested, keys);
+        if (found != null) return found;
+      }
+    } else if (value is List) {
+      for (final nested in value) {
+        final found = _findValue(nested, keys);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  String? _findScheduleItemId(dynamic value) {
+    if (value is Map) {
+      final direct = value["timetableScheduleItemId"] ??
+          value["timetable_schedule_item_id"] ??
+          value["initialScheduleItemId"];
+      if (direct != null && direct.toString().trim().isNotEmpty) {
+        return direct.toString();
+      }
+      final currentPeriod = value["currentPeriod"];
+      if (currentPeriod is Map) {
+        final currentId = currentPeriod["timetableScheduleItemId"] ??
+            currentPeriod["timetable_schedule_item_id"];
+        if (currentId != null && currentId.toString().trim().isNotEmpty) {
+          return currentId.toString();
+        }
+      }
+      final periods = value["periods"];
+      if (periods is List) {
+        for (final periodData in periods) {
+          if (periodData is Map &&
+              (periodData["isCurrent"] == true ||
+                  periodData["active"] == true ||
+                  periodData["status"]?.toString().toUpperCase() == "ACTIVE")) {
+            final currentId = periodData["timetableScheduleItemId"] ??
+                periodData["timetable_schedule_item_id"];
+            if (currentId != null && currentId.toString().trim().isNotEmpty) {
+              return currentId.toString();
+            }
+          }
+        }
+      }
+      for (final nested in value.values) {
+        final found = _findScheduleItemId(nested);
+        if (found != null) return found;
+      }
+    } else if (value is List) {
+      for (final nested in value) {
+        final found = _findScheduleItemId(nested);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  String _findPeriodLabel(Map<String, dynamic> data) {
+    final current = data["currentPeriod"];
+    if (current is Map) {
+      final periodName = current["period"] ??
+          current["periodNumber"] ??
+          current["period_number"];
+      final subject = current["subject"] ?? current["subjectName"];
+      if (periodName != null) {
+        return "Period $periodName${subject == null ? "" : " • $subject"}";
+      }
+    }
+    final number = _findValue(data, ["periodNumber", "period_number"]);
+    final subject = _findValue(data, ["subjectName", "subject_name"]);
+    if (number == null) return "Current period unavailable";
+    return "Period $number${subject == null ? "" : " • $subject"}";
+  }
+
+  List<Map<String, dynamic>>? _findSessionStudents(dynamic value) {
+    if (value is Map) {
+      for (final key in ["students", "studentRoster", "roster"]) {
+        if (value[key] is List) {
+          return (value[key] as List)
+              .whereType<Map>()
+              .map((row) => Map<String, dynamic>.from(row))
+              .toList();
+        }
+      }
+      for (final nested in value.values) {
+        final rows = _findSessionStudents(nested);
+        if (rows != null) return rows;
+      }
+    } else if (value is List) {
+      for (final nested in value) {
+        final rows = _findSessionStudents(nested);
+        if (rows != null) return rows;
+      }
+    }
+    return null;
+  }
+
   String normalizeStatus(String status) {
     switch (status.trim().toUpperCase()) {
       case "P":
@@ -247,6 +470,10 @@ class AttendanceController extends GetxController {
 
   Future<void> saveAttendance() async {
     if (isSaving.value) return;
+    if (studentAttendanceReadOnly.value) {
+      errorToast("Attendance for this period has already been saved.");
+      return;
+    }
 
     try {
       if (sessionId.value.isEmpty) {
@@ -332,7 +559,10 @@ class AttendanceController extends GetxController {
         Get.offNamed(
           Routes.staffAttendanceSession,
           arguments: {
+            "classroomId": classroomId.value,
             "sessionId": sessionId.value,
+            "timetableScheduleItemId": timetableScheduleItemId.value,
+            "studentAttendanceSaved": true,
           },
         );
       } else {

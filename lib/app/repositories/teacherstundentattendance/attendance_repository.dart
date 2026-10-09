@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:my_new_app/app/services/api_service.dart';
 import 'package:my_new_app/app/services/endpoints.dart';
@@ -47,8 +48,14 @@ class AttendanceRepository {
   Future<Response?> getStaffAttendanceSessionStudents({
     required String sessionId,
   }) async {
+    final endpoint = "${EndPoints.staffAttendanceSessions}/$sessionId/students";
+    final requestUrl =
+        Uri.parse(ApiService.dio.options.baseUrl).resolve(endpoint).toString();
+    print("Session students request URL: $requestUrl");
+
     final response = await ApiService.get(
-      "${EndPoints.staffAttendanceSessions}/$sessionId/students",
+      endpoint,
+      rethrowErrors: true,
     );
 
     return response as Response?;
@@ -90,9 +97,25 @@ class AttendanceRepository {
   /// Get Teacher Attendance Session
   Future<Response?> getStaffAttendanceSession({
     required String sessionId,
+    bool rethrowErrors = false,
+  }) async {
+    final endpoint = "${EndPoints.staffAttendanceSessions}/$sessionId";
+    debugPrint("Attendance Details GET path: /$endpoint");
+
+    final response = await ApiService.get(
+      endpoint,
+      rethrowErrors: rethrowErrors,
+    );
+
+    return response as Response?;
+  }
+
+  Future<Response?> getCurrentStaffAttendanceSession({
+    bool rethrowErrors = false,
   }) async {
     final response = await ApiService.get(
-      "${EndPoints.staffAttendanceSessions}/$sessionId",
+      EndPoints.staffAttendanceCurrentSession,
+      rethrowErrors: rethrowErrors,
     );
 
     return response as Response?;
@@ -117,6 +140,7 @@ class AttendanceRepository {
   Future<Response?> getStaffAttendanceHistory({
     int page = 1,
     int limit = 20,
+    bool rethrowErrors = false,
   }) async {
     final response = await ApiService.get(
       EndPoints.staffAttendanceSessionHistory,
@@ -124,6 +148,7 @@ class AttendanceRepository {
         "page": page,
         "limit": limit,
       },
+      rethrowErrors: rethrowErrors,
     );
 
     return response as Response?;

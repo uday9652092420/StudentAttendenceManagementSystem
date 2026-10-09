@@ -363,6 +363,7 @@ class ApiService {
     Map<String, dynamic>? queryParameters,
     Map<String, String>? headers,
     bool requireAuthToken = true,
+    bool rethrowErrors = false,
   }) async {
     if (await isInternet()) {
       _addInterceptors();
@@ -381,10 +382,19 @@ class ApiService {
         return response;
       } catch (error) {
         // fnHandleControllerException(error, stackTrace, "ApiService", "post");
+        if (rethrowErrors) rethrow;
         return null; // or rethrow the error based on your need
       }
     } else {
       consolePrint("Internet failed");
+
+      if (rethrowErrors) {
+        throw DioException(
+          requestOptions: RequestOptions(path: endpoint),
+          type: DioExceptionType.connectionError,
+          message: "No internet connection",
+        );
+      }
 
       if (isInternetDialouge || true) {
         Get.dialog(

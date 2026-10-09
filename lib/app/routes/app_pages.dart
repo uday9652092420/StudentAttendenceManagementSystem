@@ -1,6 +1,8 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_binding.dart';
 import 'package:my_new_app/app/bindings/dashboard/teacherattendance_binding.dart';
+import 'package:my_new_app/app/bindings/dashboard/teacherattendance_details_binding.dart';
+import 'package:my_new_app/app/bindings/dashboard/teacherattendance_history_binding.dart';
 import 'package:my_new_app/app/bindings/kitchen/kitchen_dashboard_binding.dart';
 import 'package:my_new_app/app/bindings/kitchen/meal_checkin_binding.dart';
 import 'package:my_new_app/app/bindings/masjid/masjid_attendance_dashboardbinding.dart';
@@ -11,6 +13,10 @@ import 'package:my_new_app/app/bindings/warden/take_attendance_binding.dart';
 import 'package:my_new_app/app/bindings/warden/warden_attendance_dashboard_binding.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
 import 'package:my_new_app/app/views/dashboard/teacherattendance_view.dart';
+import 'package:my_new_app/app/views/dashboard/teacherattendance_details_view.dart';
+import 'package:my_new_app/app/views/dashboard/teacherattendance_checkout_view.dart';
+import 'package:my_new_app/app/views/dashboard/teacherattendance_history_view.dart';
+import 'package:my_new_app/app/views/dashboard/teacherattendance_blocked_view.dart';
 import 'package:my_new_app/app/views/kitchen/kitchen_dashboard_view.dart';
 import 'package:my_new_app/app/views/kitchen/meal_checkin_view.dart';
 import 'package:my_new_app/app/views/masjid/masjid_attendance_dashboard_view.dart';
@@ -118,6 +124,24 @@ class AppPages {
       name: Routes.staffAttendanceSession,
       page: () => const StaffAttendanceSessionView(),
       binding: TeacherAttendanceBinding(),
+    ),
+    GetPage(
+      name: Routes.staffAttendanceDetails,
+      page: () => const TeacherAttendanceDetailsView(),
+      binding: TeacherAttendanceDetailsBinding(),
+    ),
+    GetPage(
+      name: Routes.staffAttendanceConfirmCheckout,
+      page: () => const TeacherAttendanceCheckoutView(),
+    ),
+    GetPage(
+      name: Routes.staffAttendanceHistory,
+      page: () => const TeacherAttendanceHistoryView(),
+      binding: TeacherAttendanceHistoryBinding(),
+    ),
+    GetPage(
+      name: Routes.staffAttendanceBlocked,
+      page: () => const TeacherAttendanceBlockedView(),
     ),
   ];
 }

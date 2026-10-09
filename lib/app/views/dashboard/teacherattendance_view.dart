@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/teacherattendance_controller.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 
 class StaffAttendanceSessionView
     extends GetView<StaffAttendanceSessionController> {
@@ -47,259 +49,101 @@ class StaffAttendanceSessionView
   }
 
   String _formatTime(String value) {
-    if (value.isEmpty) {
-      return "--";
-    }
-
+    if (value.isEmpty) return "--";
     try {
-      final dateTime = DateTime.parse(value).toLocal();
-
+      final dateTime = DateTime.parse(value)
+          .toUtc()
+          .add(const Duration(hours: 5, minutes: 30));
       final hour = dateTime.hour;
       final minute = dateTime.minute;
-
-      final period = hour >= 12 ? "PM" : "AM";
+      final suffix = hour >= 12 ? "PM" : "AM";
       final displayHour = hour % 12 == 0 ? 12 : hour % 12;
-
-      return "$displayHour:"
-          "${minute.toString().padLeft(2, '0')} $period";
+      return "$displayHour:${minute.toString().padLeft(2, '0')} $suffix";
     } catch (_) {
       return value;
     }
   }
 
+  Map<String, dynamic> _periodData(Map<String, dynamic> session) {
+    final period = session["currentPeriod"];
+    return period is Map ? Map<String, dynamic>.from(period) : session;
+  }
+
   String _getPeriodText(Map<String, dynamic> session) {
+    final currentPeriod = session["currentPeriod"];
     final value = _readValue(
-      session,
-      [
-        "periodNumber",
-        "period",
-        "periodNo",
-        "period_number",
-      ],
-      defaultValue: "1",
+      _periodData(session),
+      ["periodNumber", "period", "periodNo", "period_number"],
+      defaultValue: currentPeriod is String ? currentPeriod : "",
     );
-
-    if (value.toLowerCase().startsWith("period")) {
-      return value;
-    }
-
-    return "Period $value";
+    if (value.isEmpty) return "Period unavailable";
+    return value.toLowerCase().startsWith("period") ? value : "Period $value";
   }
 
-  String _getClassName(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "className",
-        "classroomName",
-        "classroom",
-        "class_name",
-        "class",
-      ],
-      defaultValue: "Class A",
-    );
-  }
+  String _getClassName(Map<String, dynamic> session) => _readValue(
+        session,
+        ["className", "classroomName", "classroom", "class_name", "class"],
+        defaultValue: "Class unavailable",
+      );
 
   String _getSubjectName(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "subjectName",
-        "subject",
-        "courseName",
-        "course",
-        "subject_name",
-      ],
-      defaultValue: "Arabic",
-    );
+    final period = _periodData(session);
+    final subjectValue = period["subject"];
+    final subject = subjectValue is Map
+        ? _readValue(
+            Map<String, dynamic>.from(subjectValue), ["name", "subjectName"])
+        : _readValue(
+            period, ["subjectName", "subject", "courseName", "course"]);
+    return subject.isEmpty ? "Subject unavailable" : subject;
   }
 
-  String _getStartTime(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "startTime",
-        "periodStartTime",
-        "start_time",
-        "period_start_time",
-      ],
-      defaultValue: "09:00",
-    );
-  }
+  String _getTeacherName(Map<String, dynamic> session) => _readValue(
+        session,
+        ["teacherName", "staffName", "teacher_name", "staff_name"],
+      );
 
-  String _getEndTime(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "endTime",
-        "periodEndTime",
-        "end_time",
-        "period_end_time",
-      ],
-      defaultValue: "09:40",
-    );
-  }
+  String _getStartTime(Map<String, dynamic> session) => _readValue(
+        _periodData(session),
+        ["startTime", "periodStartTime", "start_time", "period_start_time"],
+      );
 
-  String _getCheckIn(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "checkInAt",
-        "checkInTime",
-        "check_in_at",
-        "check_in_time",
-      ],
-    );
-  }
+  String _getEndTime(Map<String, dynamic> session) => _readValue(
+        _periodData(session),
+        ["endTime", "periodEndTime", "end_time", "period_end_time"],
+      );
 
-  String _getCheckOut(Map<String, dynamic> session) {
-    return _readValue(
-      session,
-      [
-        "checkOutAt",
-        "checkOutTime",
-        "check_out_at",
-        "check_out_time",
-      ],
-    );
-  }
+  String _getCheckIn(Map<String, dynamic> session) => _readValue(
+        session,
+        [
+          "checkedInAt",
+          "checkInAt",
+          "checkInTime",
+          "check_in_at",
+          "check_in_time"
+        ],
+      );
 
-  int _getCount(
-    Map<String, dynamic> session,
-    List<String> keys,
-  ) {
-    for (final key in keys) {
-      final value = session[key];
+  String _getCheckOut(Map<String, dynamic> session) => _readValue(
+        session,
+        [
+          "checkedOutAt",
+          "checkOutAt",
+          "checkOutTime",
+          "check_out_at",
+          "check_out_time"
+        ],
+      );
 
-      if (value is int) {
-        return value;
-      }
-
-      if (value != null) {
-        final parsed = int.tryParse(value.toString());
-
-        if (parsed != null) {
-          return parsed;
-        }
-      }
-    }
-
-    return 0;
-  }
-
-  Map<String, int> _getAttendanceCounts(
-    Map<String, dynamic> session,
-  ) {
-    int present = _getCount(
-      session,
-      [
-        "presentCount",
-        "present",
-        "present_count",
-      ],
-    );
-
-    int absent = _getCount(
-      session,
-      [
-        "absentCount",
-        "absent",
-        "absent_count",
-      ],
-    );
-
-    /*
-     * If backend returns student attendance list,
-     * calculate counts from it.
-     */
-    dynamic students;
-
-    if (session["students"] is List) {
-      students = session["students"];
-    } else if (session["attendance"] is List) {
-      students = session["attendance"];
-    } else if (session["studentAttendance"] is List) {
-      students = session["studentAttendance"];
-    }
-
-    if (students is List && students.isNotEmpty) {
-      present = 0;
-      absent = 0;
-
-      for (final item in students) {
-        if (item is! Map) {
-          continue;
-        }
-
-        final status = (item["status"] ?? "").toString().trim().toUpperCase();
-
-        if (status == "P" || status == "PRESENT") {
-          present++;
-        } else if (status == "A" || status == "ABSENT") {
-          absent++;
-        }
-      }
-    }
-
-    return {
-      "present": present,
-      "absent": absent,
-    };
-  }
-
-  Widget _borderCard({
-    required Widget child,
-  }) {
+  Widget _borderCard({required Widget child}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(
-          color: Colors.blue.shade200,
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.blue.shade200, width: 1.5),
       ),
       child: child,
     );
-  }
-
-  Future<void> _checkOut() async {
-    final result = await Get.dialog<bool>(
-      AlertDialog(
-        title: const Text(
-          "Check Out",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: const Text(
-          "Are you sure you want to check out from this session?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back(result: false);
-            },
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back(result: true);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text("Check Out"),
-          ),
-        ],
-      ),
-    );
-
-    if (result == true) {
-      await controller.checkOut();
-    }
   }
 
   @override
@@ -311,22 +155,18 @@ class StaffAttendanceSessionView
         centerTitle: true,
         backgroundColor: Colors.blue,
         automaticallyImplyLeading: false,
-        title: Obx(() {
-          final session = _getSession(
-            controller.sessionData,
-          );
-
-          final className = _getClassName(session);
-
-          return Text(
-            "$className • Active Session",
+        title: Obx(
+          () => Text(
+            controller.studentAttendanceSaved.value
+                ? "Attendance Saved"
+                : "Teacher Attendance",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
               fontSize: 20,
             ),
-          );
-        }),
+          ),
+        ),
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.sessionData.isEmpty) {
@@ -353,6 +193,7 @@ class StaffAttendanceSessionView
         final className = _getClassName(session);
         final periodText = _getPeriodText(session);
         final subjectName = _getSubjectName(session);
+        final teacherName = _getTeacherName(session);
 
         final startTime = _getStartTime(session);
         final endTime = _getEndTime(session);
@@ -360,19 +201,14 @@ class StaffAttendanceSessionView
         final checkIn = _getCheckIn(session);
         final checkOut = _getCheckOut(session);
 
-        final counts = _getAttendanceCounts(session);
-
-        final present = counts["present"] ?? 0;
-        final absent = counts["absent"] ?? 0;
-
         final bool checkedOut = checkOut.trim().isNotEmpty;
 
         String periodTime;
 
-        if (startTime.contains(":") && endTime.contains(":")) {
+        if (startTime.isNotEmpty && endTime.isNotEmpty) {
           periodTime = "${_formatTime(startTime)}–${_formatTime(endTime)}";
         } else {
-          periodTime = "$startTime–$endTime";
+          periodTime = "Timetable time unavailable";
         }
 
         return SafeArea(
@@ -407,6 +243,16 @@ class StaffAttendanceSessionView
                           color: Colors.black54,
                         ),
                       ),
+                      if (teacherName.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          "Teacher: $teacherName",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 14),
                       Row(
                         children: [
@@ -468,108 +314,77 @@ class StaffAttendanceSessionView
                 // -------------------------------------------------
                 // ATTENDANCE SAVED
                 // -------------------------------------------------
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    border: Border.all(
-                      color: Colors.blue.shade200,
-                      width: 1.5,
+                if (controller.studentAttendanceSaved.value)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      border: Border.all(
+                        color: Colors.blue.shade200,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Student attendance saved",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "The saved student register is read-only.",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Attendance saved",
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "$periodText • "
-                        "$present Present, $absent Absent",
-                        style: TextStyle(
-                          color: Colors.green.shade700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+                if (controller.missingCheckout.value ||
+                    session["missingCheckout"] == true) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    color: Colors.orange.shade50,
+                    child: const Text(
+                      "This session is missing a checkout from an earlier day. "
+                      "It is not recorded as a completed check-in for today.",
+                      style: TextStyle(color: Colors.deepOrange),
+                    ),
                   ),
-                ),
+                ],
 
                 const SizedBox(height: 10),
 
                 // -------------------------------------------------
-                // PERIOD CARD
-                // -------------------------------------------------
-                _borderCard(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "$periodText • $subjectName",
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 7),
-                            Text(
-                              "$periodTime • $subjectName",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Saved",
-                        style: TextStyle(
-                          color: Colors.green.shade600,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                // -------------------------------------------------
-                // EDIT PERIOD ATTENDANCE
+                // VIEW SAVED ATTENDANCE
                 // -------------------------------------------------
                 SizedBox(
                   width: double.infinity,
                   height: 58,
                   child: OutlinedButton(
                     onPressed: () {
-                      /*
-                       * Connect this to the existing
-                       * Student Attendance screen.
-                       *
-                       * We should pass:
-                       *   classroomId
-                       *   sessionId
-                       *   period information
-                       *
-                       * once the backend response structure
-                       * is confirmed.
-                       */
+                      final sessionId = controller.sessionId.trim();
+                      if (sessionId.isEmpty) {
+                        errorToast("Attendance session ID is missing.");
+                        return;
+                      }
+
+                      Get.toNamed(
+                        Routes.staffAttendanceDetails,
+                        arguments: {"sessionId": sessionId},
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -582,47 +397,9 @@ class StaffAttendanceSessionView
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
-                      "Edit $periodText Attendance",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                // -------------------------------------------------
-                // CONTINUE TO PERIOD 2
-                // -------------------------------------------------
-                SizedBox(
-                  width: double.infinity,
-                  height: 58,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      /*
-                       * Do not create the next period locally.
-                       *
-                       * The backend controls the active
-                       * timetable period.
-                       *
-                       * We will connect this after confirming
-                       * the /sessions/current response.
-                       */
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      "Continue to ${_nextPeriodText(periodText)}",
-                      style: const TextStyle(
+                    child: const Text(
+                      "View Attendance Details",
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -639,7 +416,19 @@ class StaffAttendanceSessionView
                   width: double.infinity,
                   height: 58,
                   child: ElevatedButton(
-                    onPressed: checkedOut ? null : _checkOut,
+                    onPressed: checkedOut
+                        ? null
+                        : () {
+                            final sessionId = controller.sessionId.trim();
+                            if (sessionId.isEmpty) {
+                              errorToast("Attendance session ID is missing.");
+                              return;
+                            }
+                            Get.toNamed(
+                              Routes.staffAttendanceConfirmCheckout,
+                              arguments: {"sessionId": sessionId},
+                            );
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red.shade700,
                       disabledBackgroundColor: Colors.grey.shade400,
@@ -672,8 +461,8 @@ class StaffAttendanceSessionView
                     vertical: 4,
                   ),
                   child: const Text(
-                    "Edit attendance anytime. Check Out records "
-                    "your exit without scanning QR again.",
+                    "Your check-in remains recorded.\n"
+                    "Period records follow the timetable automatically.",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black54,
@@ -687,19 +476,5 @@ class StaffAttendanceSessionView
         );
       }),
     );
-  }
-
-  String _nextPeriodText(String periodText) {
-    final match = RegExp(
-      r'(\d+)',
-    ).firstMatch(periodText);
-
-    if (match == null) {
-      return "Period 2";
-    }
-
-    final current = int.tryParse(match.group(1)!) ?? 1;
-
-    return "Period ${current + 1}";
   }
 }

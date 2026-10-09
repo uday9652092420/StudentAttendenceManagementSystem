@@ -356,9 +356,12 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                                       flex: 2,
                                       child: Center(
                                         child: GestureDetector(
-                                          onTap: () {
-                                            controller.toggleAttendance(index);
-                                          },
+                                          onTap: controller
+                                                  .studentAttendanceReadOnly
+                                                  .value
+                                              ? null
+                                              : () => controller
+                                                  .toggleAttendance(index),
                                           child: AnimatedContainer(
                                             duration: const Duration(
                                               milliseconds: 200,
@@ -425,7 +428,8 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: controller.students.isEmpty
+                    onPressed: controller.students.isEmpty ||
+                            controller.studentAttendanceReadOnly.value
                         ? null
                         : () async {
                             await controller.saveAttendance();

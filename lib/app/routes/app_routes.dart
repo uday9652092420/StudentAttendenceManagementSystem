@@ -7,6 +7,11 @@ abstract class Routes {
 
   static const dashboard = '/dashboard_view';
   static const String staffAttendanceSession = '/staff-attendance-session';
+  static const String staffAttendanceDetails = '/staff-attendance-details';
+  static const String staffAttendanceHistory = '/staff-attendance-history';
+  static const String staffAttendanceConfirmCheckout =
+      '/staff-attendance-confirm-checkout';
+  static const String staffAttendanceBlocked = '/staff-attendance-blocked';
   static const otpPage = '/otp_view_page';
   static const mealCheckin = "/meal_checkin_view";
 

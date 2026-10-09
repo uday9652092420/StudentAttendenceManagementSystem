@@ -37,6 +37,8 @@ class EndPoints {
   static const sponsorDashboard = "sponsor-dashboard";
   static const String staffAttendanceSessions =
       "staff-period-attendance/sessions";
+  static const String staffAttendanceCurrentSession =
+      "staff-period-attendance/sessions/current";
   static const String staffAttendanceStudentAttendance =
       "staff-period-attendance/sessions";
 
