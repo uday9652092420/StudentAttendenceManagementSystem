@@ -22,6 +22,7 @@ class ErrorModel {
 
 class ExceptionMessages {
   static const connectionTimeout = "Connection timeout";
+  static const transformTimeout = "Transform timeout";
   static const sendTimeout = "Send timeout";
   static const receiveTimeout = "Receive timeout";
   static const badCertificate = "Bad Certificate";
@@ -47,6 +48,8 @@ String handleDioExceptions(DioException e) {
   switch (e.type) {
     case DioExceptionType.connectionTimeout:
       errorMessage = ExceptionMessages.connectionTimeout;
+    case DioExceptionType.transformTimeout:
+      errorMessage = ExceptionMessages.transformTimeout;
     case DioExceptionType.sendTimeout:
       errorMessage = ExceptionMessages.sendTimeout;
     case DioExceptionType.receiveTimeout:

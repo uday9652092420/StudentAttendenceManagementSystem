@@ -62,6 +62,22 @@ class DashboardController extends GetxController {
     return fallback;
   }
 
+  bool _hasSavedAttendance(dynamic value) {
+    if (value is Map) {
+      if (value["attendanceSaved"] == true ||
+          value["saved"] == true ||
+          (value["studentAttendance"] is List &&
+              (value["studentAttendance"] as List).isNotEmpty) ||
+          (value["savedStudentAttendance"] is List &&
+              (value["savedStudentAttendance"] as List).isNotEmpty)) {
+        return true;
+      }
+      return value.values.any(_hasSavedAttendance);
+    }
+    if (value is List) return value.any(_hasSavedAttendance);
+    return false;
+  }
+
   Future<void> handleScannedData(String qrData) async {
     if (_isCheckingIn) return;
     _isCheckingIn = true;
@@ -155,32 +171,30 @@ class DashboardController extends GetxController {
       final alreadyCheckedIn = session["alreadyCheckedIn"] == true;
       final missingCheckout = session["missingCheckout"] == true;
       final restoreSession = alreadyCheckedIn || missingCheckout;
-      dynamic sessionStudentsBody;
-      if (!restoreSession) {
-        final studentsResponse =
-            await repository.getStaffAttendanceSessionStudents(
-          sessionId: sessionId,
+      final studentsResponse =
+          await repository.getStaffAttendanceSessionStudents(
+        sessionId: sessionId,
+      );
+      final sessionStudentsBody = studentsResponse?.data;
+      if (studentsResponse?.statusCode != 200 ||
+          (sessionStudentsBody is Map &&
+              sessionStudentsBody["success"] == false)) {
+        errorToast(
+          _readBackendMessage(
+            sessionStudentsBody,
+            "Unable to load teacher session attendance context.",
+          ),
         );
-        sessionStudentsBody = studentsResponse?.data;
-        if (studentsResponse?.statusCode != 200 ||
-            (sessionStudentsBody is Map &&
-                sessionStudentsBody["success"] == false)) {
-          errorToast(
-            _readBackendMessage(
-              sessionStudentsBody,
-              "Unable to load teacher session attendance context.",
-            ),
-          );
-          return;
-        }
+        return;
       }
+      final studentAttendanceSaved = _hasSavedAttendance(sessionStudentsBody);
 
       final scheduleItemId = _readScheduleItemId(session["currentPeriod"]) ??
           session["initialScheduleItemId"]?.toString() ??
           _readScheduleItemId(session["periods"]) ??
           _readScheduleItemId(sessionStudentsBody) ??
           "";
-      if (!restoreSession && scheduleItemId.isEmpty) {
+      if (!studentAttendanceSaved && scheduleItemId.isEmpty) {
         errorToast("Timetable schedule item not found for this session.");
         return;
       }
@@ -189,7 +203,7 @@ class DashboardController extends GetxController {
       _pendingCheckInRequestId = null;
       if (!restoreSession) successToast("Successfully Scanned");
       Get.toNamed(
-        restoreSession
+        studentAttendanceSaved
             ? Routes.staffAttendanceSession
             : Routes.studentAttendance,
         arguments: {
@@ -197,6 +211,8 @@ class DashboardController extends GetxController {
           "sessionId": sessionId,
           "timetableScheduleItemId": scheduleItemId,
           "missingCheckout": missingCheckout,
+          "studentAttendanceSaved": studentAttendanceSaved,
+          "sessionInfo": session,
           if (sessionStudentsBody != null)
             "sessionStudentsContext": sessionStudentsBody,
         },
@@ -307,7 +323,9 @@ class DashboardController extends GetxController {
 
       final inputImage = InputImage.fromFilePath(image.path);
 
-      final barcodeScanner = BarcodeScanner();
+      final barcodeScanner = BarcodeScanner(
+        formats: [BarcodeFormat.qrCode],
+      );
 
       final barcodes = await barcodeScanner.processImage(inputImage);
 

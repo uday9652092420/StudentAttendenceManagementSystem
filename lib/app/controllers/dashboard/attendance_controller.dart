@@ -216,24 +216,86 @@ class AttendanceController extends GetxController {
       }
 
       final data = _unwrapSessionContext(context);
+      final sessionInfo = arguments["sessionInfo"];
       studentAttendanceReadOnly.value = _hasSavedAttendance(data);
       final requestedScheduleId =
           arguments["timetableScheduleItemId"]?.toString().trim() ?? "";
-      timetableScheduleItemId.value =
-          _findScheduleItemId(data) ?? requestedScheduleId;
+      timetableScheduleItemId.value = _findScheduleItemId(data) ??
+          _findScheduleItemId(sessionInfo) ??
+          requestedScheduleId;
       if (timetableScheduleItemId.value.isEmpty) {
         errorToast("Timetable schedule item not found for this session.");
         return;
       }
 
-      classId.value = _findValue(data, ["classId", "class_id"]) ?? "";
-      courseId.value = _findValue(data, ["courseId", "subjectId"]) ?? "";
-      classController.text =
-          _findValue(data, ["className", "classroomName", "class_name"]) ?? "";
-      courseController.text =
-          _findValue(data, ["subjectName", "courseName", "subject_name"]) ?? "";
-      period.value = _findValue(data, ["periodNumber", "period_number"]) ?? "";
-      periodController.text = _findPeriodLabel(data);
+      classId.value = _findValue(data, ["classId", "class_id"]) ??
+          _findValue(sessionInfo, ["classId", "class_id"]) ??
+          "";
+      courseId.value = _findValue(data, ["courseId", "subjectId"]) ??
+          _findValue(sessionInfo, ["courseId", "subjectId"]) ??
+          "";
+      classController.text = _findDisplayName(
+            data,
+            valueKeys: [
+              "className",
+              "classroomName",
+              "class_name",
+              "classroom_name",
+            ],
+            entityKeys: ["class", "classroom"],
+          ) ??
+          _findDisplayName(
+            sessionInfo,
+            valueKeys: [
+              "className",
+              "classroomName",
+              "class_name",
+              "classroom_name",
+            ],
+            entityKeys: ["class", "classroom"],
+          ) ??
+          "";
+      courseController.text = _findDisplayName(
+            data,
+            valueKeys: [
+              "subjectName",
+              "courseName",
+              "subject_name",
+              "course_name",
+            ],
+            entityKeys: ["subject", "course"],
+          ) ??
+          _findDisplayName(
+            sessionInfo,
+            valueKeys: [
+              "subjectName",
+              "courseName",
+              "subject_name",
+              "course_name",
+            ],
+            entityKeys: ["subject", "course"],
+          ) ??
+          "";
+      period.value = _findValue(data, [
+            "periodNumber",
+            "period_number",
+            "periodName",
+            "period_name",
+            "currentPeriodName",
+            "current_period_name",
+          ]) ??
+          _findValue(sessionInfo, [
+            "periodNumber",
+            "period_number",
+            "periodName",
+            "period_name",
+            "currentPeriodName",
+            "current_period_name",
+          ]) ??
+          "";
+      periodController.text = _findPeriodLabel(data) ??
+          _findPeriodLabel(sessionInfo) ??
+          "Current period unavailable";
 
       final roster = _findSessionStudents(data);
       if (roster == null || roster.isEmpty) {
@@ -313,7 +375,10 @@ class AttendanceController extends GetxController {
     if (value is Map) {
       for (final key in keys) {
         final found = value[key];
-        if (found != null && found.toString().trim().isNotEmpty) {
+        if (found != null &&
+            found is! Map &&
+            found is! List &&
+            found.toString().trim().isNotEmpty) {
           return found.toString();
         }
       }
@@ -325,6 +390,46 @@ class AttendanceController extends GetxController {
       for (final nested in value) {
         final found = _findValue(nested, keys);
         if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  String? _findDisplayName(
+    dynamic value, {
+    required List<String> valueKeys,
+    required List<String> entityKeys,
+  }) {
+    final direct = _findValue(value, valueKeys);
+    if (direct != null) return direct;
+
+    if (value is Map) {
+      for (final key in entityKeys) {
+        final entity = value[key];
+        if (entity is Map) {
+          final name = _findValue(
+            entity,
+            [...valueKeys, "name", "title", "label"],
+          );
+          if (name != null) return name;
+        }
+      }
+      for (final nested in value.values) {
+        final name = _findDisplayName(
+          nested,
+          valueKeys: valueKeys,
+          entityKeys: entityKeys,
+        );
+        if (name != null) return name;
+      }
+    } else if (value is List) {
+      for (final nested in value) {
+        final name = _findDisplayName(
+          nested,
+          valueKeys: valueKeys,
+          entityKeys: entityKeys,
+        );
+        if (name != null) return name;
       }
     }
     return null;
@@ -374,21 +479,66 @@ class AttendanceController extends GetxController {
     return null;
   }
 
-  String _findPeriodLabel(Map<String, dynamic> data) {
-    final current = data["currentPeriod"];
-    if (current is Map) {
-      final periodName = current["period"] ??
-          current["periodNumber"] ??
-          current["period_number"];
-      final subject = current["subject"] ?? current["subjectName"];
-      if (periodName != null) {
-        return "Period $periodName${subject == null ? "" : " • $subject"}";
+  String? _findPeriodLabel(dynamic data) {
+    if (data is Map) {
+      final current = data["currentPeriod"];
+      if (current is Map) {
+        final periodValue = current["period"];
+        final periodName = _findValue(current, [
+              "periodName",
+              "period_name",
+              "periodNumber",
+              "period_number",
+              "currentPeriodName",
+              "current_period_name",
+            ]) ??
+            (periodValue is Map
+                ? _findValue(
+                    periodValue,
+                    ["periodName", "periodNumber", "name"],
+                  )
+                : periodValue?.toString());
+        final subject = _findDisplayName(
+          current,
+          valueKeys: [
+            "subjectName",
+            "courseName",
+            "subject_name",
+            "course_name",
+          ],
+          entityKeys: ["subject", "course"],
+        );
+        if (periodName != null) {
+          final label = periodName.toLowerCase().startsWith("period")
+              ? periodName
+              : "Period $periodName";
+          return "$label${subject == null ? "" : " • $subject"}";
+        }
       }
     }
-    final number = _findValue(data, ["periodNumber", "period_number"]);
-    final subject = _findValue(data, ["subjectName", "subject_name"]);
-    if (number == null) return "Current period unavailable";
-    return "Period $number${subject == null ? "" : " • $subject"}";
+
+    final number = _findValue(data, [
+      "periodName",
+      "period_name",
+      "periodNumber",
+      "period_number",
+      "currentPeriodName",
+      "current_period_name",
+    ]);
+    if (number == null) return null;
+    final subject = _findDisplayName(
+      data,
+      valueKeys: [
+        "subjectName",
+        "courseName",
+        "subject_name",
+        "course_name",
+      ],
+      entityKeys: ["subject", "course"],
+    );
+    final label =
+        number.toLowerCase().startsWith("period") ? number : "Period $number";
+    return "$label${subject == null ? "" : " • $subject"}";
   }
 
   List<Map<String, dynamic>>? _findSessionStudents(dynamic value) {

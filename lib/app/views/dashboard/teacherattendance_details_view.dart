@@ -225,27 +225,14 @@ class TeacherAttendanceDetailsView
                           (period["period"] ?? "Period").toString(),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        if (period["subjectName"] != null ||
-                            period["subject"] != null)
-                          Text((period["subjectName"] ?? period["subject"])
-                              .toString()),
+                        if (period["subjectName"] != null)
+                          Text(period["subjectName"].toString()),
                         if (period["checkedInAt"] != null ||
-                            period["checkedOutAt"] != null ||
-                            period["entry_time"] != null ||
-                            period["exit_time"] != null)
+                            period["checkedOutAt"] != null)
                           Text(
-                            "Entry ${_time((period["checkedInAt"] ?? period["entry_time"])?.toString())}"
-                            " • Exit ${_time((period["checkedOutAt"] ?? period["exit_time"])?.toString())}",
+                            "Entry ${_time(period["checkedInAt"]?.toString())}"
+                            " • Exit ${_time(period["checkedOutAt"]?.toString())}",
                             style: TextStyle(color: Colors.grey.shade700),
-                          ),
-                        if (period["review_required"] == true ||
-                            period["reviewRequired"] == true)
-                          const Text(
-                            "Management review required",
-                            style: TextStyle(
-                              color: Colors.deepOrange,
-                              fontWeight: FontWeight.w600,
-                            ),
                           ),
                       ],
                     ),

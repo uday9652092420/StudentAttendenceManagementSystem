@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:my_new_app/app/repositories/kitchen/kitchen_repository.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart' hide BarcodeFormat;
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 import 'package:my_new_app/app/models/kitchen/meal_scan_model.dart';
@@ -232,7 +232,9 @@ class KitchenDashboardController extends GetxController {
 
       final inputImage = InputImage.fromFilePath(image.path);
 
-      final barcodeScanner = BarcodeScanner();
+      final barcodeScanner = BarcodeScanner(
+        formats: [BarcodeFormat.qrCode],
+      );
 
       final barcodes = await barcodeScanner.processImage(inputImage);
 

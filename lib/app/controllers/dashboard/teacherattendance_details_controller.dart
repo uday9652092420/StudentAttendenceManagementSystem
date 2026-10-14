@@ -89,9 +89,8 @@ class TeacherAttendanceDetailsController extends GetxController {
 
       if (parsed.hasSavedStudentAttendance) {
         studentAttendance.assignAll(parsed.savedStudentAttendance);
-      } else {
-        await _loadSavedStudentAttendance();
       }
+      await _loadSavedStudentAttendance();
     } on DioException catch (error) {
       final backendMessage = _readBackendMessage(error.response?.data);
       debugPrint(

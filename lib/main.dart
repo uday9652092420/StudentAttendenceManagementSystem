@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,15 +10,8 @@ import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/theme/app_theme.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  await SharedPrefsHelper.init();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -28,25 +23,33 @@ void main() async {
     ),
   );
 
-  String languageCode = await SharedPrefsHelper.getString(
-    SharedPrefsHelper.languageCode,
-    defaultValue: 'en',
-  );
+  runApp(const MyApp(initialLocale: Locale('en', 'US')));
+  unawaited(_initializeStartupSettings());
+}
 
-  if (languageCode.isEmpty) languageCode = 'en';
+Future<void> _initializeStartupSettings() async {
+  await Future.wait([
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]),
+    SharedPrefsHelper.init(),
+  ]);
 
-  String countryCode = await SharedPrefsHelper.getString(
-    SharedPrefsHelper.countryCode,
-    defaultValue: 'US',
-  );
-
-  if (countryCode.isEmpty) countryCode = 'US';
-
-  runApp(
-    MyApp(
-      initialLocale: Locale(languageCode, countryCode),
+  final savedLocale = await Future.wait([
+    SharedPrefsHelper.getString(
+      SharedPrefsHelper.languageCode,
+      defaultValue: 'en',
     ),
-  );
+    SharedPrefsHelper.getString(
+      SharedPrefsHelper.countryCode,
+      defaultValue: 'US',
+    ),
+  ]);
+
+  final languageCode = savedLocale[0].isEmpty ? 'en' : savedLocale[0];
+  final countryCode = savedLocale[1].isEmpty ? 'US' : savedLocale[1];
+  Get.updateLocale(Locale(languageCode, countryCode));
 }
 
 class MyApp extends StatelessWidget {

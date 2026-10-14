@@ -52,11 +52,14 @@ class StaffAttendanceSessionController extends GetxController
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && sessionId.isNotEmpty) {
-      loadSession(showErrors: false);
+      loadSession(showErrors: false, allowPeriodNavigation: false);
     }
   }
 
-  Future<void> loadSession({bool showErrors = true}) async {
+  Future<void> loadSession({
+    bool showErrors = true,
+    bool allowPeriodNavigation = true,
+  }) async {
     if (_isRefreshing || sessionId.isEmpty) return;
     _isRefreshing = true;
     try {
@@ -81,7 +84,10 @@ class StaffAttendanceSessionController extends GetxController
               data["status"]?.toString().toUpperCase() == "CLOSED") {
             _refreshTimer?.cancel();
           }
-          _maybeAdvanceToCurrentPeriod(data);
+          _maybeAdvanceToCurrentPeriod(
+            data,
+            allowNavigation: allowPeriodNavigation,
+          );
         } else {
           if (showErrors) errorToast("Invalid attendance session response.");
         }
@@ -150,7 +156,7 @@ class StaffAttendanceSessionController extends GetxController
     _refreshTimer?.cancel();
     _refreshTimer = Timer.periodic(
       const Duration(seconds: 60),
-      (_) => loadSession(showErrors: false),
+      (_) => loadSession(showErrors: false, allowPeriodNavigation: false),
     );
   }
 
@@ -234,7 +240,10 @@ class StaffAttendanceSessionController extends GetxController
     return value is Map ? Map<String, dynamic>.from(value) : null;
   }
 
-  void _maybeAdvanceToCurrentPeriod(Map<String, dynamic> data) {
+  void _maybeAdvanceToCurrentPeriod(
+    Map<String, dynamic> data, {
+    bool allowNavigation = true,
+  }) {
     final checkedOutAt = data["checkedOutAt"];
     if (classroomId.isEmpty ||
         missingCheckout.value ||
@@ -254,6 +263,8 @@ class StaffAttendanceSessionController extends GetxController
     if (currentPeriodId == _currentScheduleItemId) return;
 
     _currentScheduleItemId = currentPeriodId;
+    if (!allowNavigation) return;
+
     Get.offNamed(
       Routes.studentAttendance,
       arguments: {

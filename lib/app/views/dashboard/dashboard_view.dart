@@ -281,6 +281,31 @@ class DashboardView extends GetView<DashboardController> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Get.toNamed(Routes.staffAttendanceHistory);
+                    },
+                    icon: const Icon(Icons.history),
+                    label: const Text(
+                      "Attendance History",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
                 // /// BUTTON
                 // SizedBox(
                 //   width: double.infinity,
