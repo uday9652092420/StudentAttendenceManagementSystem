@@ -89,7 +89,7 @@ class StaffAttendanceSessionController extends GetxController
             allowNavigation: allowPeriodNavigation,
           );
         } else {
-          if (showErrors) errorToast("Invalid attendance session response.");
+          if (showErrors) errorToast("Invalid attendance session response.".tr);
         }
       } else {
         if (showErrors) {
@@ -132,7 +132,7 @@ class StaffAttendanceSessionController extends GetxController
       missingCheckout.value = data["missingCheckout"] == true;
       studentAttendanceSaved.value = _hasSavedStudentAttendance(data);
       if (sessionId.isEmpty) {
-        errorToast("Current session response did not include a session ID.");
+        errorToast("Current session response did not include a session ID.".tr);
         return;
       }
       _startRefreshTimer();
@@ -169,7 +169,7 @@ class StaffAttendanceSessionController extends GetxController
 
   Future<bool> checkOut() async {
     if (sessionId.isEmpty) {
-      errorToast("Attendance session not found.");
+      errorToast("Attendance session not found.".tr);
       return false;
     }
     if (_isCheckingOut) return false;
@@ -191,7 +191,7 @@ class StaffAttendanceSessionController extends GetxController
           !(response.data is Map && response.data["success"] == false)) {
         _checkoutRequestId = null;
         _refreshTimer?.cancel();
-        successToast("Checked out successfully");
+        successToast("Checked out successfully".tr);
         await loadSession();
         Get.offNamed(Routes.staffAttendanceHistory);
         return true;
@@ -213,7 +213,7 @@ class StaffAttendanceSessionController extends GetxController
         if (checkedOutAt != null && checkedOutAt.toString().isNotEmpty) {
           _checkoutRequestId = null;
           _refreshTimer?.cancel();
-          successToast("Checked out successfully");
+          successToast("Checked out successfully".tr);
           Get.offNamed(Routes.staffAttendanceHistory);
           return true;
         }

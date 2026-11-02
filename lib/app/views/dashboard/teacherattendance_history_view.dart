@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/teacherattendance_history_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 
 class TeacherAttendanceHistoryView
@@ -70,7 +71,8 @@ class TeacherAttendanceHistoryView
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("Attendance History"),
+        title: Text("Attendance History".tr),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.sessions.isEmpty) {
@@ -81,7 +83,7 @@ class TeacherAttendanceHistoryView
           return _emptyError(controller.errorMessage.value);
         }
         if (controller.sessions.isEmpty) {
-          return const Center(child: Text("No attendance history found."));
+          return Center(child: Text("No attendance history found.".tr));
         }
 
         return NotificationListener<ScrollNotification>(
@@ -106,7 +108,7 @@ class TeacherAttendanceHistoryView
               if (controller.errorMessage.value.isNotEmpty)
                 TextButton(
                   onPressed: () => controller.loadHistory(),
-                  child: Text(controller.errorMessage.value),
+                  child: Text(controller.errorMessage.value.tr),
                 ),
               const SizedBox(height: 8),
               SizedBox(
@@ -117,7 +119,7 @@ class TeacherAttendanceHistoryView
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text("Check In to Another Class"),
+                  child: Text("Check In to Another Class".tr),
                 ),
               ),
             ],
@@ -137,6 +139,11 @@ class TeacherAttendanceHistoryView
         checkedOutValue == null || checkedOutValue.toString().isEmpty
             ? "Pending"
             : _time(checkedOutValue);
+    final periodSummary = _value(
+      session,
+      ["periodSummary"],
+      fallback: "Teacher Attendance".tr,
+    );
     final periods = session["periods"];
 
     return Container(
@@ -150,19 +157,17 @@ class TeacherAttendanceHistoryView
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "$className • ${_value(session, [
-                  "periodSummary"
-                ], fallback: "Teacher Attendance")}",
+            "$className • $periodSummary",
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 5),
-          if (teacher != "--") Text("Teacher: $teacher"),
-          Text("Date: $date"),
+          if (teacher != "--") Text("${"Teacher".tr}: $teacher"),
+          Text("${"Date".tr}: $date"),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: Text("Check-in: $checkIn")),
-              Expanded(child: Text("Check-out: $checkedOut")),
+              Expanded(child: Text("${"Check-in".tr}: $checkIn")),
+              Expanded(child: Text("${"Check-out".tr}: ${checkedOut.tr}")),
             ],
           ),
           if (periods is List)
@@ -180,8 +185,8 @@ class TeacherAttendanceHistoryView
               ),
               if (period["review_required"] == true ||
                   period["reviewRequired"] == true)
-                const Text(
-                  "Management review required",
+                Text(
+                  "Management review required".tr,
                   style: TextStyle(
                     color: Colors.deepOrange,
                     fontWeight: FontWeight.w600,
@@ -205,7 +210,7 @@ class TeacherAttendanceHistoryView
             OutlinedButton.icon(
               onPressed: () => controller.loadHistory(reset: true),
               icon: const Icon(Icons.refresh),
-              label: const Text("Retry"),
+              label: Text("Retry".tr),
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_new_app/app/controllers/kitchen/meal_checkin_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 class MealCheckinView extends GetView<MealCheckinController> {
   const MealCheckinView({super.key});
@@ -11,8 +12,8 @@ class MealCheckinView extends GetView<MealCheckinController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Meal Check-In",
+        title: Text(
+          "Meal Check-In".tr,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -21,6 +22,7 @@ class MealCheckinView extends GetView<MealCheckinController> {
         backgroundColor: Colors.blue,
         centerTitle: true,
         elevation: 0,
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(
         () => SingleChildScrollView(

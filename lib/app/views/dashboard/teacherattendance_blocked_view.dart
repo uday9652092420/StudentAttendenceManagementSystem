@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 
 class TeacherAttendanceBlockedView extends StatelessWidget {
@@ -44,7 +45,8 @@ class TeacherAttendanceBlockedView extends StatelessWidget {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("Check In Blocked"),
+        title: Text("Check In Blocked".tr),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -54,8 +56,8 @@ class TeacherAttendanceBlockedView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Previous teacher has not checked out",
+                Text(
+                  "Previous teacher has not checked out".tr,
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 17,
@@ -75,7 +77,7 @@ class TeacherAttendanceBlockedView extends StatelessWidget {
             const SizedBox(height: 10),
             _card(
               color: Colors.orange.shade50,
-              child: const Text("Management review required."),
+              child: Text("Management review required.".tr),
             ),
           ],
           const SizedBox(height: 12),
@@ -98,13 +100,13 @@ class TeacherAttendanceBlockedView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text("Retry Check In"),
+              child: Text("Retry Check In".tr),
             ),
           ),
           const SizedBox(height: 10),
           OutlinedButton(
             onPressed: () => Get.back(),
-            child: const Text("Back"),
+            child: Text("Back".tr),
           ),
           const SizedBox(height: 12),
           Text(
@@ -130,6 +132,6 @@ class TeacherAttendanceBlockedView extends StatelessWidget {
 
   Widget _line(String label, String value) => Padding(
         padding: const EdgeInsets.only(top: 6),
-        child: Text("$label: $value"),
+        child: Text("${label.tr}: $value"),
       );
 }

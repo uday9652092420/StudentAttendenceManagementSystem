@@ -87,7 +87,7 @@ class AttendanceController extends GetxController {
     final teacherId = await SharedPrefsHelper.getString("staffId");
 
     if (teacherId.isEmpty) {
-      errorToast("Teacher information not found.");
+      errorToast("Teacher information not found.".tr);
       return;
     }
 
@@ -224,7 +224,7 @@ class AttendanceController extends GetxController {
           _findScheduleItemId(sessionInfo) ??
           requestedScheduleId;
       if (timetableScheduleItemId.value.isEmpty) {
-        errorToast("Timetable schedule item not found for this session.");
+        errorToast("Timetable schedule item not found for this session.".tr);
         return;
       }
 
@@ -621,23 +621,23 @@ class AttendanceController extends GetxController {
   Future<void> saveAttendance() async {
     if (isSaving.value) return;
     if (studentAttendanceReadOnly.value) {
-      errorToast("Attendance for this period has already been saved.");
+      errorToast("Attendance for this period has already been saved.".tr);
       return;
     }
 
     try {
       if (sessionId.value.isEmpty) {
-        errorToast("Attendance session not found.");
+        errorToast("Attendance session not found.".tr);
         return;
       }
 
       if (timetableScheduleItemId.value.isEmpty) {
-        errorToast("Timetable schedule item not found.");
+        errorToast("Timetable schedule item not found.".tr);
         return;
       }
 
       if (students.isEmpty) {
-        errorToast("No students are available to save.");
+        errorToast("No students are available to save.".tr);
         return;
       }
 
@@ -648,7 +648,7 @@ class AttendanceController extends GetxController {
         final status = toApiStatus(student.status);
         if (studentId.isEmpty || !allowedStatuses.contains(status)) {
           errorToast(
-            "Every student must have an ID and valid attendance status.",
+            "Every student must have an ID and valid attendance status.".tr,
           );
           return;
         }
@@ -699,10 +699,10 @@ class AttendanceController extends GetxController {
           !backendRejected) {
         _pendingSaveRequestId = null;
         _pendingSavePayload = null;
-        successToast("Attendance Saved Successfully");
+        successToast("Attendance Saved Successfully".tr);
 
         if (sessionId.value.isEmpty) {
-          errorToast("Attendance session not found.");
+          errorToast("Attendance session not found.".tr);
           return;
         }
 
@@ -720,7 +720,7 @@ class AttendanceController extends GetxController {
       }
     } catch (e) {
       print("Save attendance exception: ${e.runtimeType}");
-      errorToast("Failed to save attendance. Please retry.");
+      errorToast("Failed to save attendance. Please retry.".tr);
     } finally {
       isSaving.value = false;
     }

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth/lang_selection_controller.dart';
+import '../../custome_widgets/app_language_switcher.dart';
 
 class LangSelectionView extends GetView<LangSelectionController> {
   const LangSelectionView({super.key});
@@ -9,7 +10,10 @@ class LangSelectionView extends GetView<LangSelectionController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('select_language'.tr)),
+      appBar: AppBar(
+        title: Text('select_language'.tr),
+        actions: const [AppLanguageSwitcher()],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -23,10 +27,10 @@ class LangSelectionView extends GetView<LangSelectionController> {
             ),
             ElevatedButton(
               onPressed: () {
-                controller.selectedValue.value = 'ar';
+                controller.selectedValue.value = 'ur';
                 controller.changeLanguage();
               },
-              child: Text('arabic'.tr),
+              child: Text('urdu'.tr),
             ),
           ],
         ),

@@ -5,29 +5,16 @@ import '../../helpers/shared_preferences.dart';
 
 class LangSelectionController extends GetxController {
   var selectedValue = 'en'.obs;
-  @override
-  void onInit() async {
-    String? languageCode = await SharedPrefsHelper.getString(
-      SharedPrefsHelper.languageCode,
-    );
 
-    //selectedValue.value = languageCode;
-
-    super.onInit();
-  }
-
-  void changeLanguage() {
-    // SharedPrefsHelper.setString(SharedPrefsHelper.lang, selectedValue.value);
-    //
-
+  Future<void> changeLanguage() async {
     if (selectedValue.value == 'en') {
-      SharedPrefsHelper.setString(SharedPrefsHelper.languageCode, 'en');
-      SharedPrefsHelper.setString(SharedPrefsHelper.countryCode, 'US');
+      await SharedPrefsHelper.setString(SharedPrefsHelper.languageCode, 'en');
+      await SharedPrefsHelper.setString(SharedPrefsHelper.countryCode, 'US');
       Get.updateLocale(const Locale('en', 'US'));
     } else {
-      SharedPrefsHelper.setString(SharedPrefsHelper.languageCode, 'ar');
-      SharedPrefsHelper.setString(SharedPrefsHelper.countryCode, 'SA');
-      Get.updateLocale(const Locale('ar', 'SA'));
+      await SharedPrefsHelper.setString(SharedPrefsHelper.languageCode, 'ur');
+      await SharedPrefsHelper.setString(SharedPrefsHelper.countryCode, 'PK');
+      Get.updateLocale(const Locale('ur', 'PK'));
     }
     Get.offNamed('/login');
   }

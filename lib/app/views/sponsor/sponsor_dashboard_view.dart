@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/sponsor/sponsor_dashboard_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 class SponsorDashboardView extends GetView<SponsorDashboardController> {
   const SponsorDashboardView({super.key});
@@ -13,14 +14,15 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
         backgroundColor: Colors.blue,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Sponsor Dashboard',
+        title: Text(
+          'Sponsor Dashboard'.tr,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
+          const AppLanguageSwitcher(),
           IconButton(
             onPressed: controller.logout,
             icon: const Icon(
@@ -43,7 +45,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
           }
 
           if (dashboard == null) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Column(
@@ -56,7 +58,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                     ),
                     SizedBox(height: 12),
                     Text(
-                      'No Dashboard Data Available',
+                      'No Dashboard Data Available'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -118,18 +120,18 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'My Sponsored Students',
+                  'My Sponsored Students'.tr,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 const SizedBox(height: 12),
                 if (controller.students.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
                     child: Center(
                       child: Text(
-                        'No Sponsored Students Found',
+                        'No Sponsored Students Found'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
@@ -210,7 +212,7 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                                       TextButton(
                                         onPressed: () =>
                                             controller.viewStudent(student),
-                                        child: const Text('View Profile'),
+                                        child: Text('View Profile'.tr),
                                       ),
                                     ],
                                   ),
@@ -279,8 +281,8 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Kitchen Dashboard',
+                          Text(
+                            'Kitchen Dashboard'.tr,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -347,8 +349,8 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Kitchen Photos',
+                          Text(
+                            'Kitchen Photos'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -391,8 +393,8 @@ class SponsorDashboardView extends GetView<SponsorDashboardController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Progress Report',
+                          Text(
+                            'Progress Report'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 22,

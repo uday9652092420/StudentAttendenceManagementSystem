@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/teacherattendance_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 class TeacherAttendanceCheckoutView
     extends GetView<StaffAttendanceSessionController> {
@@ -51,19 +52,20 @@ class TeacherAttendanceCheckoutView
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("Confirm Check Out"),
+        title: Text("Confirm Check Out".tr),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(() {
         final session = _session(controller.sessionData);
         final className = _value(
           session,
           ["className", "classroomName", "class_name"],
-          fallback: "Class unavailable",
+          fallback: "Class unavailable".tr,
         );
         final teacherName = _value(
           session,
           ["teacherName", "staffName", "teacher_name"],
-          fallback: "Teacher",
+          fallback: "Teacher".tr,
         );
         final checkIn = _formatTime(
           _value(session, ["checkedInAt", "checkInAt"]),
@@ -96,7 +98,7 @@ class TeacherAttendanceCheckoutView
                       Expanded(
                         child: _timeColumn(
                           "Check-out",
-                          isCheckedOut ? _formatTime(checkedOut) : "Pending",
+                          isCheckedOut ? _formatTime(checkedOut) : "Pending".tr,
                         ),
                       ),
                     ],
@@ -110,13 +112,13 @@ class TeacherAttendanceCheckoutView
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Ready to check out?",
+                  Text(
+                    "Ready to check out?".tr,
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Your check-out time is recorded when you confirm.",
+                    "Your check-out time is recorded when you confirm.".tr,
                     style: TextStyle(color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 12),
@@ -129,9 +131,10 @@ class TeacherAttendanceCheckoutView
             const SizedBox(height: 12),
             _card(
               color: Colors.blue.shade50,
-              child: const Text(
+              child: Text(
                 "The classroom will be released after successful check-out. "
-                "The next teacher can then check in.",
+                        .tr +
+                    "The next teacher can then check in.".tr,
               ),
             ),
             const SizedBox(height: 14),
@@ -157,13 +160,13 @@ class TeacherAttendanceCheckoutView
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text("Confirm Check Out"),
+                    : Text("Confirm Check Out".tr),
               ),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
               onPressed: Get.back,
-              child: const Text("Back"),
+              child: Text("Back".tr),
             ),
           ],
         );
@@ -186,9 +189,9 @@ class TeacherAttendanceCheckoutView
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600)),
+        Text(label.tr, style: TextStyle(color: Colors.grey.shade600)),
         const SizedBox(height: 3),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Text(value.tr, style: const TextStyle(fontWeight: FontWeight.w600)),
       ],
     );
   }

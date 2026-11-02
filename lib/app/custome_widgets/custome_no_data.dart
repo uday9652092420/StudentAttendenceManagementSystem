@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 
 import '../theme/app_theme.dart';
 
-Widget noDataAvailable({imagePath = "assets/nodata/no_data.png", title = "cons_no_data"}) {
+Widget noDataAvailable({
+  String imagePath = "assets/nodata/no_data.png",
+  String title = "cons_no_data",
+}) {
   return Container(
     // alignment: Alignment.center,
     // margin: const EdgeInsets.only(top: 50),
@@ -23,7 +26,7 @@ Widget noDataAvailable({imagePath = "assets/nodata/no_data.png", title = "cons_n
           height: 200,
         ),
         // const SizedBox(height: 10),
-        Text("$title".tr,
+        Text(title.tr,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,

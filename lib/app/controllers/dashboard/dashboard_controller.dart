@@ -30,7 +30,7 @@ class DashboardController extends GetxController {
   Future<void> retryCheckIn(String classroomId) async {
     final normalizedClassroomId = classroomId.trim();
     if (normalizedClassroomId.isEmpty) {
-      errorToast("Classroom information is missing.");
+      errorToast("Classroom information is missing.".tr);
       return;
     }
     _pendingCheckInQrCode = normalizedClassroomId;
@@ -91,7 +91,7 @@ class DashboardController extends GetxController {
               "";
 
       if (classroomId.isEmpty) {
-        errorToast("Invalid QR Code");
+        errorToast("Invalid QR Code".tr);
         return;
       }
 
@@ -107,7 +107,7 @@ class DashboardController extends GetxController {
       /// -------------------------------
       if (role.contains("teacher") || role.contains("lecturer")) {
         if (staffId.isEmpty) {
-          errorToast("Teacher information not found.");
+          errorToast("Teacher information not found.".tr);
           return;
         }
         await _checkInTeacher(classroomId);
@@ -117,7 +117,7 @@ class DashboardController extends GetxController {
       /// -------------------------------
       /// Other Roles
       /// -------------------------------
-      successToast("Successfully Scanned");
+      successToast("Successfully Scanned".tr);
 
       Get.toNamed(
         Routes.studentAttendance,
@@ -127,7 +127,7 @@ class DashboardController extends GetxController {
       );
     } catch (e) {
       print("QR ERROR => $e");
-      errorToast("Invalid QR Code");
+      errorToast("Invalid QR Code".tr);
     } finally {
       _isCheckingIn = false;
     }
@@ -164,7 +164,7 @@ class DashboardController extends GetxController {
       final session = _unwrapMap(checkInBody["data"]);
       final sessionId = session["sessionId"]?.toString() ?? "";
       if (sessionId.isEmpty) {
-        errorToast("Check-in response did not include a session ID.");
+        errorToast("Check-in response did not include a session ID.".tr);
         return;
       }
 
@@ -195,13 +195,13 @@ class DashboardController extends GetxController {
           _readScheduleItemId(sessionStudentsBody) ??
           "";
       if (!studentAttendanceSaved && scheduleItemId.isEmpty) {
-        errorToast("Timetable schedule item not found for this session.");
+        errorToast("Timetable schedule item not found for this session.".tr);
         return;
       }
 
       _pendingCheckInQrCode = null;
       _pendingCheckInRequestId = null;
-      if (!restoreSession) successToast("Successfully Scanned");
+      if (!restoreSession) successToast("Successfully Scanned".tr);
       Get.toNamed(
         studentAttendanceSaved
             ? Routes.staffAttendanceSession
@@ -332,14 +332,14 @@ class DashboardController extends GetxController {
       await barcodeScanner.close();
 
       if (barcodes.isEmpty) {
-        errorToast("No QR Code found in image");
+        errorToast("No QR Code found in image".tr);
         return;
       }
 
       final qrCode = barcodes.first.rawValue;
 
       if (qrCode == null || qrCode.isEmpty) {
-        errorToast("Invalid QR Code");
+        errorToast("Invalid QR Code".tr);
         return;
       }
 

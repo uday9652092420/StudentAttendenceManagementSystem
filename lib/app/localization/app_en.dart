@@ -1,4 +1,8 @@
 const Map<String, String> enUS = {
+  "select_language": "Select language",
+  "english": "English",
+  "urdu": "Urdu",
+  "change_language": "Change language",
   "app_tittle": "Wahat Al Shifa",
   "login_txt_welcom": "Welcome to Wahat Al Shifa",
   "welcome": "Welcome",

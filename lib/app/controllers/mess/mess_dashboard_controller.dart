@@ -50,14 +50,14 @@ class MessDashboardController extends GetxController {
   }
 
   void recalculateMeals() {
-    successToast("Meals recalculated successfully");
+    successToast("Meals recalculated successfully".tr);
   }
 
   void printForecast() {
-    successToast("Printing forecast...");
+    successToast("Printing forecast...".tr);
   }
 
   void sendKitchen() {
-    successToast("Forecast sent to Kitchen");
+    successToast("Forecast sent to Kitchen".tr);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 import 'package:my_new_app/app/controllers/securitycontrollers/add_movement_controller.dart';
 
@@ -93,15 +94,16 @@ class AddMovementView extends GetView<AddMovementController> {
         iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        title: const Center(
+        title: Center(
           child: Text(
-            "Security Check Movement",
+            "Security Check Movement".tr,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -265,7 +267,7 @@ class AddMovementView extends GetView<AddMovementController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Icon(
                             Icons.logout,
@@ -273,7 +275,7 @@ class AddMovementView extends GetView<AddMovementController> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            "Out Movement (Exit)",
+                            "Out Movement (Exit)".tr,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -290,7 +292,7 @@ class AddMovementView extends GetView<AddMovementController> {
                         ),
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: "Out Date & Time",
+                          labelText: "Out Date & Time".tr,
                           prefixIcon: const Icon(
                             Icons.calendar_today,
                           ),
@@ -306,7 +308,7 @@ class AddMovementView extends GetView<AddMovementController> {
                         readOnly:
                             controller.isSecondScan || controller.isThirdScan,
                         decoration: InputDecoration(
-                          labelText: "Out Security Guard",
+                          labelText: "Out Security Guard".tr,
                           prefixIcon: const Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -316,7 +318,7 @@ class AddMovementView extends GetView<AddMovementController> {
                       // TextField(
                       //   controller: controller.outSecurityGuardController,
                       //   decoration: InputDecoration(
-                      //     labelText: "Out Security Guard",
+                      //     labelText: "Out Security Guard".tr,
                       //     prefixIcon: const Icon(
                       //       Icons.security,
                       //     ),
@@ -331,7 +333,7 @@ class AddMovementView extends GetView<AddMovementController> {
                       //   controller: controller.outNotesController,
                       //   maxLines: 3,
                       //   decoration: InputDecoration(
-                      //     labelText: "Notes",
+                      //     labelText: "Notes".tr,
                       //     border: OutlineInputBorder(
                       //       borderRadius: BorderRadius.circular(12),
                       //     ),
@@ -343,8 +345,8 @@ class AddMovementView extends GetView<AddMovementController> {
                           value: controller.confirmStudentLeft.value,
                           activeColor: Colors.blue,
                           contentPadding: EdgeInsets.zero,
-                          title: const Text(
-                            "Confirm student has left the hostel",
+                          title: Text(
+                            "Confirm student has left the hostel".tr,
                           ),
                           onChanged: outDone
                               ? null
@@ -372,7 +374,7 @@ class AddMovementView extends GetView<AddMovementController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Icon(
                             Icons.login,
@@ -380,7 +382,7 @@ class AddMovementView extends GetView<AddMovementController> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            "Return Movement (Entry)",
+                            "Return Movement (Entry)".tr,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -395,7 +397,7 @@ class AddMovementView extends GetView<AddMovementController> {
                         ),
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: "Return Date & Time",
+                          labelText: "Return Date & Time".tr,
                           prefixIcon: const Icon(
                             Icons.calendar_today,
                           ),
@@ -409,7 +411,7 @@ class AddMovementView extends GetView<AddMovementController> {
                         controller: controller.returnSecurityGuardController,
                         readOnly: !controller.isSecondScan,
                         decoration: InputDecoration(
-                          labelText: "Return Security Guard",
+                          labelText: "Return Security Guard".tr,
                           prefixIcon: const Icon(Icons.security),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -421,7 +423,7 @@ class AddMovementView extends GetView<AddMovementController> {
                       //   controller: controller.returnNotesController,
                       //   maxLines: 3,
                       //   decoration: InputDecoration(
-                      //     labelText: "Return Notes",
+                      //     labelText: "Return Notes".tr,
                       //     border: OutlineInputBorder(
                       //       borderRadius: BorderRadius.circular(12),
                       //     ),
@@ -433,8 +435,8 @@ class AddMovementView extends GetView<AddMovementController> {
                           value: controller.confirmStudentReturned.value,
                           activeColor: Colors.green,
                           contentPadding: EdgeInsets.zero,
-                          title: const Text(
-                            "Confirm student has returned to the hostel",
+                          title: Text(
+                            "Confirm student has returned to the hostel".tr,
                           ),
                           onChanged: controller.isSecondScan
                               ? (value) {
@@ -465,13 +467,13 @@ class AddMovementView extends GetView<AddMovementController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 children: [
                                   Icon(Icons.note_alt_outlined,
                                       color: Colors.blue),
                                   SizedBox(width: 8),
                                   Text(
-                                    "Notes",
+                                    "Notes".tr,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -484,7 +486,7 @@ class AddMovementView extends GetView<AddMovementController> {
                                 controller: controller.outNotesController,
                                 maxLines: 4,
                                 decoration: InputDecoration(
-                                  hintText: "Enter remarks / notes",
+                                  hintText: "Enter remarks / notes".tr,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -511,7 +513,7 @@ class AddMovementView extends GetView<AddMovementController> {
                             } else if (outDone && !returnDone) {
                               await controller.updateReturnMovement();
                             } else {
-                              errorToast("Movement Completed");
+                              errorToast("Movement Completed".tr);
                             }
                           },
                     style: ElevatedButton.styleFrom(

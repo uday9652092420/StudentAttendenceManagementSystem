@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -19,14 +20,15 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
         backgroundColor: Colors.blue,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Kitchen Supervisor Dashboard",
+        title: Text(
+          "Kitchen Supervisor Dashboard".tr,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
+          const AppLanguageSwitcher(),
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.white,
@@ -37,20 +39,20 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  title: const Text(
-                    "Logout",
+                  title: Text(
+                    "Logout".tr,
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                  content: const Text(
-                    "Are you sure you want to logout?",
+                  content: Text(
+                    "Are you sure you want to logout?".tr,
                     style: TextStyle(color: Colors.black87),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(result: false),
-                      child: const Text(
-                        "Cancel",
+                      child: Text(
+                        "Cancel".tr,
                         style: TextStyle(color: Colors.black87),
                       ),
                     ),
@@ -63,7 +65,7 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text("Logout"),
+                      child: Text("Logout".tr),
                     ),
                   ],
                 ),
@@ -110,8 +112,8 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Today's Date",
+                        Text(
+                          "Today's Date".tr,
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.black,
@@ -176,7 +178,7 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                 () => DropdownButtonFormField<String>(
                   initialValue: controller.selectedMeal.value,
                   decoration: InputDecoration(
-                    labelText: "Meal Type",
+                    labelText: "Meal Type".tr,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -205,8 +207,8 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                 height: 55,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.qr_code_scanner),
-                  label: const Text(
-                    "Scan Student QR",
+                  label: Text(
+                    "Scan Student QR".tr,
                     style: TextStyle(fontSize: 18),
                   ),
                   onPressed: () {
@@ -226,8 +228,8 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                     backgroundColor: Colors.green,
                   ),
                   icon: const Icon(Icons.photo_library),
-                  label: const Text(
-                    "Upload QR Image",
+                  label: Text(
+                    "Upload QR Image".tr,
                     style: TextStyle(fontSize: 18),
                   ),
                   onPressed: () {
@@ -238,10 +240,10 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
 
               const SizedBox(height: 25),
 
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Recent Scans",
+                  "Recent Scans".tr,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -252,10 +254,10 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
               const SizedBox(height: 12),
 
               controller.recentScans.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Padding(
                         padding: EdgeInsets.all(20),
-                        child: Text("No Records Found"),
+                        child: Text("No Records Found".tr),
                       ),
                     )
                   : ListView.builder(
@@ -288,9 +290,9 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Roll No : ${student.rollNo}"),
-                                Text("Meal : ${student.mealType}"),
-                                Text("Room : ${student.roomNo}"),
+                                Text("${"Roll No :".tr} ${student.rollNo}"),
+                                Text("${"Meal :".tr} ${student.mealType}"),
+                                Text("${"Room :".tr} ${student.roomNo}"),
                               ],
                             ),
                             trailing: Text(

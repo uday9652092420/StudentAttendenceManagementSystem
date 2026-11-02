@@ -28,6 +28,8 @@ class EndPoints {
 
   // Masjid Attendance
   static const saveMasjidAttendance = "masjid-attendance";
+  static const masjidAttendanceCourses = "masjid-attendance/courses";
+  static const masjidAttendanceSessions = "masjid-attendance";
 
   // Kitchen
   static const kitchenStudentByQr = "kitchen-meal-forecast/qr/student/";

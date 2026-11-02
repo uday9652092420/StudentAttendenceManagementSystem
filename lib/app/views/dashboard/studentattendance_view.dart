@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:my_new_app/app/controllers/dashboard/attendance_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 class StudentAttendanceView extends GetView<AttendanceController> {
   const StudentAttendanceView({super.key});
@@ -17,13 +18,14 @@ class StudentAttendanceView extends GetView<AttendanceController> {
           backgroundColor: Colors.blue,
           elevation: 0,
           centerTitle: true,
-          title: const Text(
-            "Period Wise Attendance",
+          title: Text(
+            "Period Wise Attendance".tr,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
+          actions: const [AppLanguageSwitcher()],
         ),
         body: Obx(() {
           if (controller.isLoading.value) {
@@ -79,8 +81,8 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Today's Date",
+                            Text(
+                              "Today's Date".tr,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 14,
@@ -118,7 +120,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                         controller: controller.courseController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: "Course Name",
+                          labelText: "Course Name".tr,
                           filled: true,
                           fillColor: Colors.grey.shade100,
                           prefixIcon: const Icon(Icons.menu_book),
@@ -134,7 +136,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                         controller: controller.classController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: "Class Name",
+                          labelText: "Class Name".tr,
                           filled: true,
                           fillColor: Colors.grey.shade100,
                           prefixIcon: const Icon(Icons.class_),
@@ -148,7 +150,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                         controller: controller.periodController,
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: "Current Period",
+                          labelText: "Current Period".tr,
                           filled: true,
                           fillColor: Colors.grey.shade100,
                           prefixIcon: const Icon(Icons.schedule),
@@ -285,12 +287,12 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                   child: Column(
                     children: [
                       /// HEADER
-                      const Row(
+                      Row(
                         children: [
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "No",
+                              "No".tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -299,7 +301,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                           Expanded(
                             flex: 4,
                             child: Text(
-                              "Student Name",
+                              "Student Name".tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -308,7 +310,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "Status",
+                              "Status".tr,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -322,11 +324,11 @@ class StudentAttendanceView extends GetView<AttendanceController> {
 
                       /// STUDENTS
                       controller.students.isEmpty
-                          ? const Padding(
+                          ? Padding(
                               padding: EdgeInsets.all(20),
                               child: Center(
                                 child: Text(
-                                  "No Students Found",
+                                  "No Students Found".tr,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -442,8 +444,8 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text(
-                      "Save Attendance",
+                    child: Text(
+                      "Save Attendance".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -477,7 +479,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              label,
+              label.tr,
               maxLines: 1,
               textAlign: TextAlign.center,
               style: TextStyle(

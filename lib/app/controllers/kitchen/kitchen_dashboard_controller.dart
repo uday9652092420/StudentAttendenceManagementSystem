@@ -127,7 +127,7 @@ class KitchenDashboardController extends GetxController {
       }
 
       if (studentId.isEmpty) {
-        errorToast("Invalid QR Code");
+        errorToast("Invalid QR Code".tr);
         return;
       }
 
@@ -138,12 +138,12 @@ class KitchenDashboardController extends GetxController {
       print(response?.data);
 
       if (response == null || response.statusCode != 200) {
-        errorToast("Student not found");
+        errorToast("Student not found".tr);
         return;
       }
 
       if (response.data["success"] != true) {
-        errorToast("Student not found");
+        errorToast("Student not found".tr);
         return;
       }
       final student = response.data["data"];
@@ -165,7 +165,7 @@ class KitchenDashboardController extends GetxController {
       }
     } catch (e) {
       print(e);
-      errorToast("Unable to load student details");
+      errorToast("Unable to load student details".tr);
     } finally {
       isLoading.value = false;
     }
@@ -241,14 +241,14 @@ class KitchenDashboardController extends GetxController {
       await barcodeScanner.close();
 
       if (barcodes.isEmpty) {
-        errorToast("No QR Code Found");
+        errorToast("No QR Code Found".tr);
         return;
       }
 
       final qrCode = barcodes.first.rawValue;
 
       if (qrCode == null || qrCode.isEmpty) {
-        errorToast("Invalid QR Code");
+        errorToast("Invalid QR Code".tr);
         return;
       }
 

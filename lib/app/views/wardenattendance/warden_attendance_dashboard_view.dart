@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/warden/warden_attendance_dashboard_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/custome_widgets/logout.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
@@ -18,11 +19,12 @@ class WardenAttendanceDashboardView
         backgroundColor: Colors.blue,
         //foregroundColor: Colors.black,
         centerTitle: true,
+        actions: const [AppLanguageSwitcher()],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              "Warden Dashboard",
+            Text(
+              "Warden Dashboard".tr,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -36,20 +38,20 @@ class WardenAttendanceDashboardView
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    title: const Text(
-                      'Logout',
+                    title: Text(
+                      'Logout'.tr,
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                    content: const Text(
-                      'Are you sure you want to logout?',
+                    content: Text(
+                      'Are you sure you want to logout?'.tr,
                       style: TextStyle(color: Colors.black87),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Get.back(result: false),
-                        child: const Text(
-                          'No',
+                        child: Text(
+                          'No'.tr,
                           style: TextStyle(color: Colors.black87),
                         ),
                       ),
@@ -62,7 +64,7 @@ class WardenAttendanceDashboardView
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Yes'),
+                        child: Text('Yes'.tr),
                       ),
                     ],
                   ),
@@ -82,14 +84,14 @@ class WardenAttendanceDashboardView
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(),
           );
         }
 
         if (controller.blocks.isEmpty) {
-          return const Center(
-            child: Text("No Blocks Found"),
+          return Center(
+            child: Text("No Blocks Found".tr),
           );
         }
         return SingleChildScrollView(
@@ -99,8 +101,8 @@ class WardenAttendanceDashboardView
             children: [
               const SizedBox(height: 6),
 
-              const Text(
-                "Take and manage daily student attendance by floor.",
+              Text(
+                "Take and manage daily student attendance by floor.".tr,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -258,10 +260,10 @@ class WardenAttendanceDashboardView
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Row(
                               children: [
-                                const Expanded(
+                                Expanded(
                                   flex: 2,
                                   child: Text(
-                                    "Session",
+                                    "Session".tr,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -322,8 +324,8 @@ class WardenAttendanceDashboardView
                                       color: Colors.blue,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Text(
-                                      "Take Attendance",
+                                    child: Text(
+                                      "Take Attendance".tr,
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
@@ -369,8 +371,8 @@ class WardenAttendanceDashboardView
               );
             },
             icon: const Icon(Icons.add),
-            label: const Text(
-              "Take Attendance",
+            label: Text(
+              "Take Attendance".tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -491,7 +493,7 @@ class WardenAttendanceDashboardView
     return Obx(() {
       return InputDecorator(
         decoration: InputDecoration(
-          labelText: "Select Hostel / Block",
+          labelText: "Select Hostel / Block".tr,
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -504,7 +506,7 @@ class WardenAttendanceDashboardView
                 ? null
                 : controller.selectedBlockId.value,
             isExpanded: true,
-            hint: const Text("Select Block"),
+            hint: Text("Select Block".tr),
             items: controller.blocks.map((block) {
               return DropdownMenuItem(
                 value: block.id,

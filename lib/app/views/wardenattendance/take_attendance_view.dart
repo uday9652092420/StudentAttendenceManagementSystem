@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/warden/take_attendance_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:intl/intl.dart';
 
 class TakeAttendanceView extends GetView<TakeAttendanceController> {
@@ -14,13 +15,14 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: const Text(
-          "Take Attendance",
+        title: Text(
+          "Take Attendance".tr,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: const [AppLanguageSwitcher()],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
@@ -33,7 +35,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                   foregroundColor: Colors.black,
                 ),
                 onPressed: () => Get.back(),
-                child: const Text("Cancel"),
+                child: Text("Cancel".tr),
               ),
             ),
             const SizedBox(width: 12),
@@ -56,7 +58,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text("Save Attendance"),
+                      : Text("Save Attendance".tr),
                 ),
               ),
             ),
@@ -84,7 +86,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                         readOnly: true,
                         initialValue: currentDate,
                         decoration: InputDecoration(
-                          labelText: "Date",
+                          labelText: "Date".tr,
                           labelStyle: const TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -103,7 +105,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           readOnly: true,
                           initialValue: controller.blockName.value,
                           decoration: InputDecoration(
-                            labelText: "Hostel Block",
+                            labelText: "Hostel Block".tr,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -115,7 +117,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                         () => DropdownButtonFormField<String>(
                           initialValue: controller.selectedFloorId.value,
                           decoration: InputDecoration(
-                            labelText: "Floor",
+                            labelText: "Floor".tr,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -160,7 +162,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
               /// SEARCH
               TextField(
                 decoration: InputDecoration(
-                  hintText: "Search by Name / ID",
+                  hintText: "Search by Name / ID".tr,
                   hintStyle: const TextStyle(color: Colors.black54),
                   prefixIcon: const Icon(Icons.search, color: Colors.blue),
                   filled: true,
@@ -189,7 +191,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                   },
                   children: [
                     /// Header
-                    const TableRow(
+                    TableRow(
                       decoration: BoxDecoration(
                         color: Colors.white,
                       ),
@@ -198,7 +200,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           padding: EdgeInsets.all(10),
                           child: Center(
                             child: Text(
-                              "Room No",
+                              "Room No".tr,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -207,7 +209,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           padding: EdgeInsets.all(10),
                           child: Center(
                             child: Text(
-                              "Student Name",
+                              "Student Name".tr,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -216,7 +218,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           padding: EdgeInsets.all(10),
                           child: Center(
                             child: Text(
-                              "Status",
+                              "Status".tr,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -225,7 +227,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           padding: EdgeInsets.all(10),
                           child: Center(
                             child: Text(
-                              "Remarks",
+                              "Remarks".tr,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -260,22 +262,22 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                                 isDense: true,
                                 border: OutlineInputBorder(),
                               ),
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
                                   value: "Present",
-                                  child: Text("Present"),
+                                  child: Text("Present".tr),
                                 ),
                                 DropdownMenuItem(
                                   value: "Absent",
-                                  child: Text("Absent"),
+                                  child: Text("Absent".tr),
                                 ),
                                 DropdownMenuItem(
                                   value: "Leave",
-                                  child: Text("Leave"),
+                                  child: Text("Leave".tr),
                                 ),
                                 DropdownMenuItem(
                                   value: "Out Pass",
-                                  child: Text("Out Pass"),
+                                  child: Text("Out Pass".tr),
                                 ),
                               ],
                               onChanged: (value) {
@@ -292,8 +294,8 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                             padding: const EdgeInsets.all(6),
                             child: TextFormField(
                               initialValue: student.remarks,
-                              decoration: const InputDecoration(
-                                hintText: "Remarks",
+                              decoration: InputDecoration(
+                                hintText: "Remarks".tr,
                                 isDense: true,
                                 border: OutlineInputBorder(),
                               ),
@@ -347,7 +349,7 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
         style: const TextStyle(fontSize: 14, color: Colors.black),
         children: [
           TextSpan(
-            text: "$title : ",
+            text: "${title.tr} : ",
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           TextSpan(

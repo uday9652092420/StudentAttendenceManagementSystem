@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/teacherattendance_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 
@@ -167,18 +168,19 @@ class StaffAttendanceSessionView
             ),
           ),
         ),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.sessionData.isEmpty) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(),
           );
         }
 
         if (controller.sessionData.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              "Unable to load attendance session.",
+              "Unable to load attendance session.".tr,
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -260,8 +262,8 @@ class StaffAttendanceSessionView
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "Check in",
+                                Text(
+                                  "Check in".tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.black54,
@@ -283,8 +285,8 @@ class StaffAttendanceSessionView
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "Check out",
+                                Text(
+                                  "Check out".tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.black54,
@@ -332,7 +334,7 @@ class StaffAttendanceSessionView
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Student attendance saved",
+                          "Student attendance saved".tr,
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontSize: 17,
@@ -341,7 +343,7 @@ class StaffAttendanceSessionView
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "The saved student register is read-only.",
+                          "The saved student register is read-only.".tr,
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontSize: 14,
@@ -377,7 +379,7 @@ class StaffAttendanceSessionView
                     onPressed: () {
                       final sessionId = controller.sessionId.trim();
                       if (sessionId.isEmpty) {
-                        errorToast("Attendance session ID is missing.");
+                        errorToast("Attendance session ID is missing.".tr);
                         return;
                       }
 
@@ -397,8 +399,8 @@ class StaffAttendanceSessionView
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      "View Attendance Details",
+                    child: Text(
+                      "View Attendance Details".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -421,7 +423,8 @@ class StaffAttendanceSessionView
                         : () {
                             final sessionId = controller.sessionId.trim();
                             if (sessionId.isEmpty) {
-                              errorToast("Attendance session ID is missing.");
+                              errorToast(
+                                  "Attendance session ID is missing.".tr);
                               return;
                             }
                             Get.toNamed(

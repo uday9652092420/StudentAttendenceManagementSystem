@@ -155,7 +155,7 @@ class AddMovementController extends GetxController {
       final data = gatePass.value;
 
       if (data == null) {
-        errorToast("Gate Pass Data Missing");
+        errorToast("Gate Pass Data Missing".tr);
         return;
       }
 
@@ -167,18 +167,18 @@ class AddMovementController extends GetxController {
 
       // BOTH COMPLETED
       if ((data.outConfirmed ?? false) && (data.returnConfirmed ?? false)) {
-        errorToast("Both movements already completed");
+        errorToast("Both movements already completed".tr);
         return;
       }
 
       // OUT MOVEMENT VALIDATION
       if (!confirmStudentLeft.value) {
-        errorToast("Please confirm student has left the hostel");
+        errorToast("Please confirm student has left the hostel".tr);
         return;
       }
 
       if (outSecurityGuardController.text.trim().isEmpty) {
-        errorToast("Please enter Security Guard name");
+        errorToast("Please enter Security Guard name".tr);
         return;
       }
 
@@ -217,7 +217,7 @@ class AddMovementController extends GetxController {
           response.data["message"] ?? "Movement created successfully",
         );
 
-        successToast("Out Movement Saved");
+        successToast("Out Movement Saved".tr);
 
         Get.back(result: true);
       } else {
@@ -309,7 +309,7 @@ class AddMovementController extends GetxController {
       );
     } catch (e) {
       print("CREATE OUT MOVEMENT ERROR => $e");
-      errorToast("Something went wrong");
+      errorToast("Something went wrong".tr);
     }
   }
 
@@ -347,7 +347,7 @@ class AddMovementController extends GetxController {
   //         gatePass.value?.movementId = movementData["id"]?.toString();
   //       }
 
-  //       successToast("Exit Movement Saved");
+  //       successToast("Exit Movement Saved".tr);
 
   //       // Reload movement immediately
   //       await loadGatePassDetails();
@@ -449,7 +449,7 @@ class AddMovementController extends GetxController {
       ).format(DateTime.now());
 
       if (data.movementId == null || data.movementId!.isEmpty) {
-        errorToast("Movement ID not found");
+        errorToast("Movement ID not found".tr);
         return;
       }
 
@@ -463,14 +463,14 @@ class AddMovementController extends GetxController {
       print("PUT BODY => $body");
       if (!confirmStudentReturned.value) {
         errorToast(
-          "Please confirm student has returned",
+          "Please confirm student has returned".tr,
         );
         return;
       }
 
       if (returnSecurityGuardController.text.trim().isEmpty) {
         errorToast(
-          "Enter Return Security Guard",
+          "Enter Return Security Guard".tr,
         );
         return;
       }
@@ -483,7 +483,7 @@ class AddMovementController extends GetxController {
       print("PUT RESPONSE => ${response?.data}");
 
       if (response?.data["success"] == true) {
-        successToast("Return Movement Saved");
+        successToast("Return Movement Saved".tr);
 
         await loadGatePassDetails();
 

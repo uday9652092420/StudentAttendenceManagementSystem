@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 
 import 'app/config/environment.dart';
 import 'app/helpers/shared_preferences.dart';
+import 'app/localization/localization.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/theme/app_theme.dart';
@@ -36,19 +38,12 @@ Future<void> _initializeStartupSettings() async {
     SharedPrefsHelper.init(),
   ]);
 
-  final savedLocale = await Future.wait([
-    SharedPrefsHelper.getString(
-      SharedPrefsHelper.languageCode,
-      defaultValue: 'en',
-    ),
-    SharedPrefsHelper.getString(
-      SharedPrefsHelper.countryCode,
-      defaultValue: 'US',
-    ),
-  ]);
-
-  final languageCode = savedLocale[0].isEmpty ? 'en' : savedLocale[0];
-  final countryCode = savedLocale[1].isEmpty ? 'US' : savedLocale[1];
+  final savedLanguageCode = await SharedPrefsHelper.getString(
+    SharedPrefsHelper.languageCode,
+    defaultValue: 'en',
+  );
+  final languageCode = savedLanguageCode == 'ur' ? 'ur' : 'en';
+  final countryCode = languageCode == 'ur' ? 'PK' : 'US';
   Get.updateLocale(Locale(languageCode, countryCode));
 }
 
@@ -65,6 +60,14 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: Environment.appName,
       locale: initialLocale,
+      translations: Localization(),
+      supportedLocales: Localization.supportedLocales,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      fallbackLocale: Localization.fallbackLocale,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
 

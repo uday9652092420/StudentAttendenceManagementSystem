@@ -190,7 +190,7 @@ class TeacherAttendanceDetailsController extends GetxController {
   Future<void> checkOut() async {
     if (sessionId.isEmpty ||
         !Get.isRegistered<StaffAttendanceSessionController>()) {
-      errorToast("The active attendance session is not available.");
+      errorToast("The active attendance session is not available.".tr);
       return;
     }
 

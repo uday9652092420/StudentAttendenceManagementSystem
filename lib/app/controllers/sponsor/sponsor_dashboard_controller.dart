@@ -40,7 +40,7 @@ class SponsorDashboardController extends GetxController {
       }
     } catch (e) {
       print("Sponsor Dashboard Error => $e");
-      errorToast("Something went wrong.");
+      errorToast("Something went wrong.".tr);
     } finally {
       isLoading.value = false;
     }
@@ -57,11 +57,11 @@ class SponsorDashboardController extends GetxController {
     //   arguments: student,
     // );
 
-    successToast("Student profile will be available soon.");
+    successToast("Student profile will be available soon.".tr);
   }
 
   void downloadReport() {
-    successToast("Report download will be available soon.");
+    successToast("Report download will be available soon.".tr);
   }
 
   void logout() {
@@ -75,19 +75,19 @@ class SponsorDashboardController extends GetxController {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        title: const Text(
-          'Logout',
+        title: Text(
+          'Logout'.tr,
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        content: const Text(
-          'Are you sure you want to logout?',
+        content: Text(
+          'Are you sure you want to logout?'.tr,
           style: TextStyle(color: Colors.black87),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text(
-              'Cancel',
+            child: Text(
+              'Cancel'.tr,
               style: TextStyle(color: Colors.black87),
             ),
           ),
@@ -100,7 +100,7 @@ class SponsorDashboardController extends GetxController {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Logout'),
+            child: Text('Logout'.tr),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
@@ -101,8 +102,8 @@ class DashboardView extends GetView<DashboardController> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.blue,
-        title: const Text(
-          "Student Attendance Management",
+        title: Text(
+          "Student Attendance Management".tr,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -110,6 +111,7 @@ class DashboardView extends GetView<DashboardController> {
           ),
         ),
         actions: [
+          const AppLanguageSwitcher(),
           IconButton(
             icon: const Icon(
               Icons.logout,
@@ -122,20 +124,20 @@ class DashboardView extends GetView<DashboardController> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  title: const Text(
-                    'Logout',
+                  title: Text(
+                    'Logout'.tr,
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                  content: const Text(
-                    'Are you sure you want to logout?',
+                  content: Text(
+                    'Are you sure you want to logout?'.tr,
                     style: TextStyle(color: Colors.black87),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(result: false),
-                      child: const Text(
-                        'Cancel',
+                      child: Text(
+                        'Cancel'.tr,
                         style: TextStyle(color: Colors.black87),
                       ),
                     ),
@@ -148,7 +150,7 @@ class DashboardView extends GetView<DashboardController> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Logout'),
+                      child: Text('Logout'.tr),
                     ),
                   ],
                 ),
@@ -207,8 +209,8 @@ class DashboardView extends GetView<DashboardController> {
                 const SizedBox(height: 40),
 
                 /// HEADING
-                const Text(
-                  "Scan to Get Classroom Details",
+                Text(
+                  "Scan to Get Classroom Details".tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
@@ -218,8 +220,9 @@ class DashboardView extends GetView<DashboardController> {
 
                 const SizedBox(height: 12),
 
-                const Text(
-                  "Use the QR scanner to fetch classroom information and mark attendance instantly.",
+                Text(
+                  "Use the QR scanner to fetch classroom information and mark attendance instantly."
+                      .tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -238,8 +241,8 @@ class DashboardView extends GetView<DashboardController> {
                       openScanner();
                     },
                     icon: const Icon(Icons.qr_code_scanner),
-                    label: const Text(
-                      "Scan QR",
+                    label: Text(
+                      "Scan QR".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -265,8 +268,8 @@ class DashboardView extends GetView<DashboardController> {
                       await controller.pickQrFromGallery();
                     },
                     icon: const Icon(Icons.photo_library),
-                    label: const Text(
-                      "Upload QR Image",
+                    label: Text(
+                      "Upload QR Image".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -290,8 +293,8 @@ class DashboardView extends GetView<DashboardController> {
                       Get.toNamed(Routes.staffAttendanceHistory);
                     },
                     icon: const Icon(Icons.history),
-                    label: const Text(
-                      "Attendance History",
+                    label: Text(
+                      "Attendance History".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

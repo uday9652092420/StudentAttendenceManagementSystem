@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   mobile_scanner: ^5.2.3
 
   
@@ -21,7 +23,7 @@ dependencies:
   shared_preferences: ^2.3.2
   flutter_secure_storage: ^9.2.4
   fluttertoast: ^8.2.12
-  intl: ^0.19.0
+  intl: ^0.20.3
   flutter_svg: ^2.0.17
   cached_network_image: ^3.4.1
   image_picker: ^1.1.2

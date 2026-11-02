@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 //     show Translations;
 import 'package:get/get.dart';
 
-import 'app_ar.dart';
 import 'app_en.dart';
+import 'app_ur.dart';
 
 class Localization extends Translations {
   // // static var locale = Locale(
@@ -16,7 +16,7 @@ class Localization extends Translations {
 
   // Supported languages
   static const localeEnglishUS = Locale('en', 'US');
-  static const localeArabic = Locale('ar', 'SA'); // Arabic (Saudi Arabia)
+  static const localeUrdu = Locale('ur', 'PK');
 
   // Default locale
   static const defaultLocale = localeEnglishUS;
@@ -25,10 +25,13 @@ class Localization extends Translations {
   static const fallbackLocale = Locale('en', 'US');
 
   // List of supported locales
-  static final supportedLocales = [localeEnglishUS, localeArabic];
+  static final supportedLocales = [localeEnglishUS, localeUrdu];
 
   @override
-  Map<String, Map<String, String>> get keys => {'en_US': enUS, 'ar_SA': arSA};
+  Map<String, Map<String, String>> get keys => {
+        'en_US': enUS,
+        'ur_PK': urPK,
+      };
 
   // Function to update language
   void changeLanguage(String langCode, String countryCode) {

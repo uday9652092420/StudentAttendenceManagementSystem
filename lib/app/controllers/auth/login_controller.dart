@@ -17,7 +17,7 @@ class LoginController extends GetxController {
   Future<void> login() async {
     if (usernameController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      errorToast("Please enter username and password");
+      errorToast("Please enter username and password".tr);
       return;
     }
 
@@ -81,7 +81,7 @@ class LoginController extends GetxController {
           print("USER ID SAVED => $userId");
         }
 
-        successToast("Login Successful");
+        successToast("Login Successful".tr);
 
         print("ROLE => $roleName");
         print("ROLE => $role");
@@ -100,14 +100,14 @@ class LoginController extends GetxController {
         } else if (role.contains("sponsor")) {
           Get.offAllNamed(Routes.sponsorDashboard);
         } else {
-          errorToast("Role not supported.");
+          errorToast("Role not supported.".tr);
         }
       } else {
-        errorToast("Invalid Username or Password");
+        errorToast("Invalid Username or Password".tr);
       }
     } catch (e) {
       print("LOGIN ERROR => $e");
-      errorToast("Invalid Username or Password");
+      errorToast("Invalid Username or Password".tr);
     } finally {
       isLoading.value = false;
     }

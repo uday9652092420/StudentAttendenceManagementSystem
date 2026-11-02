@@ -76,7 +76,7 @@ class CustomeDropdownForm extends StatelessWidget {
             children: [
               //const SizedBox(width: 15),
               Text(
-                label ?? "",
+                label.tr,
                 style: TextStyle(
                   color: customTheme.textDefault,
                   fontSize: textTheme.labelMedium?.fontSize,
@@ -97,7 +97,7 @@ class CustomeDropdownForm extends StatelessWidget {
             // hint: Align(alignment: Alignment.centerLeft, child: Text(hintText)),
             padding: const EdgeInsets.only(left: 10),
             hint: Text(
-              hintText ?? "select_options".tr,
+              (hintText ?? "select_options").tr,
               style: TextStyle(fontSize: textTheme.bodySmall?.fontSize),
             ),
             iconEnabledColor: customTheme.textDefault,
@@ -143,7 +143,7 @@ class CustomeDropdownForm extends StatelessWidget {
             selectedItemBuilder: (BuildContext context) {
               return items.map<Widget>((item) {
                 // String key = item.keys.first;
-                String value = item.values.first;
+                String value = item.values.first.toString().tr;
                 return Container(
                   alignment: Alignment.centerLeft,
                   // padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -159,7 +159,7 @@ class CustomeDropdownForm extends StatelessWidget {
             },
             items: items.map<DropdownMenuItem<String>>((item) {
               String key = item.keys.first;
-              String value = item.values.first;
+              String value = item.values.first.toString().tr;
               return DropdownMenuItem<String>(
                 value: key,
                 child: Container(

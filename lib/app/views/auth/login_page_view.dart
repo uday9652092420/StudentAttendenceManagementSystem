@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth/login_controller.dart';
+import '../../custome_widgets/app_language_switcher.dart';
 
 class LoginPageView extends GetView<LoginController> {
   const LoginPageView({super.key});
@@ -12,13 +13,14 @@ class LoginPageView extends GetView<LoginController> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: const Text(
-          "Login",
+        title: Text(
+          "Login".tr,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -36,8 +38,8 @@ class LoginPageView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "DARUL ULOOM SABEELUS SALAM",
+              Text(
+                "DARUL ULOOM SABEELUS SALAM".tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.blue,
@@ -49,7 +51,7 @@ class LoginPageView extends GetView<LoginController> {
               TextField(
                 controller: controller.usernameController,
                 decoration: InputDecoration(
-                  hintText: "Username",
+                  hintText: "Username".tr,
                   prefixIcon: const Icon(Icons.person),
                   filled: true,
                   fillColor: Colors.white,
@@ -63,7 +65,7 @@ class LoginPageView extends GetView<LoginController> {
                 controller: controller.passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: "Password",
+                  hintText: "Password".tr,
                   prefixIcon: const Icon(Icons.lock),
                   filled: true,
                   fillColor: Colors.white,
@@ -97,8 +99,8 @@ class LoginPageView extends GetView<LoginController> {
                               strokeWidth: 3,
                             ),
                           )
-                        : const Text(
-                            "LOGIN",
+                        : Text(
+                            "LOGIN".tr,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,

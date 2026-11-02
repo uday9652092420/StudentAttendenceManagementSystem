@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/auth/otp_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 
 class OtpScreenView extends GetView<OtpController> {
@@ -10,14 +11,15 @@ class OtpScreenView extends GetView<OtpController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OTP Verification'),
+        title: Text('OTP Verification'.tr),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Center(
         child: TextButton(
           onPressed: () {
             Get.toNamed(Routes.langeSelection);
           },
-          child: const Text('OTP Screen - Under Construction'),
+          child: Text('OTP Screen - Under Construction'.tr),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 
 import '../../controllers/securitycontrollers/security_dashboard_controller.dart';
 import '../../custome_widgets/logout.dart';
@@ -24,8 +25,8 @@ class SecurityDashboard extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.blue,
-        title: const Text(
-          "Security Management",
+        title: Text(
+          "Security Management".tr,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -41,20 +42,20 @@ class SecurityDashboard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  title: const Text(
-                    'Logout',
+                  title: Text(
+                    'Logout'.tr,
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                   ),
-                  content: const Text(
-                    'Are you sure you want to logout?',
+                  content: Text(
+                    'Are you sure you want to logout?'.tr,
                     style: TextStyle(color: Colors.black87),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(result: false),
-                      child: const Text(
-                        'No',
+                      child: Text(
+                        'No'.tr,
                         style: TextStyle(color: Colors.black87),
                       ),
                     ),
@@ -67,7 +68,7 @@ class SecurityDashboard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Yes'),
+                      child: Text('Yes'.tr),
                     ),
                   ],
                 ),
@@ -82,6 +83,7 @@ class SecurityDashboard extends StatelessWidget {
               color: Colors.white,
             ),
           ),
+          const AppLanguageSwitcher(),
         ],
       ),
       body: SafeArea(
@@ -112,8 +114,8 @@ class SecurityDashboard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                const Text(
-                  "Scan to Validate Gatepass",
+                Text(
+                  "Scan to Validate Gatepass".tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
@@ -121,8 +123,9 @@ class SecurityDashboard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  "Use the QR scanner to verify gatepass details and validate student or visitor entry instantly.",
+                Text(
+                  "Use the QR scanner to verify gatepass details and validate student or visitor entry instantly."
+                      .tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -138,8 +141,8 @@ class SecurityDashboard extends StatelessWidget {
                       _openScanner();
                     },
                     icon: const Icon(Icons.qr_code_scanner),
-                    label: const Text(
-                      "Scan QR",
+                    label: Text(
+                      "Scan QR".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -160,8 +163,8 @@ class SecurityDashboard extends StatelessWidget {
                       await controller.pickQrFromGallery();
                     },
                     icon: const Icon(Icons.photo_library),
-                    label: const Text(
-                      "Upload QR Image",
+                    label: Text(
+                      "Upload QR Image".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -227,7 +230,7 @@ class SecurityDashboard extends StatelessWidget {
                   print("EXTRACTED GATEPASS ID => $gatePassId");
 
                   if (gatePassId.isEmpty) {
-                    errorToast("Gate Pass ID not found in QR");
+                    errorToast("Gate Pass ID not found in QR".tr);
                     isScanned = false;
                     return;
                   }

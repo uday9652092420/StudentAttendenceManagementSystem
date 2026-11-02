@@ -33,7 +33,7 @@ class NoInternetConnection extends StatelessWidget {
           ),
           Text("internet_not_available".tr),
           const SizedBox(height: 40),
-          // const Text("cons_check_internet", style: TextStyle(fontSize: 18)),
+          // Text("cons_check_internet".tr, style: TextStyle(fontSize: 18)),
         ],
       ),
       actions: <Widget>[

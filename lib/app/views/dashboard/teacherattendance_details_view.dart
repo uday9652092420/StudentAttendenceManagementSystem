@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/teacherattendance_details_controller.dart';
+import 'package:my_new_app/app/custome_widgets/app_language_switcher.dart';
 import 'package:my_new_app/app/models/dashboard/teacher_attendance_session_details_model.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
@@ -104,7 +105,8 @@ class TeacherAttendanceDetailsView
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("Teacher Attendance"),
+        title: Text("Teacher Attendance".tr),
+        actions: const [AppLanguageSwitcher()],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -126,11 +128,11 @@ class TeacherAttendanceDetailsView
                   OutlinedButton.icon(
                     onPressed: controller.loadSessionDetails,
                     icon: const Icon(Icons.refresh),
-                    label: const Text("Retry"),
+                    label: Text("Retry".tr),
                   ),
                   TextButton(
                     onPressed: Get.back,
-                    child: const Text("Back to Attendance"),
+                    child: Text("Back to Attendance".tr),
                   ),
                 ],
               ),
@@ -140,17 +142,17 @@ class TeacherAttendanceDetailsView
 
         final details = controller.details.value;
         if (details == null) {
-          return const Center(
+          return Center(
             child: Padding(
               padding: EdgeInsets.all(24),
-              child: Text("Attendance session details are unavailable."),
+              child: Text("Attendance session details are unavailable.".tr),
             ),
           );
         }
 
         final periodName = _periodName(details);
-        final subjectName = details.courseName ?? "Subject unavailable";
-        final className = details.className ?? "Class unavailable";
+        final subjectName = details.courseName ?? "Subject unavailable".tr;
+        final className = details.className ?? "Class unavailable".tr;
         final checkedOut = details.checkedOutAt?.isNotEmpty == true;
         final students = controller.studentAttendance;
 
@@ -184,7 +186,9 @@ class TeacherAttendanceDetailsView
                       Expanded(
                         child: _timeColumn(
                           "Check-out",
-                          checkedOut ? _time(details.checkedOutAt) : "Pending",
+                          checkedOut
+                              ? _time(details.checkedOutAt)
+                              : "Pending".tr,
                         ),
                       ),
                     ],
@@ -197,8 +201,8 @@ class TeacherAttendanceDetailsView
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Teacher Attendance Details",
+                  Text(
+                    "Teacher Attendance Details".tr,
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   if (details.teacherName?.isNotEmpty == true)
@@ -222,7 +226,7 @@ class TeacherAttendanceDetailsView
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          (period["period"] ?? "Period").toString(),
+                          (period["period"] ?? "Period").toString().tr,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         if (period["subjectName"] != null)
@@ -230,8 +234,8 @@ class TeacherAttendanceDetailsView
                         if (period["checkedInAt"] != null ||
                             period["checkedOutAt"] != null)
                           Text(
-                            "Entry ${_time(period["checkedInAt"]?.toString())}"
-                            " • Exit ${_time(period["checkedOutAt"]?.toString())}",
+                            "${"Entry".tr} ${_time(period["checkedInAt"]?.toString())}"
+                            " • ${"Exit".tr} ${_time(period["checkedOutAt"]?.toString())}",
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                       ],
@@ -241,10 +245,10 @@ class TeacherAttendanceDetailsView
             ],
             const SizedBox(height: 12),
             if (students.isNotEmpty) ...[
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Saved Student Register",
+                  "Saved Student Register".tr,
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -269,7 +273,7 @@ class TeacherAttendanceDetailsView
                                     "full_name",
                                   ],
                                 ).isEmpty
-                                    ? "Student"
+                                    ? "Student".tr
                                     : _studentValue(
                                         student,
                                         [
@@ -292,7 +296,7 @@ class TeacherAttendanceDetailsView
                                 "rollNo",
                               ]).isNotEmpty)
                                 Text(
-                                  "Admission no: ${_studentValue(student, [
+                                  "${"Admission no:".tr} ${_studentValue(student, [
                                         "admissionNumber",
                                         "admissionNo",
                                         "admission_number",
@@ -303,7 +307,7 @@ class TeacherAttendanceDetailsView
                                 ),
                               if (_studentValue(student, ["studentId"])
                                   .isNotEmpty)
-                                Text("ID: ${_studentValue(student, [
+                                Text("${"ID:".tr} ${_studentValue(student, [
                                       "studentId"
                                     ])}"),
                             ],
@@ -340,7 +344,7 @@ class TeacherAttendanceDetailsView
                     : () {
                         final sessionId = controller.sessionId.trim();
                         if (sessionId.isEmpty) {
-                          errorToast("Attendance session ID is missing.");
+                          errorToast("Attendance session ID is missing.".tr);
                           return;
                         }
                         Get.toNamed(
@@ -380,7 +384,7 @@ class TeacherAttendanceDetailsView
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text("Back to Attendance"),
+                child: Text("Back to Attendance".tr),
               ),
             ),
             const SizedBox(height: 12),
@@ -399,7 +403,7 @@ class TeacherAttendanceDetailsView
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600)),
+        Text(label.tr, style: TextStyle(color: Colors.grey.shade600)),
         const SizedBox(height: 3),
         Text(
           value,
@@ -416,7 +420,7 @@ class TeacherAttendanceDetailsView
     return Padding(
       padding: const EdgeInsets.only(top: 7),
       child: Text(
-        "$label: $value",
+        "${label.tr}: $value",
         style: TextStyle(color: Colors.grey.shade700),
       ),
     );

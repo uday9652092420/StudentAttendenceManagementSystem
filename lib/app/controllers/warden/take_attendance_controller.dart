@@ -201,7 +201,7 @@ class TakeAttendanceController extends GetxController {
 
       if (response != null &&
           (response.statusCode == 200 || response.statusCode == 201)) {
-        successToast("Attendance Saved Successfully");
+        successToast("Attendance Saved Successfully".tr);
 
         Get.back(result: true);
       } else {
