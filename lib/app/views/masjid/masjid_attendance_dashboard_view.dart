@@ -104,20 +104,24 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                           child: Card(
                             color: Colors.white,
                             child: Padding(
-                              padding: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               child: Column(
                                 children: [
                                   const Icon(
                                     Icons.calendar_today,
                                     color: Colors.blue,
+                                    size: 20,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 4),
                                   Text(
                                     "Date".tr,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 3),
                                   Text(controller.currentDate.value),
                                 ],
                               ),
@@ -129,20 +133,24 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                           child: Card(
                             color: Colors.white,
                             child: Padding(
-                              padding: const EdgeInsets.all(15),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               child: Column(
                                 children: [
                                   const Icon(
                                     Icons.access_time,
                                     color: Colors.green,
+                                    size: 20,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 4),
                                   Text(
                                     "Time".tr,
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 3),
                                   Text(controller.currentTime.value),
                                 ],
                               ),
@@ -152,9 +160,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                       ],
                     ),
 
-                    const SizedBox(height: 20),
-
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 12),
 
                     DropdownButtonFormField<String>(
                       key: ValueKey(
@@ -165,6 +171,11 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                           : controller.selectedCourseId.value,
                       decoration: InputDecoration(
                         labelText: "Course".tr,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -184,7 +195,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                             },
                     ),
 
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 8),
 
                     DropdownButtonFormField<String>(
                       key:
@@ -194,6 +205,11 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                           : controller.selectedClassId.value,
                       decoration: InputDecoration(
                         labelText: "Class".tr,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -214,13 +230,18 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                     ),
 
                     /// Prayer Dropdown
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       key:
                           ValueKey("prayer-${controller.selectedPrayer.value}"),
                       initialValue: controller.selectedPrayer.value,
                       decoration: InputDecoration(
                         labelText: "Prayer".tr,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -240,7 +261,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                             },
                     ),
 
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 8),
 
                     /// Search
                     TextField(
@@ -248,6 +269,15 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                       decoration: InputDecoration(
                         hintText: "Search Student".tr,
                         prefixIcon: const Icon(Icons.search),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -255,7 +285,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                       onChanged: controller.searchStudent,
                     ),
 
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 8),
 
                     Align(
                       alignment: Alignment.centerLeft,
@@ -276,59 +306,7 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                               ? Center(
                                   child: Text("No Students Found".tr),
                                 )
-                              : ListView.builder(
-                                  itemCount: controller.filteredStudents.length,
-                                  itemBuilder: (_, index) {
-                                    final student =
-                                        controller.filteredStudents[index];
-
-                                    return Obx(
-                                      () => Card(
-                                        color: Colors.white,
-                                        margin:
-                                            const EdgeInsets.only(bottom: 8),
-                                        child: CheckboxListTile(
-                                          value: student.isPresent.value,
-                                          onChanged: controller
-                                                      .attendanceTaken.value &&
-                                                  !controller.isEditing.value
-                                              ? null
-                                              : (value) {
-                                                  student.isPresent.value =
-                                                      value ?? false;
-                                                },
-                                          activeColor: Colors.blue,
-                                          controlAffinity:
-                                              ListTileControlAffinity.trailing,
-                                          secondary: CircleAvatar(
-                                            backgroundColor: Colors.blue,
-                                            child: Text(
-                                              student.studentName.isEmpty
-                                                  ? "S"
-                                                  : student.studentName
-                                                      .substring(0, 1)
-                                                      .toUpperCase(),
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          title: Text(
-                                            student.studentName,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          subtitle: Text(
-                                            "ID : ${student.studentId}",
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                              : _studentList(),
                     ),
                     const SizedBox(height: 15),
 
@@ -419,6 +397,57 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
               ),
       ),
     );
+  }
+
+  Widget _studentList() {
+    final list = ListView.builder(
+      itemCount: controller.filteredStudents.length,
+      itemBuilder: (_, index) {
+        final student = controller.filteredStudents[index];
+
+        return Obx(
+          () => Card(
+            color: Colors.white,
+            margin: const EdgeInsets.only(bottom: 8),
+            child: CheckboxListTile(
+              value: student.isPresent.value,
+              onChanged: controller.attendanceTaken.value &&
+                      !controller.isEditing.value
+                  ? null
+                  : (value) {
+                      student.isPresent.value = value ?? false;
+                    },
+              activeColor: Colors.blue,
+              controlAffinity: ListTileControlAffinity.trailing,
+              secondary: CircleAvatar(
+                backgroundColor: Colors.blue,
+                child: Text(
+                  student.studentName.isEmpty
+                      ? "S"
+                      : student.studentName.substring(0, 1).toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(
+                student.studentName,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              subtitle: Text("ID : ${student.studentId}"),
+            ),
+          ),
+        );
+      },
+    );
+
+    return controller.filteredStudents.length > 4
+        ? Scrollbar(thumbVisibility: true, child: list)
+        : list;
   }
 
   Widget _savedAttendanceSummary() {
