@@ -20,6 +20,7 @@ import 'package:my_new_app/app/views/dashboard/teacherattendance_blocked_view.da
 import 'package:my_new_app/app/views/kitchen/kitchen_dashboard_view.dart';
 import 'package:my_new_app/app/views/kitchen/meal_checkin_view.dart';
 import 'package:my_new_app/app/views/masjid/masjid_attendance_dashboard_view.dart';
+import 'package:my_new_app/app/views/multiroleuser/mutliroleuser_dashboard_view.dart';
 import 'package:my_new_app/app/views/security/security_dashboard.dart';
 import 'package:my_new_app/app/views/sponsor/sponsor_dashboard_view.dart';
 import 'package:my_new_app/app/views/wardenattendance/take_attendance_view.dart';
@@ -68,6 +69,10 @@ class AppPages {
       name: Routes.login,
       page: () => const LoginPageView(),
       binding: LoginBinding(),
+    ),
+    GetPage(
+      name: Routes.multiRoleUserDashboard,
+      page: () => const MultiRoleUserDashboardView(),
     ),
     GetPage(
       name: Routes.otpPage,

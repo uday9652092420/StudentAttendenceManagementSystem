@@ -164,28 +164,20 @@ class AttendanceController extends GetxController {
       if (studentResponse != null && studentResponse.statusCode == 200) {
         final List studentList = studentResponse.data as List;
 
-// Sort alphabetically by student name
+        // Sort by the name currently shown in the selected language.
         studentList.sort(
-          (a, b) => (a["studentName"] ?? "").toString().toLowerCase().compareTo(
-                (b["studentName"] ?? "").toString().toLowerCase(),
-              ),
+          (a, b) => _studentNameForCurrentLocale(a)
+              .toLowerCase()
+              .compareTo(_studentNameForCurrentLocale(b).toLowerCase()),
         );
 
         students.assignAll(
-          List.generate(studentList.length, (index) {
-            final e = studentList[index];
-
-            return StudentModel(
-              studentId: e["studentId"].toString(),
-
-              // Serial Number instead of Admission Number
-              rollNo: (index + 1).toString(),
-
-              name: e["studentName"] ?? "",
-
-              status: normalizeStatus(e["status"]?.toString() ?? "P"),
-            );
-          }),
+          studentList.map((row) {
+            final student =
+                StudentModel.fromJson(Map<String, dynamic>.from(row as Map));
+            student.status = normalizeStatus(student.status);
+            return student;
+          }).toList(),
         );
 
         calculateCounts();
@@ -306,33 +298,27 @@ class AttendanceController extends GetxController {
       }
 
       final sortedRoster = [...roster]..sort((left, right) =>
-          (left["studentName"] ?? left["name"] ?? "")
-              .toString()
+          _studentNameForCurrentLocale(left)
               .toLowerCase()
-              .compareTo((right["studentName"] ?? right["name"] ?? "")
-                  .toString()
-                  .toLowerCase()));
+              .compareTo(_studentNameForCurrentLocale(right).toLowerCase()));
       students.assignAll(
-        List.generate(sortedRoster.length, (index) {
-          final row = sortedRoster[index];
-          return StudentModel(
-            studentId:
-                (row["studentId"] ?? row["student_id"] ?? row["id"] ?? "")
-                    .toString(),
-            rollNo: (row["studentCode"] ??
-                    row["rollNo"] ??
-                    row["student_code"] ??
-                    index + 1)
-                .toString(),
-            name:
-                (row["studentName"] ?? row["name"] ?? row["student_name"] ?? "")
-                    .toString(),
-            status: normalizeStatus(
-              (row["status"] ?? row["attendanceStatus"] ?? "present")
-                  .toString(),
-            ),
-          );
-        }),
+        sortedRoster.map((row) {
+          final student = StudentModel.fromJson(row);
+          student.displayStudentId = (row["displayStudentId"] ??
+                  row["display_student_id"] ??
+                  row["admissionNo"] ??
+                  row["admission_no"] ??
+                  row["studentCode"] ??
+                  row["rollNo"] ??
+                  row["studentId"] ??
+                  row["student_id"] ??
+                  row["student_code"] ??
+                  row["id"] ??
+                  student.displayStudentId)
+              .toString();
+          student.status = normalizeStatus(student.status);
+          return student;
+        }).toList(),
       );
       calculateCounts();
     } catch (error) {
@@ -562,6 +548,17 @@ class AttendanceController extends GetxController {
       }
     }
     return null;
+  }
+
+  String _studentNameForCurrentLocale(Map<String, dynamic> row) {
+    final urduName = (row["studentNameUrdu"] ?? row["student_name_urdu"] ?? "")
+        .toString()
+        .trim();
+    if (Get.locale?.languageCode == "ur" && urduName.isNotEmpty) {
+      return urduName;
+    }
+    return (row["studentName"] ?? row["name"] ?? row["student_name"] ?? "")
+        .toString();
   }
 
   String normalizeStatus(String status) {

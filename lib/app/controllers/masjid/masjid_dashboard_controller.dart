@@ -267,7 +267,11 @@ class MasjidDashboardController extends GetxController {
             "date",
           ]),
         );
-        _assignStudents(detailStudents.isEmpty ? roster : detailStudents);
+        _assignStudents(
+          detailStudents.isEmpty
+              ? roster
+              : _mergeLocalizedRosterNames(detailStudents, roster),
+        );
         showSavedAttendanceSummary.value = true;
         if (students.isEmpty) {
           errorToast("No students found for this attendance session.".tr);
@@ -283,6 +287,63 @@ class MasjidDashboardController extends GetxController {
       errorToast("Unable to load attendance.".tr);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> reloadLocalizedData() async {
+    final previousStudents = students.toList();
+    final previousPresence = {
+      for (final student in previousStudents)
+        student.studentId: student.isPresent.value,
+    };
+    final previousCourseId = selectedCourseId.value;
+    final previousClassId = selectedClassId.value;
+    final wasEditing = isEditing.value;
+    final wasShowingSummary = showSavedAttendanceSummary.value;
+    final wasAttendanceTaken = attendanceTaken.value;
+    final previousSessionId = sessionId.value;
+    final previousSavedDate = savedAttendanceDate.value;
+
+    await loadCourses();
+    if (previousCourseId.isNotEmpty &&
+        previousCourseId != selectedCourseId.value &&
+        courses.any((course) => course.id == previousCourseId)) {
+      await selectCourse(previousCourseId);
+    }
+    if (previousClassId.isNotEmpty &&
+        previousClassId != selectedClassId.value &&
+        classes.any((classOption) => classOption.id == previousClassId)) {
+      await selectClass(previousClassId);
+    }
+
+    if (students.isEmpty && previousStudents.isNotEmpty) {
+      students.assignAll(previousStudents);
+      searchStudent(searchController.text);
+      if (courses.any((course) => course.id == previousCourseId)) {
+        selectedCourseId.value = previousCourseId;
+      }
+      if (classes.any((classOption) => classOption.id == previousClassId)) {
+        selectedClassId.value = previousClassId;
+      }
+      attendanceTaken.value = wasAttendanceTaken;
+      sessionId.value = previousSessionId;
+      savedAttendanceDate.value = previousSavedDate;
+      isEditing.value = wasEditing;
+      showSavedAttendanceSummary.value = wasShowingSummary;
+      return;
+    }
+
+    for (final student in students) {
+      final previousValue = previousPresence[student.studentId];
+      if (previousValue != null) {
+        student.isPresent.value = previousValue;
+      }
+    }
+    if (wasEditing) {
+      isEditing.value = true;
+      showSavedAttendanceSummary.value = false;
+    } else if (wasShowingSummary) {
+      showSavedAttendanceSummary.value = true;
     }
   }
 
@@ -318,6 +379,9 @@ class MasjidDashboardController extends GetxController {
       students.where(
         (student) =>
             student.studentName.toLowerCase().contains(value.toLowerCase()) ||
+            student.urduStudentName
+                .toLowerCase()
+                .contains(value.toLowerCase()) ||
             student.studentId.toLowerCase().contains(value.toLowerCase()),
       ),
     );
@@ -326,6 +390,37 @@ class MasjidDashboardController extends GetxController {
   void _assignStudents(List<Map<String, dynamic>> rows) {
     students.assignAll(rows.map(MasjidStudentModel.fromJson));
     searchStudent(searchController.text);
+  }
+
+  List<Map<String, dynamic>> _mergeLocalizedRosterNames(
+    List<Map<String, dynamic>> attendanceRows,
+    List<Map<String, dynamic>> rosterRows,
+  ) {
+    final rosterByStudentId = <String, Map<String, dynamic>>{};
+    for (final row in rosterRows) {
+      final studentId = _firstValue(
+        row,
+        const ["studentId", "student_id", "id"],
+      );
+      if (studentId.isNotEmpty) rosterByStudentId[studentId] = row;
+    }
+
+    return attendanceRows.map((attendanceRow) {
+      final studentId = _firstValue(
+        attendanceRow,
+        const ["studentId", "student_id", "id"],
+      );
+      final rosterRow = rosterByStudentId[studentId];
+      if (rosterRow == null) return attendanceRow;
+
+      final mergedRow = {...rosterRow, ...attendanceRow};
+      final localizedName =
+          MasjidStudentModel.fromJson(rosterRow).urduStudentName;
+      if (localizedName.isNotEmpty) {
+        mergedRow["studentNameUrdu"] = localizedName;
+      }
+      return mergedRow;
+    }).toList();
   }
 
   void _clearAttendance() {

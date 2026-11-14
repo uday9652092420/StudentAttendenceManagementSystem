@@ -17,6 +17,8 @@ class MealCheckinController extends GetxController {
   final timeController = TextEditingController();
 
   RxBool isSaving = false.obs;
+  String studentNameEnglish = "";
+  String studentNameUrdu = "";
 
   @override
   void onInit() {
@@ -28,7 +30,9 @@ class MealCheckinController extends GetxController {
 
     studentCodeController.text = args["studentCode"]?.toString() ?? "";
 
-    studentNameController.text = args["studentName"]?.toString() ?? "";
+    studentNameEnglish = args["studentName"]?.toString() ?? "";
+    studentNameUrdu = args["studentNameUrdu"]?.toString() ?? "";
+    updateStudentNameForLocale();
 
     courseNameController.text = args["courseName"]?.toString() ?? "";
 
@@ -44,6 +48,13 @@ class MealCheckinController extends GetxController {
     print("Meal Type = ${mealController.text}");
   }
 
+  void updateStudentNameForLocale() {
+    studentNameController.text =
+        Get.locale?.languageCode == "ur" && studentNameUrdu.trim().isNotEmpty
+            ? studentNameUrdu
+            : studentNameEnglish;
+  }
+
   Future<void> saveMeal() async {
     try {
       isSaving.value = true;
@@ -53,7 +64,7 @@ class MealCheckinController extends GetxController {
         "currentTime": timeController.text,
         "studentId": studentIdController.text,
         "studentCode": studentCodeController.text,
-        "studentName": studentNameController.text,
+        "studentName": studentNameEnglish,
         "courseName": courseNameController.text,
         "className": classNameController.text,
         "mealType": mealController.text.toLowerCase(),

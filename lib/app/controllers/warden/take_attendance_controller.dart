@@ -91,41 +91,14 @@ class TakeAttendanceController extends GetxController {
 
     final List entries = data["entries"];
     students.assignAll(
-      entries.map<StudentAttendanceModel>((e) {
-        return StudentAttendanceModel(
-          hostelAdmissionId: e["hostel_admission_id"]?.toString() ?? "",
-          roomId: e["room_id"]?.toString() ?? "",
-          studentId: e["student_id"]?.toString() ?? "",
-          rollNo: e["student_code"]?.toString() ?? "",
-          studentName: e["student_name"]?.toString() ?? "",
-          roomNo: e["room_no"]?.toString() ?? "",
-          bedNo: e["bed_no"]?.toString() ?? "",
-          remarks: e["remarks"]?.toString() ?? "",
-          status: _statusToUi(
-            e["attendance_status"]?.toString() ?? "present",
-          ),
-        );
-      }).toList(),
+      entries
+          .map<StudentAttendanceModel>(
+            (e) => StudentAttendanceModel.fromJson(
+              Map<String, dynamic>.from(e as Map),
+            ),
+          )
+          .toList(),
     );
-  }
-
-  String _statusToUi(String status) {
-    switch (status.toLowerCase()) {
-      case "present":
-        return "Present";
-
-      case "absent":
-        return "Absent";
-
-      case "leave":
-        return "Leave";
-
-      case "outpass":
-        return "Out Pass";
-
-      default:
-        return "Present";
-    }
   }
 
   String _statusToApi(String status) {

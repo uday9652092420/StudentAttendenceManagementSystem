@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,7 +24,12 @@ class MealCheckinView extends GetView<MealCheckinController> {
         backgroundColor: Colors.blue,
         centerTitle: true,
         elevation: 0,
-        actions: const [AppLanguageSwitcher()],
+        actions: [
+          AppLanguageSwitcher(
+            onLanguageChanged: (_) async =>
+                controller.updateStudentNameForLocale(),
+          ),
+        ],
       ),
       body: Obx(
         () => SingleChildScrollView(
@@ -71,6 +78,9 @@ class MealCheckinView extends GetView<MealCheckinController> {
                     "Student Name",
                     controller.studentNameController,
                     Icons.person,
+                    textDirection: Get.locale?.languageCode == "ur"
+                        ? ui.TextDirection.rtl
+                        : ui.TextDirection.ltr,
                   ),
                   const SizedBox(height: 15),
                   _textField(
@@ -131,13 +141,12 @@ class MealCheckinView extends GetView<MealCheckinController> {
   }
 
   Widget _textField(
-    String label,
-    TextEditingController controller,
-    IconData icon,
-  ) {
+      String label, TextEditingController controller, IconData icon,
+      {TextDirection? textDirection}) {
     return TextField(
       controller: controller,
       readOnly: true,
+      textDirection: textDirection,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),

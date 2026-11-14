@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:my_new_app/app/repositories/kitchen/kitchen_repository.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_scanner/mobile_scanner.dart' hide BarcodeFormat;
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 
 import 'package:my_new_app/app/models/kitchen/meal_scan_model.dart';
+import 'package:my_new_app/app/models/kitchen/meal_forecast_student_model.dart';
 
 import 'package:my_new_app/app/routes/app_routes.dart';
 
@@ -33,6 +35,9 @@ class KitchenDashboardController extends GetxController {
 
   /// Recent Scans
   RxList<MealScanModel> recentScans = <MealScanModel>[].obs;
+  RxList<MealForecastStudentModel> forecastStudents =
+      <MealForecastStudentModel>[].obs;
+  RxBool isForecastLoading = false.obs;
 
   /// Scanner
   final MobileScannerController scannerController = MobileScannerController();
@@ -43,6 +48,59 @@ class KitchenDashboardController extends GetxController {
   void onInit() {
     super.onInit();
     loadDashboard();
+    loadMealForecast();
+  }
+
+  Future<void> loadMealForecast() async {
+    isForecastLoading.value = true;
+    try {
+      final response = await repository.getMealForecast(
+        mealType: selectedMeal.value.toLowerCase(),
+        mealDate: DateFormat("yyyy-MM-dd").format(DateTime.now()),
+      );
+
+      if (response == null || response.statusCode != 200) {
+        forecastStudents.clear();
+        errorToast("Unable to load meal forecast".tr);
+        return;
+      }
+
+      final dynamic body = response.data;
+      final dynamic payload =
+          body is Map && body["data"] is Map ? body["data"] : body;
+      if (payload is! Map || payload["students"] is! List) {
+        forecastStudents.clear();
+        errorToast("Invalid meal forecast response".tr);
+        return;
+      }
+
+      final parsedStudents = <MealForecastStudentModel>[];
+      for (final row in payload["students"] as List) {
+        if (row is! Map) {
+          forecastStudents.clear();
+          errorToast("Invalid meal forecast response".tr);
+          return;
+        }
+        parsedStudents.add(
+          MealForecastStudentModel.fromJson(
+            Map<String, dynamic>.from(row),
+          ),
+        );
+      }
+      forecastStudents.assignAll(parsedStudents);
+    } finally {
+      isForecastLoading.value = false;
+    }
+  }
+
+  Future<void> changeMeal(String meal) async {
+    selectedMeal.value = meal;
+    await loadMealForecast();
+  }
+
+  void refreshLocalizedNames() {
+    recentScans.refresh();
+    forecastStudents.refresh();
   }
 
   Future<void> loadDashboard() async {
@@ -153,7 +211,12 @@ class KitchenDashboardController extends GetxController {
         arguments: {
           "studentId": student["studentId"]?.toString() ?? "",
           "studentCode": student["studentCode"]?.toString() ?? "",
-          "studentName": student["studentName"] ?? "",
+          "studentName": student["studentName"]?.toString() ??
+              student["student_name"]?.toString() ??
+              "",
+          "studentNameUrdu": student["studentNameUrdu"]?.toString() ??
+              student["student_name_urdu"]?.toString() ??
+              "",
           "courseName": student["courseName"] ?? "",
           "className": student["className"] ?? "",
           "meal": selectedMeal.value,

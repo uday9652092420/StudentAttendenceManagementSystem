@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +27,11 @@ class StudentAttendanceView extends GetView<AttendanceController> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          actions: const [AppLanguageSwitcher()],
+          actions: [
+            AppLanguageSwitcher(
+              onLanguageChanged: (_) async => controller.students.refresh(),
+            ),
+          ],
         ),
         body: Obx(() {
           if (controller.isLoading.value) {
@@ -292,7 +298,7 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              "No".tr,
+                              "Student ID".tr,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -348,11 +354,21 @@ class StudentAttendanceView extends GetView<AttendanceController> {
                                   children: [
                                     Expanded(
                                       flex: 2,
-                                      child: Text(student.rollNo),
+                                      child: Text(student.displayStudentId),
                                     ),
                                     Expanded(
                                       flex: 4,
-                                      child: Text(student.name),
+                                      child: Text(
+                                        student.displayName,
+                                        textDirection:
+                                            Get.locale?.languageCode == "ur"
+                                                ? ui.TextDirection.rtl
+                                                : ui.TextDirection.ltr,
+                                        textAlign:
+                                            Get.locale?.languageCode == "ur"
+                                                ? TextAlign.right
+                                                : TextAlign.left,
+                                      ),
                                     ),
                                     Expanded(
                                       flex: 2,

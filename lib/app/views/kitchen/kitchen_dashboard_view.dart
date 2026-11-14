@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -28,7 +30,9 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
           ),
         ),
         actions: [
-          const AppLanguageSwitcher(),
+          AppLanguageSwitcher(
+            onLanguageChanged: (_) async => controller.refreshLocalizedNames(),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             color: Colors.white,
@@ -193,11 +197,58 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      controller.selectedMeal.value = value;
+                      controller.changeMeal(value);
                     }
                   },
                 ),
               ),
+
+              const SizedBox(height: 25),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Meal Forecast Students".tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Obx(() {
+                if (controller.isForecastLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (controller.forecastStudents.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text("No Forecast Students Found".tr),
+                    ),
+                  );
+                }
+                return Column(
+                  children: controller.forecastStudents.map((student) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(
+                          student.displayName,
+                          textDirection: Get.locale?.languageCode == "ur"
+                              ? ui.TextDirection.rtl
+                              : ui.TextDirection.ltr,
+                          textAlign: Get.locale?.languageCode == "ur"
+                              ? TextAlign.right
+                              : TextAlign.left,
+                        ),
+                        subtitle: Text(
+                          "${"Student ID".tr}: ${student.displayStudentId}",
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
 
               const SizedBox(height: 25),
 
@@ -286,10 +337,21 @@ class KitchenDashboardView extends GetView<KitchenDashboardController> {
                                 ),
                               ),
                             ),
-                            title: Text(student.studentName),
+                            title: Text(
+                              student.displayName,
+                              textDirection: Get.locale?.languageCode == "ur"
+                                  ? ui.TextDirection.rtl
+                                  : ui.TextDirection.ltr,
+                              textAlign: Get.locale?.languageCode == "ur"
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                            ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  "${"Student ID".tr} ${student.displayId}",
+                                ),
                                 Text("${"Roll No :".tr} ${student.rollNo}"),
                                 Text("${"Meal :".tr} ${student.mealType}"),
                                 Text("${"Room :".tr} ${student.roomNo}"),

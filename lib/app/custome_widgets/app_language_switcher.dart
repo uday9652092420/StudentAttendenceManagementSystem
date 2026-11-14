@@ -3,7 +3,12 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 
 class AppLanguageSwitcher extends StatelessWidget {
-  const AppLanguageSwitcher({super.key});
+  const AppLanguageSwitcher({
+    super.key,
+    this.onLanguageChanged,
+  });
+
+  final Future<void> Function(String languageCode)? onLanguageChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -46,5 +51,6 @@ class AppLanguageSwitcher extends StatelessWidget {
       countryCode,
     );
     Get.updateLocale(Locale(languageCode, countryCode));
+    await onLanguageChanged?.call(languageCode);
   }
 }

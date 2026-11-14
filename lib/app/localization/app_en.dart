@@ -6,6 +6,7 @@ const Map<String, String> enUS = {
   "app_tittle": "Wahat Al Shifa",
   "login_txt_welcom": "Welcome to Wahat Al Shifa",
   "welcome": "Welcome",
+  "Multi Role User Dashboard": "Multi Role User Dashboard",
   "txtLangSelection":
       "Please select your language for easy\nusage of your complete Process",
   "setLang": "Set your Language",

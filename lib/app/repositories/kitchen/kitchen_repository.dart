@@ -27,6 +27,19 @@ class KitchenRepository {
     );
   }
 
+  Future<Response?> getMealForecast({
+    required String mealType,
+    required String mealDate,
+  }) async {
+    return await ApiService.get(
+      EndPoints.kitchenForecast,
+      queryParameters: {
+        "mealType": mealType,
+        "mealDate": mealDate,
+      },
+    );
+  }
+
   Future<Response?> saveMealAttendance(
     Map<String, dynamic> body,
   ) async {

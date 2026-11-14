@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
@@ -29,7 +31,9 @@ class LoginController extends GetxController {
         password: passwordController.text.trim(),
       );
 
-      final response = await authRepository.postlogin(request.toJson());
+      final response = await authRepository
+          .postlogin(request.toJson())
+          .timeout(const Duration(seconds: 20));
       if (response.statusCode == 200) {
         final data = response.data;
 
@@ -40,6 +44,17 @@ class LoginController extends GetxController {
         final userId = data["id"]?.toString() ?? "";
 
         final role = roleName.trim().toLowerCase();
+        final responseRoleNames = data["roleNames"];
+        final roleNames = responseRoleNames is List
+            ? responseRoleNames
+                .map((value) => value?.toString().trim() ?? "")
+                .where((value) => value.isNotEmpty)
+                .toList()
+            : <String>[];
+        if (roleNames.isEmpty && roleName.trim().isNotEmpty) {
+          roleNames.add(roleName.trim());
+        }
+        await SharedPrefsHelper.setList("roleNames", roleNames);
 
         // Save Staff Id
         final dynamic staffIdData = data["staffId"];
@@ -72,7 +87,14 @@ class LoginController extends GetxController {
         await SharedPrefsHelper.setString("roleName", roleName);
 
         // Save User Id for modules that require it
-        if (role.contains("masjid incharge") || role.contains("sponsor")) {
+        if (role.contains("masjid incharge") ||
+            role.contains("sponsor") ||
+            (roleNames.length > 1 &&
+                roleNames.any((name) {
+                  final normalizedName = name.toLowerCase();
+                  return normalizedName.contains("masjid incharge") ||
+                      normalizedName.contains("sponsor");
+                }))) {
           await SharedPrefsHelper.setString(
             "userId",
             userId,
@@ -85,6 +107,17 @@ class LoginController extends GetxController {
 
         print("ROLE => $roleName");
         print("ROLE => $role");
+
+        if (roleNames.length > 1) {
+          Get.offAllNamed(
+            Routes.multiRoleUserDashboard,
+            arguments: {
+              "roleNames": roleNames,
+              "fullName": fullName,
+            },
+          );
+          return;
+        }
 
         // Navigate according to role
         if (role.contains("security")) {
@@ -105,6 +138,10 @@ class LoginController extends GetxController {
       } else {
         errorToast("Invalid Username or Password".tr);
       }
+    } on TimeoutException {
+      errorToast(
+          "Login request timed out. Please check your connection and try again."
+              .tr);
     } catch (e) {
       print("LOGIN ERROR => $e");
       errorToast("Invalid Username or Password".tr);

@@ -33,8 +33,8 @@ class EndPoints {
 
   // Kitchen
   static const kitchenStudentByQr = "kitchen-meal-forecast/qr/student/";
-
   static const kitchenDashboard = "kitchen-meal-forecast/dashboard";
+  static const kitchenForecast = "kitchen-meal-forecast/forecast";
 
   static const sponsorDashboard = "sponsor-dashboard";
   static const String staffAttendanceSessions =

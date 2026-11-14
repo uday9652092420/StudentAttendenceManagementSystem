@@ -19,67 +19,61 @@ class WardenAttendanceDashboardView
         backgroundColor: Colors.blue,
         //foregroundColor: Colors.black,
         centerTitle: true,
-        actions: const [AppLanguageSwitcher()],
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Warden Dashboard".tr,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            IconButton(
-              onPressed: () async {
-                final result = await Get.dialog<bool>(
-                  AlertDialog(
-                    backgroundColor: AppColors.bgLight,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    title: Text(
-                      'Logout'.tr,
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ),
-                    content: Text(
-                      'Are you sure you want to logout?'.tr,
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Get.back(result: false),
-                        child: Text(
-                          'No'.tr,
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Get.back(result: true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text('Yes'.tr),
-                      ),
-                    ],
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final result = await Get.dialog<bool>(
+                AlertDialog(
+                  backgroundColor: AppColors.bgLight,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                );
+                  title: Text(
+                    'Logout'.tr,
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  content: Text(
+                    'Are you sure you want to logout?'.tr,
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Get.back(result: false),
+                      child: Text(
+                        'No'.tr,
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Get.back(result: true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text('Yes'.tr),
+                    ),
+                  ],
+                ),
+              );
 
-                if (result == true) {
-                  await logout();
-                }
-              },
-              icon: const Icon(
-                Icons.logout,
-                color: Colors.white,
-              ),
-            ),
-          ],
+              if (result == true) {
+                await logout();
+              }
+            },
+            icon: const Icon(Icons.logout, color: Colors.white),
+          ),
+          const AppLanguageSwitcher(),
+        ],
+        title: Text(
+          "Warden Dashboard".tr,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: Obx(() {

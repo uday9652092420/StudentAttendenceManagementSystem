@@ -17,12 +17,21 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
         centerTitle: true,
         elevation: 0,
         leading: Obx(
-          () => controller.isEditing.value
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: controller.cancelEditing,
-                )
-              : const SizedBox.shrink(),
+          () {
+            if (controller.isEditing.value) {
+              return IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: controller.cancelEditing,
+              );
+            }
+            if (Get.previousRoute == Routes.multiRoleUserDashboard) {
+              return IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: Get.back,
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
         title: Obx(
           () => Text(
@@ -36,7 +45,9 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
           ),
         ),
         actions: [
-          const AppLanguageSwitcher(),
+          AppLanguageSwitcher(
+            onLanguageChanged: (_) => controller.reloadLocalizedData(),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
@@ -422,9 +433,9 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
               secondary: CircleAvatar(
                 backgroundColor: Colors.blue,
                 child: Text(
-                  student.studentName.isEmpty
+                  student.displayName.isEmpty
                       ? "S"
-                      : student.studentName.substring(0, 1).toUpperCase(),
+                      : student.displayName.substring(0, 1).toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -432,13 +443,19 @@ class MasjidDashboardView extends GetView<MasjidDashboardController> {
                 ),
               ),
               title: Text(
-                student.studentName,
+                student.displayName,
+                textDirection: Get.locale?.languageCode == "ur"
+                    ? TextDirection.rtl
+                    : TextDirection.ltr,
+                textAlign: Get.locale?.languageCode == "ur"
+                    ? TextAlign.right
+                    : TextAlign.left,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
-              subtitle: Text("ID : ${student.studentId}"),
+              subtitle: Text("ID : ${student.displayStudentId}"),
             ),
           ),
         );

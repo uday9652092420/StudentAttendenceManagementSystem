@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/warden/take_attendance_controller.dart';
@@ -22,7 +24,11 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: const [AppLanguageSwitcher()],
+        actions: [
+          AppLanguageSwitcher(
+            onLanguageChanged: (_) async => controller.students.refresh(),
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
@@ -249,7 +255,26 @@ class TakeAttendanceView extends GetView<TakeAttendanceController> {
                           /// Student Name
                           Padding(
                             padding: const EdgeInsets.all(10),
-                            child: Text(student.studentName),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  student.displayName,
+                                  textDirection:
+                                      Get.locale?.languageCode == "ur"
+                                          ? ui.TextDirection.rtl
+                                          : ui.TextDirection.ltr,
+                                ),
+                                if (student.displayId.isNotEmpty)
+                                  Text(
+                                    "${"Student ID".tr}: ${student.displayId}",
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
 
                           /// Status

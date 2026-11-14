@@ -46,6 +46,11 @@ class ApiService {
     bool requireAuthToken = true,
   }) async {
     final Map<String, String> mergedHeaders = {...commonHeaders, ...?headers};
+    final languageCode = await SharedPrefsHelper.getString(
+      SharedPrefsHelper.languageCode,
+      defaultValue: Get.locale?.languageCode ?? "en",
+    );
+    mergedHeaders.putIfAbsent("Accept-Language", () => languageCode);
     if (requireAuthToken) {
       //SANDEEP CAHNGE FOR DYNAMIC
       // const accessToken =
